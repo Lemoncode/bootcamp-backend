@@ -1,6 +1,6 @@
 # 01 Get method
 
-In this example we are going to implement a get method using http server in Nodejs.
+In this example we are going to implement a `get` method using http server in Nodejs.
 
 We will start from `00-boilerplate`.
 
