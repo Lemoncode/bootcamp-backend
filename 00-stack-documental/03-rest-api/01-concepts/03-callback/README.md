@@ -17,6 +17,8 @@ Hello from file!
 
 And try to read it using `fs`:
 
+_./index.js_
+
 ```javascript
 const fs = require("fs");
 
