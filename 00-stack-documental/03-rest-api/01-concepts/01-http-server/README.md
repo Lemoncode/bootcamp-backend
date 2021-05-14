@@ -1,12 +1,12 @@
 # 01 Http Server
 
-In this example we are going to implement a basic HTTP server with Nodejs
+In this example we are going to implement a basic HTTP server with Nodejs.
 
 # Steps to build it
 
 We will start from scratch, let's create our first http server with nodejs`:
 
-_index.js_
+_./index.js_
 
 ```javascript
 const http = require("http");
@@ -27,9 +27,12 @@ node index
 
 ```
 
+> Check with Chrome
+> Check with Firefox to see raw http request / response
+
 Let's add an `index.html` file to serve it:
 
-_index.html_
+_./index.html_
 
 ```html
 <!DOCTYPE html>
@@ -48,7 +51,7 @@ _index.html_
 
 ```
 
-_index.js_
+_./index.js_
 
 ```diff
 const http = require("http");
@@ -74,7 +77,7 @@ server.listen(3000);
 
 Finally, we need to resolve the image query:
 
-_index.js_
+_./index.js_
 
 ```diff
 const http = require("http");
