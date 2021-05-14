@@ -2,9 +2,11 @@
 
 In this example we are going to implement a basic HTTP server with Nodejs.
 
+We will start from `00-boilerplate`.
+
 # Steps to build it
 
-We will start from scratch, let's create our first http server with nodejs`:
+Let's create our first http server with nodejs`:
 
 _./index.js_
 
