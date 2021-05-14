@@ -1,4 +1,4 @@
-# 01 Http Server
+# 02 Http2 Server
 
 In this example we are going to implement a basic HTTP version 2 server with Nodejs.
 
