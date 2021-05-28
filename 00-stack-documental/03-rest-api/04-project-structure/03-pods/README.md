@@ -1,8 +1,8 @@
-# 02 DALS
+# 03 PODS
 
-In this example we are going to structure code in `dals` folder.
+In this example we are going to structure code in `pods` folder.
 
-We will start from `01-core`.
+We will start from `02-dals`.
 
 # Steps to build it
 
@@ -13,273 +13,58 @@ npm install
 
 ```
 
-The `dals` folder is related with the entities from your domain, it means it's a good place getting `models`, `repositories`, `mock-data`, etc. We will migrate `mock-db.ts` to this folder:
+The `pods` folder is related with each encapsulated piece of functionality that implements your project, in this case, we will create the `book` pod.
 
-_./dals/book/book.model.ts_
+Let's start with `API model`:
+
+_./src/pods/book/book.api-model.ts_
 
 ```typescript
 export interface Book {
   id: string;
   title: string;
-  releaseDate: Date;
+  releaseDate: string;
   author: string;
 }
 
 ```
 
-Add barrel file:
+So, we need to implement `mappers` to transform:
 
-_./dals/book/index.ts_
+- `Model to API`: when we get entities
+- `API to Model`: when we update or insert entities
 
-```typescript
-export * from "./book.model";
-
-```
-
-Let's create the `mock-data` file that it will be represent the database in memory:
-
-_./dals/mock-data.ts_
+_./src/pods/book/book.mappers.ts_
 
 ```typescript
-import { Book } from "./book";
+import * as model from "dals";
+import * as apiModel from "./book.api-model";
 
-export interface DB {
-  books: Book[];
-}
+const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
+  id: book.id,
+  title: book.title,
+  releaseDate: book.releaseDate.toISOString(),
+  author: book.author,
+});
 
-export const db: DB = {
-  books: [
-    {
-      id: "1",
-      title: "Choque de reyes",
-      releaseDate: new Date("1998-11-16"),
-      author: "George R. R. Martin",
-    },
-    {
-      id: "2",
-      title: "Harry Potter y el prisionero de Azkaban",
-      releaseDate: new Date("1999-07-21"),
-      author: "J. K. Rowling",
-    },
-    {
-      id: "3",
-      title: "The Witcher - The Last Wish",
-      releaseDate: new Date("1993-11-02"),
-      author: "Andrzej Sapkowski",
-    },
-    {
-      id: "4",
-      title: "El Hobbit",
-      releaseDate: new Date("1937-09-21"),
-      author: "J. R. R. Tolkien",
-    },
-    {
-      id: "5",
-      title: "Assassin's Quest",
-      releaseDate: new Date("1997-03-03"),
-      author: "Robin Hobb",
-    },
-    {
-      id: "6",
-      title: "Homeland",
-      releaseDate: new Date("1990-09-19"),
-      author: "R. A. Salvatore",
-    },
-    {
-      id: "7",
-      title: "American Gods",
-      releaseDate: new Date("2001-06-19"),
-      author: "Neil Gaiman",
-    },
-  ],
-};
+export const mapBookListFromModelToApi = (
+  bookList: model.Book[]
+): apiModel.Book[] => bookList.map(mapBookFromModelToApi);
 
 ```
 
-Let's create `repositories`, they are interfaces to getting entities as well as creating and changing them, etc.
+> [Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
 
-_./dals/book/repositories/book.repository.ts_
+Let's implement the `rest-api`, move `./src/books.api.ts` -> `./src/pods/book/book.rest-api.ts`:
 
-```typescript
-import { Book } from "../book.model";
-
-export interface BookRepository {
-  getBookList: () => Promise<Book[]>;
-  getBook: (id: string) => Promise<Book>;
-  saveBook: (book: Book) => Promise<Book>;
-  deleteBook: (id: string) => Promise<boolean>;
-}
-
-```
-
-Let's implement `mock-repository`:
-
-_./dals/book/repositories/book.mock-repository.ts_
-
-```typescript
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { db } from "../../mock-data";
-
-const insertBook = (book: Book) => {
-  const id = (db.books.length + 1).toString();
-  const newBook = {
-    ...book,
-    id,
-  };
-
-  db.books = [...db.books, newBook];
-  return newBook;
-};
-
-const updateBook = (book: Book) => {
-  db.books = db.books.map((b) => (b.id === book.id ? { ...b, ...book } : b));
-  return book;
-};
-
-export const mockRepository: BookRepository = {
-  getBookList: async () => db.books,
-  getBook: async (id: string) => db.books.find((b) => b.id === id),
-  saveBook: async (book: Book) =>
-    Boolean(book.id) ? updateBook(book) : insertBook(book),
-  deleteBook: async (id: string) => {
-    db.books = db.books.filter((b) => b.id !== id);
-    return true;
-  },
-};
-
-```
-
-We could create the empty `db repository` pending to implement:
-
-_./dals/book/repositories/book.db-repository.ts_
-
-```typescript
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-
-export const dbRepository: BookRepository = {
-  getBookList: async () => {
-    throw new Error("Not implemented");
-  },
-  getBook: async (id: string) => {
-    throw new Error("Not implemented");
-  },
-  saveBook: async (book: Book) => {
-    throw new Error("Not implemented");
-  },
-  deleteBook: async (id: string) => {
-    throw new Error("Not implemented");
-  },
-};
-
-```
-
-Add barrel file:
-
-_./dals/book/repositories/index.ts_
-
-```typescript
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
-
-// TODO: Create env variable
-const isApiMock = true;
-
-export const bookRepository = isApiMock ? mockRepository : dbRepository;
-
-```
-
-Update barrel file:
-
-_./dals/book/index.ts_
-
-```diff
-export * from "./book.model";
-+ export * from "./repositories";
-
-```
-
-Finally, let's create the env variable:
-
-_./.env.example_
-
-```diff
-NODE_ENV=development
-PORT=3000
-STATIC_FILES_PATH=../public
-CORS_ORIGIN=*
-CORS_METHODS=GET,POST,PUT,DELETE
-+ API_MOCK=true
-
-```
-
-_./.env_
-
-```diff
-NODE_ENV=development
-PORT=3000
-STATIC_FILES_PATH=../public
-CORS_ORIGIN=*
-CORS_METHODS=GET,POST,PUT,DELETE
-+ API_MOCK=true
-
-```
-
-Update constants:
-
-_./src/core/constants/env.constants.ts_
-
-```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
-  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH, 
-  CORS_ORIGIN: process.env.CORS_ORIGIN,
-  CORS_METHODS: process.env.CORS_METHODS,
-+ isApiMock: process.env.API_MOCK === 'true',
-};
-
-```
-
-Update barrel file:
-
-_./dals/book/repositories/index.ts_
-
-```diff
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
-+ import { envConstants } from "../../../core/constants";
-
-- // TODO: Create env variable
-- const isApiMock = true;
-
-- export const bookRepository = isApiMock ? mockRepository : dbRepository;
-+ export const bookRepository = envConstants.isApiMock ? mockRepository : dbRepository;
-
-```
-
-Let's try using the repository:
-
-_./src/dals/index.ts_
-
-```typescript
-export * from "./book";
-
-```
-
-_./src/books.api.ts_
+_./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-+ import { bookRepository } from "./dals";
-import {
-- getBookList,
-  getBook,
-  insertBook,
-  updateBook,
-  deleteBook,
-} from "./mock-db";
+import { bookRepository } from "dals";
++ import { mapBookListFromModelToApi } from "./book.mappers";
+- import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
++ import { getBook, insertBook, updateBook, deleteBook } from "../../mock-db";
 
 export const booksApi = Router();
 
@@ -288,126 +73,295 @@ booksApi
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
--     let bookList = await getBookList();
+-     let bookList = await bookRepository.getBookList();
 +     let bookList = await bookRepository.getBookList();
 
-...
-```
-
-> NOTE: Try to change env variable API_MOCK=false
-
-As a great improvement, we will configure our project to allow import aliases installing [babel-plugin-module-resolver](https://github.com/tleunen/babel-plugin-module-resolver):
-
-```bash
-npm install babel-plugin-module-resolver --save-dev
-```
-
-> NOTE: It's not an official plugin.
-
-Let's add main folders aliases:
-
-_./.babelrc_
-
-```diff
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "14"
-        }
+      if (page && pageSize) {
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = Math.min(startIndex + pageSize, bookList.length);
+        bookList = bookList.slice(startIndex, endIndex);
       }
-    ],
-    "@babel/preset-typescript"
-  ],
-  "plugins": [
-    "@babel/plugin-proposal-optional-chaining",
-+   [
-+     "module-resolver",
-+     {
-+       "root": ["."],
-+       "alias": {
-+         "common": "./src/common",
-+         "common-app": "./src/common-app",
-+         "core": "./src/core",
-+         "dals": "./src/dals",
-+         "pods": "./src/pods"
-+       }
-+     }
-+   ]
-  ],
-  "env": {
-    "development": {
-      "sourceMaps": "inline"
+-     res.send(bookList);
++     res.send(mapBookListFromModelToApi(bookList));
+    } catch (error) {
+      next(error);
     }
-  }
-}
+
+...
+
 
 ```
 
-Configure typescript:
+Add barrel file:
 
-_./tsconfig.json_
+_./src/pods/book/index.ts_
 
-```diff{
-  "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "moduleResolution": "node",
-    "declaration": false,
-    "noImplicitAny": false,
-    "sourceMap": true,
-    "noLib": false,
-    "allowJs": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-+   "baseUrl": "./src"
-  },
-  "include": ["src/**/*"]
-}
+```typescript
+export * from "./book.rest-api";
 
 ```
 
-Update imports with aliases:
+Update app:
 
 _./src/app.ts_
 
 ```diff
 import express from "express";
 import path from "path";
-- import { createRestApiServer } from "./core/servers";
-+ import { createRestApiServer } from "core/servers";
-- import { envConstants } from "./core/constants";
-+ import { envConstants } from "core/constants";
-import { booksApi } from "./books.api";
+import { createRestApiServer } from "core/servers";
+import { envConstants } from "core/constants";
+- import { booksApi } from "./books.api";
++ import { booksApi } from "pods/book";
+
 ...
 
 ```
 
-_./src/dals/book/repositories/index.ts_
+Let's export single entity mapper:
+
+_./src/pods/book/book.mappers.ts_
 
 ```diff
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
-- import { envConstants } from "../../../core/constants";
-+ import { envConstants } from "core/constants";
+import * as model from "dals";
+import * as apiModel from "./book.api-model";
 
+- const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
++ export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
+  id: book.id,
+  title: book.title,
 ...
 
 ```
 
-_./src/books.api.ts_
+Update `get by id` method:
+
+_./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-- import { bookRepository } from "./dals";
-+ import { bookRepository } from "dals";
-import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
+import { bookRepository } from "dals";
+- import { mapBookListFromModelToApi } from "./book.mappers";
++ import { mapBookListFromModelToApi, mapBookFromModelToApi } from "./book.mappers";
+- import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
++ import { insertBook, updateBook, deleteBook } from "../../mock-db";
+
+...
+- .get("/:id", async (req, res) => {
++ .get("/:id", async (req, res, next) => {
++   try {
+      const { id } = req.params;
+-     const bookId = Number(id);
+-     const book = await getBook(bookId);
++     const book = await bookRepository.getBook(id);
+-     res.send(book);
++     res.send(mapBookFromModelToApi(book));
++   } catch (error) {
++     next(error);
++   }
+  })
+...
+```
+
+Let's implement `API to Model` mapper:
+
+_./src/pods/book/book.mappers.ts_
+
+```diff
+...
+
+export const mapBookListFromModelToApi = (
+  bookList: model.Book[]
+): apiModel.Book[] => bookList.map(mapBookFromModelToApi);
+
++ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
++   id: book.id,
++   title: book.title,
++   releaseDate: new Date(book.releaseDate),
++   author: book.author,
++ });
 
 ...
 
+```
+
+Update `post` method:
+
+_./src/pods/book/book.rest-api.ts_
+
+```diff
+import { Router } from "express";
+import { bookRepository } from "dals";
+import {
+  mapBookListFromModelToApi,
+  mapBookFromModelToApi,
++ mapBookFromApiToModel,
+} from "./book.mappers";
+- import { insertBook, updateBook, deleteBook } from "../../mock-db";
++ import { updateBook, deleteBook } from "../../mock-db";
+
+...
+- .post("/", async (req, res, next) => {
++ .post("/", async (req, res) => {
++   try {
+-     const book = req.body;
++     const modelBook = mapBookFromApiToModel(req.body);
+-     const newBook = await insertBook(book);
++     const newBook = await bookRepository.saveBook(modelBook);
+-     res.status(201).send(newBook);
++     res.status(201).send(mapBookFromModelToApi(newBook));
++   } catch (error) {
++     next(error);
++   }
+  })
+...
+```
+
+Running post method:
+
+```
+{
+    "title": "El señor de los anillos",
+    "releaseDate": "1954-07-29T00:00:00.000Z",
+    "author": "J. R. R. Tolkien"
+}
+```
+
+Update `put` method:
+
+_./src/pods/book/book.rest-api.ts_
+
+```diff
+import { Router } from "express";
+import { bookRepository } from "dals";
+import {
+  mapBookListFromModelToApi,
+  mapBookFromModelToApi,
+  mapBookFromApiToModel,
+} from "./book.mappers";
+- import { updateBook, deleteBook } from "../../mock-db";
++ import { deleteBook } from "../../mock-db";
+
+...
+- .put("/:id", async (req, res) => {
++ .put("/:id", async (req, res, next) => {
++   try {
+      const { id } = req.params;
+-     const bookId = Number(id);
+-     const book = req.body;
++     const modelBook = mapBookFromApiToModel({ ...req.body, id });
+-     await updateBook(bookId, book);
++     await bookRepository.saveBook(modelBook);
+      res.sendStatus(204);
++   } catch (error) {
++     next(error);
++   }
+  })
+...
+```
+
+Running put method:
+
+```
+{
+    "title": "Harry Potter y la piedra filosofal",
+    "releaseDate": "1999-07-21T00:00:00.000Z",
+    "author": "J. K. Rowling"
+}
+```
+
+Update `delete` method:
+
+_./src/pods/book/book.rest-api.ts_
+
+```diff
+import { Router } from "express";
+import { bookRepository } from "dals";
+import {
+  mapBookListFromModelToApi,
+  mapBookFromModelToApi,
+  mapBookFromApiToModel,
+} from "./book.mappers";
+- import { deleteBook } from "../../mock-db";
+
+...
+- .delete("/:id", async (req, res) => {
++ .delete("/:id", async (req, res, next) => {
++   try {
+      const { id } = req.params;
+-     const bookId = Number(id);
+-     await deleteBook(bookId);
++     await bookRepository.deleteBook(id);
+      res.sendStatus(204);
++   } catch (error) {
++     next(error);
++   }
+  });
+
+```
+
+Now, we could delete `./src/mock-db.ts` file.
+
+A nice improvement is move the pagination functionality to a `helpers` file:
+
+_./src/pods/book/book.helpers.ts_
+
+```typescript
+import { Book } from "dals";
+
+export const paginateBookList = (
+  bookList: Book[],
+  page: number,
+  pageSize: number
+): Book[] => {
+  let paginatedBookList = [...bookList];
+  if (page && pageSize) {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, paginatedBookList.length);
+    paginatedBookList = paginatedBookList.slice(startIndex, endIndex);
+  }
+
+  return paginatedBookList;
+};
+
+```
+
+Update api:
+
+_./src/pods/book/book.rest-api.ts_
+
+```diff
+import { Router } from "express";
+import { bookRepository } from "dals";
+import {
+  mapBookListFromModelToApi,
+  mapBookFromModelToApi,
+  mapBookFromApiToModel,
+} from "./book.mappers";
++ import { paginateBookList } from "./book.helpers";
+
+export const booksApi = Router();
+
+booksApi
+  .get("/", async (req, res, next) => {
+    try {
+      const page = Number(req.query.page);
+      const pageSize = Number(req.query.pageSize);
+-     let bookList = await bookRepository.getBookList();
++     const bookList = await bookRepository.getBookList();
++     const paginatedBookList = paginateBookList(bookList, page, pageSize);
+
+-     if (page && pageSize) {
+-       const startIndex = (page - 1) * pageSize;
+-       const endIndex = Math.min(startIndex + pageSize, bookList.length);
+-       bookList = bookList.slice(startIndex, endIndex);
+-     }
+-     res.send(mapBookListFromModelToApi(bookList));
++     res.send(mapBookListFromModelToApi(paginatedBookList));
+    } catch (error) {
+      next(error);
+    }
+  })
+...
 ```
 
 # ¿Con ganas de aprender Backend?
