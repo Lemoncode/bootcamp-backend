@@ -76,7 +76,7 @@ import { MongoClient, Db } from "mongodb";
 
 let dbInstance: Db;
 
-export const connectToDB = async (connectionURI: string) => {
+export const connectToDBServer = async (connectionURI: string) => {
   const client = new MongoClient(connectionURI);
   await client.connect();
 
@@ -104,7 +104,7 @@ _./src/app.ts_
 import express from "express";
 import path from "path";
 - import { createRestApiServer } from "core/servers";
-+ import { createRestApiServer, connectToDB, getDBInstance } from "core/servers";
++ import { createRestApiServer, connectToDBServer, getDBInstance } from "core/servers";
 import { envConstants } from "core/constants";
 import {
   logRequestMiddleware,
@@ -116,7 +116,7 @@ import { booksApi } from "pods/book";
 - restApiServer.listen(envConstants.PORT, () => {
 + restApiServer.listen(envConstants.PORT, async () => {
 + if (!envConstants.isApiMock) {
-+   await connectToDB(envConstants.MONGODB_URI);
++   await connectToDBServer(envConstants.MONGODB_URI);
 +   console.log("Connected to DB");
 +   const db = getDBInstance();
 +   await db.collection("books").insertOne({ name: "Book 1" });
@@ -138,7 +138,7 @@ _./src/app.ts_
 ...
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
-    await connectToDB(envConstants.MONGODB_URI);
+    await connectToDBServer(envConstants.MONGODB_URI);
     console.log("Connected to DB");
     const db = getDBInstance();
 -   await db.collection("books").insertOne({ name: "Book 1" });
