@@ -5,4 +5,5 @@ export const envConstants = {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
   isApiMock: process.env.API_MOCK === 'true',
+  MONGODB_URI: process.env.MONGODB_URI,
 };
