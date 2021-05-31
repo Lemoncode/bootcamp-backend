@@ -4,7 +4,7 @@ import { db } from "../../mock-data";
 
 const insertBook = (book: Book) => {
   const id = (db.books.length + 1).toString();
-  const newBook = {
+  const newBook: Book = {
     ...book,
     id,
   };

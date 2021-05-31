@@ -52,8 +52,8 @@ booksApi
   .delete("/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
-      await bookRepository.deleteBook(id);
-      res.sendStatus(204);
+      const isDeleted = await bookRepository.deleteBook(id);
+      res.sendStatus(isDeleted ? 204 : 404);
     } catch (error) {
       next(error);
     }

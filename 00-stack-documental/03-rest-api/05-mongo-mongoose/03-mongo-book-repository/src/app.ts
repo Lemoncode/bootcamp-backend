@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import { createRestApiServer, connectToDBServer, getDBInstance } from "core/servers";
+import { createRestApiServer, connectToDBServer } from "core/servers";
 import { envConstants } from "core/constants";
 import {
   logRequestMiddleware,
@@ -23,9 +23,6 @@ restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
     await connectToDBServer(envConstants.MONGODB_URI);
     console.log("Connected to DB");
-    const db = getDBInstance();
-    const books = await db.collection("books").find().toArray();
-    console.log({ books });
   } else {
     console.log("Running API mock");
   }

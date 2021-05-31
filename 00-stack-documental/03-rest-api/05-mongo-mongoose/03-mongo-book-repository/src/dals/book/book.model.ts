@@ -1,5 +1,7 @@
+import { ObjectId } from "mongodb";
+
 export interface Book {
-  id: string;
+  _id: ObjectId;
   title: string;
   releaseDate: Date;
   author: string;
