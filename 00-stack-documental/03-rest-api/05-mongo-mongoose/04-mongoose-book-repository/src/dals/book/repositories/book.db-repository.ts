@@ -1,33 +1,22 @@
 import { ObjectId } from "mongodb";
-import { getDBInstance } from "core/servers";
+import { BookContext } from "../book.context";
 import { BookRepository } from "./book.repository";
 import { Book } from "../book.model";
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => {
-    const db = getDBInstance();
-    return await db.collection<Book>("books").find().toArray();
-  },
-  getBook: async (id: string) => {
-    const db = getDBInstance();
-    return await db.collection<Book>("books").findOne({
-      _id: new ObjectId(id),
-    });
-  },
-  saveBook: async (book: Book) => {
-    const db = getDBInstance();
-    const { value } = await db.collection<Book>("books").findOneAndUpdate(
+  getBookList: async () => await BookContext.find().lean(),
+  getBook: async (id: string) =>
+    await BookContext.findOne({ _id: new ObjectId(id) }).lean(),
+  saveBook: async (book: Book) =>
+    await BookContext.findOneAndUpdate(
       {
         _id: book._id,
       },
       { $set: book },
-      { upsert: true, returnDocument: "after" }
-    );
-    return value;
-  },
+      { upsert: true, new: true }
+    ).lean(),
   deleteBook: async (id: string) => {
-    const db = getDBInstance();
-    const { deletedCount } = await db.collection<Book>("books").deleteOne({
+    const { deletedCount } = await BookContext.deleteOne({
       _id: new ObjectId(id),
     });
     return deletedCount === 1;
