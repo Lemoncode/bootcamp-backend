@@ -25,14 +25,11 @@ services:
     image: mongo:4.4.6
     ports:
       - '27017:27017'
-    volumes:
-      - './mongo-data:/data/db'
 
 ```
 
 > [Docker compose versioning](https://docs.docker.com/compose/compose-file/compose-versioning/)
 > [Docker versions](https://hub.docker.com/_/mongo?tab=tags&page=1&ordering=last_updated)
-> Volume is optionally.
 
 Let's create npm commands to run it:
 
@@ -47,7 +44,7 @@ _./package.json_
     "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
     "start:console-runners": "npm run type-check && babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
 +   "start:local-db": "docker-compose up || echo \"Fail running docker-compose up, do it manually!\"",
-+   "stop:local-db": "docker-compose down || echo \"Fail running docker-compose down, do it manually!\"",
++   "remove:local-db": "docker-compose down || echo \"Fail running docker-compose down, do it manually!\"",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
   },
