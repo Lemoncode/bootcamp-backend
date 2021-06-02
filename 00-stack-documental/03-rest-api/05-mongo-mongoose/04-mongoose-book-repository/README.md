@@ -64,7 +64,7 @@ const bookSchema = new Schema({
   author: { type: Schema.Types.String, required: true },
 } as SchemaDefinition<Book>);
 
-export const BookContext = mongoose.model<Book>("Book", bookSchema);
+export const bookContext = mongoose.model<Book>("Book", bookSchema);
 
 ```
 
@@ -79,7 +79,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
 ```diff
 import { ObjectId } from "mongodb";
 - import { getDBInstance } from "core/servers";
-+ import { BookContext } from "../book.context";
++ import { bookContext } from "../book.context";
 import { BookRepository } from "./book.repository";
 import { Book } from "../book.model";
 
@@ -87,7 +87,7 @@ export const dbRepository: BookRepository = {
   getBookList: async () => {
 -   const db = getDBInstance();
 -   return await db.collection<Book>("books").find().toArray();
-+   return await BookContext.find();
++   return await bookContext.find();
   },
 ...
 };
@@ -105,9 +105,9 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 export const dbRepository: BookRepository = {
 - getBookList: async () => {
--   return await BookContext.find();
+-   return await bookContext.find();
 - },
-+ getBookList: async () => await BookContext.find().lean(),
++ getBookList: async () => await bookContext.find().lean(),
 ...
 
 ```
@@ -125,7 +125,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
 -     _id: new ObjectId(id),
 -   });
 - },
-+   await BookContext.findOne({ _id: new ObjectId(id) }).lean(),
++   await bookContext.findOne({ _id: new ObjectId(id) }).lean(),
 ...
 
 ```
@@ -140,7 +140,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
 + saveBook: async (book: Book) =>
 -   const db = getDBInstance();
 -   const { value } = await db.collection<Book>("books").findOneAndUpdate(
-+   await BookContext.findOneAndUpdate(
++   await bookContext.findOneAndUpdate(
       {
         _id: book._id,
       },
@@ -164,7 +164,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
   deleteBook: async (id: string) => {
 -   const db = getDBInstance();
 -   const { deletedCount } = await db.collection<Book>("books").deleteOne({
-+   const { deletedCount } = await BookContext.deleteOne({
++   const { deletedCount } = await bookContext.deleteOne({
       _id: new ObjectId(id),
     });
     return deletedCount === 1;

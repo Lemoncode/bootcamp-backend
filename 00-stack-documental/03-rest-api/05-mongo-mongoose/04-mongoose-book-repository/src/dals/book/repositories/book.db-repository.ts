@@ -1,14 +1,14 @@
 import { ObjectId } from "mongodb";
-import { BookContext } from "../book.context";
+import { bookContext } from "../book.context";
 import { BookRepository } from "./book.repository";
 import { Book } from "../book.model";
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => await BookContext.find().lean(),
+  getBookList: async () => await bookContext.find().lean(),
   getBook: async (id: string) =>
-    await BookContext.findOne({ _id: new ObjectId(id) }).lean(),
+    await bookContext.findOne({ _id: new ObjectId(id) }).lean(),
   saveBook: async (book: Book) =>
-    await BookContext.findOneAndUpdate(
+    await bookContext.findOneAndUpdate(
       {
         _id: book._id,
       },
@@ -16,7 +16,7 @@ export const dbRepository: BookRepository = {
       { upsert: true, new: true }
     ).lean(),
   deleteBook: async (id: string) => {
-    const { deletedCount } = await BookContext.deleteOne({
+    const { deletedCount } = await bookContext.deleteOne({
       _id: new ObjectId(id),
     });
     return deletedCount === 1;

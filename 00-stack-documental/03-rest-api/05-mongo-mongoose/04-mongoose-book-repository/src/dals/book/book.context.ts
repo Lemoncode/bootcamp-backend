@@ -7,4 +7,4 @@ const bookSchema = new Schema({
   author: { type: Schema.Types.String, required: true },
 } as SchemaDefinition<Book>);
 
-export const BookContext = mongoose.model<Book>("Book", bookSchema);
+export const bookContext = mongoose.model<Book>("Book", bookSchema);
