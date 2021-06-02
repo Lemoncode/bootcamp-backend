@@ -1,6 +1,6 @@
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { db } from "../../mock-data";
+import { BookRepository } from './book.repository';
+import { Book } from '../book.model';
+import { db } from '../../mock-data';
 
 const insertBook = (book: Book) => {
   const id = (db.books.length + 1).toString();

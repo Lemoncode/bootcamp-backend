@@ -1,2 +1,2 @@
-export * from "./movie.model";
-export * from "./repositories";
+export * from './movie.model';
+export * from './repositories';

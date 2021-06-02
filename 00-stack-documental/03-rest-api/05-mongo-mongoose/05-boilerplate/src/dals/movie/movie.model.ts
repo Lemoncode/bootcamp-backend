@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 // https://docs.atlas.mongodb.com/sample-data/sample-mflix/#sample_mflix.movies
 
@@ -22,7 +22,7 @@ export interface Movie {
   tomatoes?: Tomatoes;
 }
 
-export type MovieType = "movie" | "series";
+export type MovieType = 'movie' | 'series';
 
 export interface IMDB {
   rating: number;

@@ -1,16 +1,16 @@
-import { Router } from "express";
-import { bookRepository } from "dals";
+import { Router } from 'express';
+import { bookRepository } from 'dals';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from "./book.mappers";
-import { paginateBookList } from "./book.helpers";
+} from './book.mappers';
+import { paginateBookList } from './book.helpers';
 
 export const booksApi = Router();
 
 booksApi
-  .get("/", async (req, res, next) => {
+  .get('/', async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
@@ -21,7 +21,7 @@ booksApi
       next(error);
     }
   })
-  .get("/:id", async (req, res, next) => {
+  .get('/:id', async (req, res, next) => {
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
@@ -30,7 +30,7 @@ booksApi
       next(error);
     }
   })
-  .post("/", async (req, res, next) => {
+  .post('/', async (req, res, next) => {
     try {
       const modelBook = mapBookFromApiToModel(req.body);
       const newBook = await bookRepository.saveBook(modelBook);
@@ -39,7 +39,7 @@ booksApi
       next(error);
     }
   })
-  .put("/:id", async (req, res, next) => {
+  .put('/:id', async (req, res, next) => {
     try {
       const { id } = req.params;
       const modelBook = mapBookFromApiToModel({ ...req.body, id });
@@ -49,7 +49,7 @@ booksApi
       next(error);
     }
   })
-  .delete("/:id", async (req, res, next) => {
+  .delete('/:id', async (req, res, next) => {
     try {
       const { id } = req.params;
       await bookRepository.deleteBook(id);

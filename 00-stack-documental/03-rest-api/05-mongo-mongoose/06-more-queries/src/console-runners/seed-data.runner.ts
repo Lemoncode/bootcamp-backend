@@ -1,24 +1,24 @@
-import { prompt } from "inquirer";
-import { runCommand } from "./console-runners.helpers";
+import { prompt } from 'inquirer';
+import { runCommand } from './console-runners.helpers';
 
-const seedDataContainerPath = "/opt/app";
+const seedDataContainerPath = '/opt/app';
 
 export const run = async () => {
   const { seedDataPath, containerName, dbName } = await prompt([
     {
-      name: "seedDataPath",
-      type: "input",
-      message: "Seed data path (in your system files):",
+      name: 'seedDataPath',
+      type: 'input',
+      message: 'Seed data path (in your file system):',
     },
     {
-      name: "containerName",
-      type: "input",
-      message: "Docker container name:",
+      name: 'containerName',
+      type: 'input',
+      message: 'Docker container name:',
     },
     {
-      name: "dbName",
-      type: "input",
-      message: "Database name:",
+      name: 'dbName',
+      type: 'input',
+      message: 'Database name:',
     },
   ]);
 

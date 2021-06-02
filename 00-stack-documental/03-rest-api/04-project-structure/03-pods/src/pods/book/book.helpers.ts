@@ -1,4 +1,4 @@
-import { Book } from "dals";
+import { Book } from 'dals';
 
 export const paginateBookList = (
   bookList: Book[],

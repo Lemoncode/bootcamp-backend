@@ -1,7 +1,7 @@
-import { ObjectId } from "mongodb";
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { db } from "../../mock-data";
+import { ObjectId } from 'mongodb';
+import { BookRepository } from './book.repository';
+import { Book } from '../book.model';
+import { db } from '../../mock-data';
 
 const insertBook = (book: Book) => {
   const _id = new ObjectId();

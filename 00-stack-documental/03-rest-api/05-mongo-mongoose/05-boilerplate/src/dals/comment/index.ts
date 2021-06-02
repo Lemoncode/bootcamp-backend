@@ -1,2 +1,2 @@
-export * from "./comment.model";
-export * from "./repositories";
+export * from './comment.model';
+export * from './repositories';

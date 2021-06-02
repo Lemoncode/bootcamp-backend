@@ -1,5 +1,5 @@
-import mongoose, { Schema, SchemaDefinition } from "mongoose";
-import { Book } from "./book.model";
+import mongoose, { Schema, SchemaDefinition } from 'mongoose';
+import { Book } from './book.model';
 
 const bookSchema = new Schema({
   title: { type: Schema.Types.String, required: true },
@@ -7,4 +7,4 @@ const bookSchema = new Schema({
   author: { type: Schema.Types.String, required: true },
 } as SchemaDefinition<Book>);
 
-export const bookContext = mongoose.model<Book>("Book", bookSchema);
+export const bookContext = mongoose.model<Book>('Book', bookSchema);

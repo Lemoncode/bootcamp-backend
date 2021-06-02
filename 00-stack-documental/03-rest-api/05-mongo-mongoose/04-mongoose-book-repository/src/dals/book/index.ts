@@ -1,2 +1,2 @@
-export * from "./book.model";
-export * from "./repositories";
+export * from './book.model';
+export * from './repositories';

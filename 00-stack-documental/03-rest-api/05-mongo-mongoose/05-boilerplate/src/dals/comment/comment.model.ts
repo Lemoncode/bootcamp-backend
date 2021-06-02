@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 // https://docs.atlas.mongodb.com/sample-data/sample-mflix/#sample_mflix.comments
 

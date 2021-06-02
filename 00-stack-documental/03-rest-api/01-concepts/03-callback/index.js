@@ -1,6 +1,6 @@
-const fs = require("fs");
+const fs = require('fs');
 
-fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
+fs.readFile('./file.txt', { encoding: 'utf-8' }, (error, data) => {
   if (error) {
     console.error(error);
   } else {
@@ -8,4 +8,4 @@ fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
   }
 });
 
-console.log("Start program");
+console.log('Start program');

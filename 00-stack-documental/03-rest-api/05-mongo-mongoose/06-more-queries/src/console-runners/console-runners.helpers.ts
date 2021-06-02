@@ -1,5 +1,5 @@
-import { promisify } from "util";
-import childProcess from "child_process";
+import { promisify } from 'util';
+import childProcess from 'child_process';
 
 export const runCommand = async (command) => {
   console.log(command);

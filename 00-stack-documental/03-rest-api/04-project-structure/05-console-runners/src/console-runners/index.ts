@@ -1,16 +1,16 @@
-import { prompt } from "inquirer";
+import { prompt } from 'inquirer';
 
 (async () => {
   let exit = false;
   while (!exit) {
     const answer = await prompt({
-      name: "consoleRunner",
-      type: "list",
-      message: "Which console-runner do you want to run?",
-      choices: ["create-admin", "exit"],
+      name: 'consoleRunner',
+      type: 'list',
+      message: 'Which console-runner do you want to run?',
+      choices: ['create-admin', 'exit'],
     });
 
-    if (answer.consoleRunner !== "exit") {
+    if (answer.consoleRunner !== 'exit') {
       const { run } = require(`./${answer.consoleRunner}.runner`);
       await run();
     } else {

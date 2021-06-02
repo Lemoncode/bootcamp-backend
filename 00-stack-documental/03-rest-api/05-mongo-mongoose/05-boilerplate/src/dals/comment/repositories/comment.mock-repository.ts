@@ -1,3 +1,3 @@
-import { CommentRepository } from "./comment.repository";
+import { CommentRepository } from './comment.repository';
 
 export const mockRepository: CommentRepository = {};
