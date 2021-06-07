@@ -25,7 +25,12 @@ securityApi
           expiresIn: '1d',
           algorithm: 'HS256',
         });
-        res.send(token);
+        // TODO: Move to constants
+        res.cookie('authorization', `Bearer ${token}`, {
+          httpOnly: true,
+          secure: envConstants.isProduction,
+        });
+        res.sendStatus(204);
       } else {
         res.sendStatus(401);
       }
@@ -38,5 +43,6 @@ securityApi
     // Different approaches:
     // - Short expiration times in token
     // - Black list tokens on DB
+    res.clearCookie('authorization');
     res.sendStatus(200);
   });

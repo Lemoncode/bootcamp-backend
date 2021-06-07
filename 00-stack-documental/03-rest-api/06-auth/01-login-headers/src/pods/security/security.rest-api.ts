@@ -25,7 +25,7 @@ securityApi
           expiresIn: '1d',
           algorithm: 'HS256',
         });
-        res.send(token);
+        res.send(`Bearer ${token}`);
       } else {
         res.sendStatus(401);
       }

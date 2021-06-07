@@ -1,3 +1,4 @@
+import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
 import { UserSession, Role } from 'common-app/models';
@@ -17,9 +18,13 @@ const verify = (token: string, secret: string): Promise<UserSession> =>
     });
   });
 
-export const authenticationMiddleware = async (req, res, next) => {
+export const authenticationMiddleware: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
-    const [, token] = req.headers.authorization?.split(' ') || [];
+    const [, token] = req.cookies.authorization?.split(' ') || [];
     const userSession = await verify(token, envConstants.AUTH_SECRET);
     req.userSession = userSession;
     next();
@@ -33,7 +38,8 @@ const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
   (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
 
 export const authorizationMiddleware =
-  (allowedRoles?: Role[]) => async (req, res, next) => {
+  (allowedRoles?: Role[]): RequestHandler =>
+  async (req, res, next) => {
     if (isAuthorized(req.userSession.role, allowedRoles)) {
       next();
     } else {

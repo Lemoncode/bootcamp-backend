@@ -317,7 +317,7 @@ import { userRepository } from 'dals';} from 'dals';
 +       algorithm: 'HS256',
 +     });
 -     // Send token
-+     res.send(token);
++     res.send(`Bearer ${token}`);
     } else {
       res.sendStatus(401);
     }
@@ -458,6 +458,7 @@ Create `security.middleware`:
 _./src/pods/security/security.middlewares.ts_
 
 ```typescript
+import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
 import { UserSession } from 'common-app/models';
@@ -477,7 +478,11 @@ const verify = (token: string, secret: string): Promise<UserSession> =>
     });
   });
 
-export const authenticationMiddleware = async (req, res, next) => {
+export const authenticationMiddleware: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
     const [, token] = req.headers.authorization?.split(' ') || [];
     const userSession = await verify(token, envConstants.AUTH_SECRET);
@@ -487,6 +492,47 @@ export const authenticationMiddleware = async (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
+```
+
+We could extend Express's Request types:
+
+_./global-types.d.ts_
+
+```typescript
+declare namespace Express {
+  export interface UserSession {
+    id: string;
+  }
+
+  export interface Request {
+    userSession?: UserSession;
+  }
+}
+
+```
+
+_./tsconfig.json_
+
+```diff
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "moduleResolution": "node",
+    "declaration": false,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "noLib": false,
+    "allowJs": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src"
+  },
+- "include": ["src/**/*"]
++ "include": ["src/**/*", "./global-types.d.ts"]
+}
 
 ```
 
@@ -510,7 +556,7 @@ import { userRepository } from 'dals';
         expiresIn: '1d',
         algorithm: 'HS256',
       });
-      res.send(token);
+      res.send(`Bearer ${token}`);
 ...
 
 ```
@@ -669,6 +715,26 @@ export const db: DB = {
 
 ```
 
+Update Express's Request:
+
+_./global-types.d.ts_
+
+```diff
+declare namespace Express {
++ export type Role = 'admin' | 'standard-user';
+
+  export interface UserSession {
+    id: string;
++   role: Role;
+  }
+
+  export interface Request {
+    userSession?: UserSession;
+  }
+}
+
+```
+
 Update `login` method:
 
 _./src/pods/security/security.rest-api.ts_
@@ -698,6 +764,7 @@ Now, we could create a new `authorization middleware`:
 _./src/pods/security/security.middlewares.ts_
 
 ```diff
+import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
 - import { UserSession } from 'common-app/models';
@@ -710,7 +777,8 @@ import { envConstants } from 'core/constants';
 +   (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
 
 + export const authorizationMiddleware =
-+   (allowedRoles?: Role[]) => async (req, res, next) => {
++   (allowedRoles?: Role[]): RequestHandler =>
++   async (req, res, next) => {
 +     if (isAuthorized(req.userSession.role, allowedRoles)) {
 +       next();
 +     } else {
