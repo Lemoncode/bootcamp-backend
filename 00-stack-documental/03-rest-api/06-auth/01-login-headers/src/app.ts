@@ -7,6 +7,7 @@ import {
   logErrorRequestMiddleware,
 } from 'common/middlewares';
 import { booksApi } from 'pods/book';
+import { securityApi, authenticationMiddleware } from 'pods/security';
 
 const restApiServer = createRestApiServer();
 
@@ -15,7 +16,8 @@ restApiServer.use('/', express.static(staticFilesPath));
 
 restApiServer.use(logRequestMiddleware);
 
-restApiServer.use('/api/books', booksApi);
+restApiServer.use('/api/security', securityApi);
+restApiServer.use('/api/books', authenticationMiddleware, booksApi);
 
 restApiServer.use(logErrorRequestMiddleware);
 

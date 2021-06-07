@@ -6,4 +6,5 @@ export const envConstants = {
   CORS_METHODS: process.env.CORS_METHODS,
   isApiMock: process.env.API_MOCK === 'true',
   MONGODB_URI: process.env.MONGODB_URI,
+  AUTH_SECRET: process.env.AUTH_SECRET,
 };
