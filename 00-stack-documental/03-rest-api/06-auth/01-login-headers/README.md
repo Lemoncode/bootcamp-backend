@@ -587,7 +587,244 @@ restApiServer.use('/api/security', securityApi);
 
 ```
 
+Let's add a role for each user:
 
+_./src/common-app/models/role.ts_
+
+```typescript
+export type Role = 'admin' | 'standard-user';
+
+```
+
+_./src/common-app/models/user-session.ts_
+
+```diff
++ import { Role } from './role';
+
+export interface UserSession {
+  id: string;
++ role: Role;
+}
+
+```
+
+Update barrel file:
+
+_./src/common-app/models/index.ts_
+
+```diff
+export * from './user-session';
+
+```
+
+Update dals model:
+
+_./src/dals/user/user.model.ts_
+
+```diff
+import { ObjectId } from 'mongodb';
++ import { Role } from 'common-app/models';
+
+export interface User {
+  _id: ObjectId;
+  email: string;
+  password: string;
++ role: Role;
+}
+
+```
+
+And mock data:
+
+_./src/dals/mock-data.ts_
+
+```diff
+import { ObjectId } from 'mongodb';
++ import { Role } from 'common-app/models';
+import { Book } from './book';
+import { User } from './user';
+
+export interface DB {
+  users: User[];
+  books: Book[];
+}
+
+export const db: DB = {
+  users: [
+    {
+      _id: new ObjectId(),
+      email: 'admin@email.com',
+      password: 'test',
++     role: 'admin',
+    },
+    {
+      _id: new ObjectId(),
+      email: 'user@email.com',
+      password: 'test',
++     role: 'standard-user',
+    },
+  ],
+  books: [
+...
+
+```
+
+Update `login` method:
+
+_./src/pods/security/security.rest-api.ts_
+
+```diff
+...
+
+    if (user) {
+      const userSession: UserSession = {
+        id: user._id.toHexString(),
++       role: user.role,
+      };
+      const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
+        expiresIn: '1d',
+...
+```
+
+Let's run app and [check new jwt](https://jwt.io/):
+
+```bash
+npm start
+
+```
+
+Now, we could create a new `authorization middleware`:
+
+_./src/pods/security/security.middlewares.ts_
+
+```diff
+import jwt from 'jsonwebtoken';
+import { envConstants } from 'core/constants';
+- import { UserSession } from 'common-app/models';
++ import { UserSession, Role } from 'common-app/models';
+
+...
+
++ const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
++   !Boolean(allowedRoles) ||
++   (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
+
++ export const authorizationMiddleware =
++   (allowedRoles?: Role[]) => async (req, res, next) => {
++     if (isAuthorized(req.userSession.role, allowedRoles)) {
++       next();
++     } else {
++       res.sendStatus(403);
++     }
++   };
+
+```
+
+Let's use this new `middleware` in book rest-api:
+
+_./src/pods/book/book.rest-api.ts_
+
+```diff
+import { Router } from 'express';
+import { bookRepository } from 'dals';
++ import { authorizationMiddleware } from 'pods/security';
+import {
+  mapBookListFromModelToApi,
+  mapBookFromModelToApi,
+  mapBookFromApiToModel,
+} from './book.mappers';
+import { paginateBookList } from './book.helpers';
+
+export const booksApi = Router();
+
+booksApi
+- .get('/', async (req, res, next) => {
++ .get('/', authorizationMiddleware(), async (req, res, next) => {
+    try {
+      const page = Number(req.query.page);
+      const pageSize = Number(req.query.pageSize);
+      const bookList = await bookRepository.getBookList();
+      const paginatedBookList = paginateBookList(bookList, page, pageSize);
+      res.send(mapBookListFromModelToApi(paginatedBookList));
+    } catch (error) {
+      next(error);
+    }
+  })
+- .get('/:id', async (req, res, next) => {
++ .get('/:id', authorizationMiddleware(), async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const book = await bookRepository.getBook(id);
+      res.send(mapBookFromModelToApi(book));
+    } catch (error) {
+      next(error);
+    }
+  })
+- .post('/', async (req, res, next) => {
++ .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
+    try {
+      const modelBook = mapBookFromApiToModel(req.body);
+      const newBook = await bookRepository.saveBook(modelBook);
+      res.status(201).send(mapBookFromModelToApi(newBook));
+    } catch (error) {
+      next(error);
+    }
+  })
+- .put('/:id', async (req, res, next) => {
++ .put('/:id', authorizationMiddleware(['admin']), async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const modelBook = mapBookFromApiToModel({ ...req.body, id });
+      await bookRepository.saveBook(modelBook);
+      res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  })
+- .delete('/:id', async (req, res, next) => {
++ .delete(
++   '/:id',
++   authorizationMiddleware(['admin']),
++   async (req, res, next) => {
+      try {
+        const { id } = req.params;
+        const isDeleted = await bookRepository.deleteBook(id);
+        res.sendStatus(isDeleted ? 204 : 404);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+```
+
+Finally, we will implement the `logout` method:
+
+_./src/pods/security/security.rest-api.ts_
+
+```diff
+import { Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { envConstants } from 'core/constants';
+import { UserSession } from 'common-app/models';
+import { userRepository } from 'dals';
+
+...
+
+  } catch (error) {
+    next(error);
+  }
+- });
++ })
++ .post('/logout', authenticationMiddleware, async (req, res) => {
++   // NOTE: We cannot invalidate token using jwt libraries.
++   // Different approaches:
++   // - Short expiration times in token
++   // - Black list tokens on DB
++   res.sendStatus(200);
++ });
+
+```
 
 # ¿Con ganas de aprender Backend?
 

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
-import { UserSession } from 'common-app/models';
+import { UserSession, Role } from 'common-app/models';
 
 const verify = (token: string, secret: string): Promise<UserSession> =>
   new Promise((resolve, reject) => {
@@ -27,3 +27,16 @@ export const authenticationMiddleware = async (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
+const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
+  !Boolean(allowedRoles) ||
+  (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
+
+export const authorizationMiddleware =
+  (allowedRoles?: Role[]) => async (req, res, next) => {
+    if (isAuthorized(req.userSession.role, allowedRoles)) {
+      next();
+    } else {
+      res.sendStatus(403);
+    }
+  };

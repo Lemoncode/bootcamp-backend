@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { bookRepository } from 'dals';
+import { authorizationMiddleware } from 'pods/security';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
@@ -10,7 +11,7 @@ import { paginateBookList } from './book.helpers';
 export const booksApi = Router();
 
 booksApi
-  .get('/', async (req, res, next) => {
+  .get('/', authorizationMiddleware(), async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
@@ -21,7 +22,7 @@ booksApi
       next(error);
     }
   })
-  .get('/:id', async (req, res, next) => {
+  .get('/:id', authorizationMiddleware(), async (req, res, next) => {
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
@@ -30,7 +31,7 @@ booksApi
       next(error);
     }
   })
-  .post('/', async (req, res, next) => {
+  .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
       const modelBook = mapBookFromApiToModel(req.body);
       const newBook = await bookRepository.saveBook(modelBook);
@@ -39,7 +40,7 @@ booksApi
       next(error);
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/:id', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
       const { id } = req.params;
       const modelBook = mapBookFromApiToModel({ ...req.body, id });
@@ -49,12 +50,16 @@ booksApi
       next(error);
     }
   })
-  .delete('/:id', async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const isDeleted = await bookRepository.deleteBook(id);
-      res.sendStatus(isDeleted ? 204 : 404);
-    } catch (error) {
-      next(error);
+  .delete(
+    '/:id',
+    authorizationMiddleware(['admin']),
+    async (req, res, next) => {
+      try {
+        const { id } = req.params;
+        const isDeleted = await bookRepository.deleteBook(id);
+        res.sendStatus(isDeleted ? 204 : 404);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
