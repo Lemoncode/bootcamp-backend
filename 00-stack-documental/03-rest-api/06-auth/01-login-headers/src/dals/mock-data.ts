@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { Role } from 'common-app/models';
 import { Book } from './book';
 import { User } from './user';
 

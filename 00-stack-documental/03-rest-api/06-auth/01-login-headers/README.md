@@ -685,16 +685,7 @@ And mock data:
 _./src/dals/mock-data.ts_
 
 ```diff
-import { ObjectId } from 'mongodb';
-+ import { Role } from 'common-app/models';
-import { Book } from './book';
-import { User } from './user';
-
-export interface DB {
-  users: User[];
-  books: Book[];
-}
-
+...
 export const db: DB = {
   users: [
     {
