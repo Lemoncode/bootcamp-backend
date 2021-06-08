@@ -234,6 +234,90 @@ npm start
 
 ```
 
+******************************** TODO
+
+We could try with a modern key derivation function like [Scrypt](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback):
+
+_./src/common/helpers/hash-password.helpers.ts_
+
+```diff
+import crypto from 'crypto';
+import { promisify } from 'util';
+const randomBytes = promisify(crypto.randomBytes);
+const pbkdf2 = promisify(crypto.pbkdf2);
+
+const saltLength = 16;
+export const generateSalt = async (): Promise<string> => {
+  const salt = await randomBytes(saltLength);
+  return salt.toString('hex');
+};
+
+const passwordLength = 64; // 64 bytes = 512 bits
+const digestAlgorithm = 'sha512';
+const iterations = 100000;
+
+export const hashPassword = async (
+  password: string,
+  salt: string
+): Promise<string> => {
+  const hashedPassword = await pbkdf2(
+    password,
+    salt,
+    iterations,
+    passwordLength,
+    digestAlgorithm
+  );
+
+  return hashedPassword.toString('hex');
+};
+
+```
+
+Using scrypt
+
+```typescript
+import crypto from 'crypto';
+import { promisify } from 'util';
+const randomBytes = promisify(crypto.randomBytes);
+
+const saltLength = 16;
+export const generateSalt = async (): Promise<string> => {
+  const salt = await randomBytes(saltLength);
+  return salt.toString('hex');
+};
+
+const passwordLength = 64; // 64 bytes = 512 bits
+const digestAlgorithm = 'sha512';
+const iterations = 262144; // Must be a power of two greater than one (x2)
+
+// Memory required = 128 * N * r * p (128 * cost * blockSize * parallelization)
+// E.g. 128 * 16384 * 8 * 1 = 16 MB
+
+export const hashPassword = async (
+  password: string,
+  salt: string
+): Promise<string> => {
+  const promise = new Promise<string>((resolve, reject) => {
+    crypto.scrypt(
+      password,
+      salt,
+      passwordLength,
+      { N: iterations, maxmem: 512 * 1024 * 1024 },
+      (error, hashedPassword) => {
+        if (error) {
+          reject(error);
+        }
+
+        resolve(hashedPassword.toString('hex'));
+      }
+    );
+  });
+
+  return promise;
+};
+
+```
+
 # ¿Con ganas de aprender Backend?
 
 En Lemoncode impartimos un Bootcamp Backend Online, centrado en stack node y stack .net, en él encontrarás todos los recursos necesarios: clases de los mejores profesionales del sector, tutorías en cuanto las necesites y ejercicios para desarrollar lo aprendido en los distintos módulos. Si quieres saber más puedes pinchar [aquí para más información sobre este Bootcamp Backend](https://lemoncode.net/bootcamp-backend#bootcamp-backend/banner).
