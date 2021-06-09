@@ -45,15 +45,13 @@ npm install jest @types/jest ts-jest --save-dev
 
 > -i or --runInBand Run all tests serially in the current process, rather than creating a worker pool of child processes that run tests. This can be useful for debugging
 
-### ./package.json
+_./package.json_
 
 ```diff
 {
   ...
   "scripts": {
     ...
--   "clean": "rimraf dist"
-+   "clean": "rimraf dist",
 +   "test": "jest --verbose",
 +   "test:watch": "npm run test -- --watchAll -i"
   },
@@ -63,7 +61,7 @@ npm install jest @types/jest ts-jest --save-dev
 
 - [ts-jest basic configuration](https://kulshekhar.github.io/ts-jest/user/config/#basic-usage):
 
-### ./package.json
+_./package.json_
 
 ```diff
 {
@@ -75,23 +73,6 @@ npm install jest @types/jest ts-jest --save-dev
 + }
 ```
 
-- Finally we are going to automatically restore mock state between every test:
-
-### ./package.json
-
-```diff
-{
-  ...
-  "jest": {
--   "preset": "ts-jest"
-+   "preset": "ts-jest",
-+   "restoreMocks": true
-  }
-}
-```
-
-> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
-
 # Dummy spec
 
 - Let's launch tests in watch mode:
@@ -102,7 +83,7 @@ npm run test:watch
 
 - Adding success spec:
 
-### ./src/dummy.spec.ts
+_./src/dummy.spec.ts_
 
 ```javascript
 describe('dummy specs', () => {
@@ -119,7 +100,7 @@ describe('dummy specs', () => {
 
 - Adding failed spec:
 
-### ./src/dummy.spec.ts
+_./src/dummy.spec.ts_
 
 ```diff
 describe('dummy specs', () => {
@@ -147,40 +128,38 @@ describe('dummy specs', () => {
 
 - One step over, we could be moved jest config outside `package.json` to improve maintainability.
 
-- Move config to `config/test/jest.json` file:
+- Move config to `config/test/jest.js` file:
 
-### ./package.json
+_./package.json_
 
 ```diff
 ...
 - },
 + }
 - "jest": {
--   "preset": "ts-jest",
--   "restoreMocks": true
+-   "preset": "ts-jest"
 - }
 }
 
 ```
 
-### ./config/test/jest.js
+_./config/test/jest.js_
 
 ```js
 module.exports = {
   preset: 'ts-jest',
-  restoreMocks: true,
 };
+
 ```
 
 - We only need a detail to keep working with this Jest config, we need to use `rootDir`:
 
-### ./config/test/jest.js
+_./config/test/jest.js_
 
 ```diff
 module.exports = {
 + rootDir: '../../',
-  preset: 'ts-jest',
-  restoreMocks: true,
+  preset: 'ts-jest'
 };
 
 
@@ -188,7 +167,7 @@ module.exports = {
 
 - And use that file:
 
-### ./package.json
+_./package.json_
 
 ```diff
 {

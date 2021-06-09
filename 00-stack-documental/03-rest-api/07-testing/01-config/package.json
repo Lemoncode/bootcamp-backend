@@ -13,7 +13,9 @@
     "start:local-db": "docker-compose up || echo \"Fail running docker-compose up, do it manually!\"",
     "remove:local-db": "docker-compose down || echo \"Fail running docker-compose down, do it manually!\"",
     "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch"
+    "type-check:watch": "npm run type-check -- --watch",
+    "test": "jest -c ./config/test/jest.js --verbose",
+    "test:watch": "npm run test -- --watchAll -i"
   },
   "keywords": [],
   "author": "",
@@ -38,13 +40,16 @@
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/inquirer": "^7.3.1",
+    "@types/jest": "^26.0.23",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/mongodb": "^3.6.17",
     "@types/mongoose": "^5.10.5",
     "babel-plugin-module-resolver": "^4.1.0",
     "inquirer": "^8.1.0",
+    "jest": "^27.0.4",
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
+    "ts-jest": "^27.0.3",
     "typescript": "^4.2.4"
   }
 }
