@@ -11,13 +11,13 @@ Summary steps:
 
 # Steps to build it
 
-- `npm install` to install previous sample packages:
+`npm install` to install previous sample packages:
 
 ```bash
 npm install
 ```
 
-- Create calculator:
+Create calculator:
 
 _./src/calculator.ts_
 
@@ -25,7 +25,7 @@ _./src/calculator.ts_
 export const add = (a, b) => a + b;
 ```
 
-- Rename `dummy.spec.ts` to `calculator.spec.ts`:
+Rename `dummy.spec.ts` to `calculator.spec.ts`:
 
 _./src/calculator.spec.ts_
 
@@ -62,7 +62,7 @@ _./src/calculator.spec.ts_
 
 ```
 
-- Now, we need passing a method as parameter, whatever it is, we only want to check that it was called and with which arguments:
+Now, we need passing a method as parameter, whatever it is, we only want to check that it was called and with which arguments:
 
 _./src/calculator.ts_
 
@@ -80,7 +80,7 @@ _./src/calculator.ts_
 
 ```
 
-- How we could test it? Using a `spy`:
+How we could test it? Using a `spy`:
 
 _./src/calculator.spec.ts_
 
@@ -123,7 +123,7 @@ describe("Calculator tests", () => {
 
 > If we set `a = 3` this test fail.
 
-- Sometimes, we need to `import` dependencies that we can't pass throught function parameters, we need to import as `external dependency`:
+Sometimes, we need to `import` dependencies that we can't pass throught function parameters, we need to import as `external dependency`:
 
 _./src/business.ts_
 
@@ -133,7 +133,7 @@ export const isLowerThanFive = value => {
 };
 ```
 
-- Use it:
+Use it:
 
 _./src/calculator.ts_
 
@@ -153,7 +153,7 @@ _./src/calculator.ts_
 
 ```
 
-- Same as before, we only want to test that function was called and with which arguments, but this time is an `external dependency`, so we need a stub:
+Same as before, we only want to test that function was called and with which arguments, but this time is an `external dependency`, so we need a stub:
 
 _./src/calculator.spec.ts_
 
@@ -199,7 +199,7 @@ describe('Calculator tests', () => {
 
 > Note: As we see in `console`, the `stub` doesn't replace original function behaviour. We have to mock it if we need it.
 
-- Mocking original behaviour:
+Mocking original behaviour:
 
 _./src/calculator.spec.ts_
 
@@ -224,7 +224,79 @@ _./src/calculator.spec.ts_
 
 ```
 
-- Finally, we could have a business with too much methods, or even, it is exporting an object:
+Note, it's important reset the `mocks` implementation:
+
+_./src/calculator.spec.ts_
+
+```diff
+...
+
++   it('should call to original implementation isLowerThanFive', () => {
++     // Arrange
++     const a = 1;
++     const b = 2;
+
++     // Act
++     const result = calculator.add(a, b);
+
++     // Assert
++     expect(result).toEqual(3);
++   });
+
+```
+
+> console.log
+>    This is the result 3
+
+We should restore all mocks after run them:
+
+_./src/calculator.spec.ts_
+
+```diff
+...
+
+describe('Calculator tests', () => {
++ afterEach(() => {
++   jest.restoreAllMocks();
++ });
+
+  describe('add', () => {
+...
+
+```
+
+Instead of use `restoreAllMocks` on each spec file, we could configure it globally:
+
+_./config/test/jest.js_
+
+```diff
+module.exports = {
+  rootDir: '../../',
+  preset: 'ts-jest',
++ restoreMocks: true,
+};
+
+```
+> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
+
+_./src/calculator.spec.ts_
+
+```diff
+...
+
+describe('Calculator tests', () => {
+- afterEach(() => {
+-   jest.restoreAllMocks();
+- });
+
+  describe('add', () => {
+...
+
+```
+
+> Run again `npm run test:watch`
+
+Finally, we could have a business with too much methods, or even, it is exporting an object:
 
 _./src/business.ts_
 
@@ -239,7 +311,7 @@ _./src/business.ts_
 
 ```
 
-- Use it:
+Use it:
 
 _./src/calculator.ts_
 
@@ -261,7 +333,7 @@ export const add = (a, b) => {
 
 ```
 
-- In this case, we need to mock the whole module:
+In this case, we need to mock the whole module:
 
 _./src/calculator.spec.ts_
 
@@ -270,9 +342,11 @@ import * as calculator from './calculator'
 import * as business from './business'
 
 + jest.mock('./business', () => ({
-+   isLowerThan: jest.fn(),
++   isLowerThan: jest.fn().mockImplementation(() => {
++     console.log('Another implementation');
++   }),
 +   max: 7,
-+ }))
++ }));
 
 describe('Calculator tests', () => {
   describe('add', () => {
@@ -305,6 +379,19 @@ describe('Calculator tests', () => {
 -     expect(isLowerThanFive).toHaveBeenCalledWith(4);
 +     expect(business.isLowerThan).toHaveBeenCalledWith(4, 7);
     })
+
+-   it('should call to original implementation isLowerThanFive', () => {
++   it('should call to original implementation isLowerThan', () => {
+      // Arrange
+      const a = 1;
+      const b = 2;
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+      expect(result).toEqual(3);
+    });
   })
 })
 

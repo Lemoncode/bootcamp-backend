@@ -15,7 +15,7 @@ npm install
 
 # Libraries
 
-- We are going to install the main library which we base all our unit tests, [Jest](https://facebook.github.io/jest/en/).
+We are going to install the main library which we base all our unit tests, [Jest](https://facebook.github.io/jest/en/).
 
 - [jest](https://github.com/facebook/jest): JavaScript Testing library with runner, assertion, mocks, etc.
 - [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/df38f202a0185eadfb6012e47dd91f8975eb6151/types/jest): Typings for jest.
@@ -29,7 +29,7 @@ npm install jest @types/jest ts-jest --save-dev
 
 # Config
 
-- Jest test commands:
+Jest test commands:
   - `npm test`: to single run
   - `npm run test:watch`: to run all specs after changes.
 
@@ -75,7 +75,7 @@ _./package.json_
 
 # Dummy spec
 
-- Let's launch tests in watch mode:
+Let's launch tests in watch mode:
 
 ```bash
 npm run test:watch
@@ -98,7 +98,7 @@ describe('dummy specs', () => {
 });
 ```
 
-- Adding failed spec:
+Adding failed spec:
 
 _./src/dummy.spec.ts_
 
@@ -126,9 +126,9 @@ describe('dummy specs', () => {
 
 # External config
 
-- One step over, we could be moved jest config outside `package.json` to improve maintainability.
+One step over, we could be moved jest config outside `package.json` to improve maintainability.
 
-- Move config to `config/test/jest.js` file:
+Move config to `config/test/jest.js` file:
 
 _./package.json_
 
@@ -152,7 +152,7 @@ module.exports = {
 
 ```
 
-- We only need a detail to keep working with this Jest config, we need to use `rootDir`:
+We only need a detail to keep working with this Jest config, we need to use `rootDir`:
 
 _./config/test/jest.js_
 
@@ -165,7 +165,7 @@ module.exports = {
 
 ```
 
-- And use that file:
+And use that file:
 
 _./package.json_
 
@@ -182,7 +182,7 @@ _./package.json_
 }
 ```
 
-- Running specs again:
+Running specs again:
 
 ```bash
 npm run test:watch
