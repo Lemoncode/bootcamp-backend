@@ -12,7 +12,41 @@ We will start from `02-basic-concepts`.
 npm install
 ```
 
+Since `jest` is a nodejs process, we could use the integraded `JavaScript Debug Terminal` provided by VS Code.
 
+We could run all specs as `single run` in this terminal and adding some breakpoints:
+
+```bash
+npm test
+
+```
+
+We could run all specs as `watch run` in this terminal and adding some breakpoints:
+
+```bash
+npm run test:watch
+
+```
+
+We could run specs related to specific file or files:
+
+_./src/second.spec.ts_
+
+```typescript
+describe('second specs', () => {
+  it('should return true', () => {
+    expect(true).toBeTruthy();
+  });
+});
+
+```
+
+```bash
+npm run test:watch calculator
+npm run test:watch calculator.spec
+npm run test:watch spec
+
+```
 
 # ¿Con ganas de aprender Backend?
 
