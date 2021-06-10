@@ -267,7 +267,12 @@ export const hashPassword = async (
       password,
       salt,
       passwordLength,
-      { N: iterations, maxmem: 32 * 1024 * 1024 },
+      {
+        cost: iterations,
+        blockSize: 8,
+        parallelization: 1,
+        maxmem: 32 * 1024 * 1024,
+      },
       (error, hashedPassword) => {
         if (error) {
           reject(error);

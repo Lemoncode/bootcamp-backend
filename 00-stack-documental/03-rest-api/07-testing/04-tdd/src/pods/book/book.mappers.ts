@@ -19,3 +19,10 @@ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
   releaseDate: new Date(book.releaseDate),
   author: book.author,
 });
+
+export const mapBookListFromApiToModel = (
+  bookList: apiModel.Book[]
+): model.Book[] =>
+  Array.isArray(bookList)
+    ? bookList.map(mapBookFromApiToModel)
+    : [];
