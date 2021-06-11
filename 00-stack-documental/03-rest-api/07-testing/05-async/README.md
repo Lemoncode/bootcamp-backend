@@ -1,8 +1,8 @@
-# 04 TDD
+# 05 Async
 
-In this example we are going to apply Test Driven Development while we are implementing the app.
+In this example we are going to learn test async code.
 
-We will start from `03-debug`.
+We will start from `04-tdd`.
 
 # Steps to build it
 
@@ -12,25 +12,15 @@ We will start from `03-debug`.
 npm install
 ```
 
-Let's remove all `calculator` stuff.
-  - `./src/business.ts`
-  - `./src/calculator.spec.ts`
-  - `./src/calculator.ts`
-  - `./src/second.spec.ts`
+Let's test an important piece of code, the async code. We will start with `authenticationMiddleware`:
 
-Run tests in watch mode:
+Create specs file:
 
-```bash
-npm run test:watch
-```
-
-Let's add a new mapper function to `books.mappers`, but this time, we will start from `spec`:
-
-_./src/pods/book/book.mappers.spec.ts_
+_./src/pods/security/security.middlewares.spec.ts_
 
 ```typescript
-describe('pods/book/book.mappers spec', () => {
-  describe('mapBookListFromApiToModel', () => {
+describe('pods/security/security.middlewares specs', () => {
+  describe('authenticationMiddleware', () => {
     it('', () => {
       // Arrange
       // Act
@@ -39,210 +29,373 @@ describe('pods/book/book.mappers spec', () => {
   });
 });
 
-
 ```
 
-Should return empty array when it feeds undefined:
+Should send 401 status code if it feeds authorization cookie equals undefined:
 
-_./src/pods/book/book.mappers.spec.ts_
+_./src/pods/security/security.middlewares.spec.ts_
 
 ```diff
-+ import * as model from 'dals';
-+ import * as apiModel from './book.api-model';
-+ import {} from './book.mappers';
++ import { Request, Response } from 'express';
++ import { authenticationMiddleware } from './security.middlewares';
 
-describe('pods/book/book.mappers spec', () => {
-  describe('mapBookListFromApiToModel', () => {
+describe('pods/security/security.middlewares specs', () => {
+  describe('authorizationMiddleware', () => {
 -   it('', () => {
-+   it('should return empty array when it feeds bookList equals undefined', () => {
++   it('should send 401 status code if it feeds authorization cookie equals undefined', () => {
       // Arrange
-+     const bookList: apiModel.Book[] = undefined;
++     const authorization = undefined;
+
++     const req = {
++       cookies: {
++         authorization,
++       },
++     } as Request;
++     const res = {
++       sendStatus: jest.fn() as any,
++     } as Response;
++     const next = jest.fn();
 
       // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     authenticationMiddleware(req, res, next);
 
       // Assert
-+     expect(result).toEqual([]);
++     expect(res.sendStatus).toHaveBeenCalled();
++     expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
   });
 });
 
 ```
 
-Create the minimum implementation to pass the test:
+Run specs:
 
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-+ export const mapBookListFromApiToModel = (
-+   bookList: apiModel.Book[]
-+ ): model.Book[] => [];
+```bash
+npm run test:watch security.middlewares.spec
 
 ```
 
-Let's update the spec:
+Why it cannot find a module `'core/constants'`? Because we need to configure alias in specs too:
 
-_./src/pods/book/book.mappers.spec.ts_
+_./config/test/jest.js_
 
 ```diff
-import * as model from 'dals';
-import * as apiModel from './book.api-model';
-- import {} from './book.mappers';
-+ import { mapBookListFromApiToModel } from './book.mappers';
-
-...
+module.exports = {
+  rootDir: '../../',
+  preset: 'ts-jest',
+  restoreMocks: true,
++ moduleDirectories: ['<rootDir>/src', 'node_modules'],
+};
 
 ```
 
-Should return empty array when it feeds null:
+> [moduleDirectories default value](https://jestjs.io/docs/configuration#moduledirectories-arraystring)
+>
+> [More info](https://www.basefactor.com/configuring-aliases-in-webpack-vs-code-typescript-jest)
 
-_./src/pods/book/book.mappers.spec.ts_
+ Why is it still failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
+
+_./src/pods/security/security.middlewares.spec.ts_
 
 ```diff
-...
+import { Request, Response } from 'express';
+import { authenticationMiddleware } from './security.middlewares';
 
-+   it('should return empty array when it feeds bookList equals null', () => {
-+     // Arrange
-+     const bookList: apiModel.Book[] = null;
+describe('pods/security/security.middlewares specs', () => {
+  describe('authenticationMiddleware', () => {
+-   it('should send 401 status code if it feeds authorization cookie equals undefined', () => {
++   it('should send 401 status code if it feeds authorization cookie equals undefined', (done) => {
+      // Arrange
+      const authorization = undefined;
 
-+     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
+      const req = {
+        cookies: {
+          authorization,
+        },
+      } as Request;
+      const res = {
+        sendStatus: jest.fn() as any,
+      } as Response;
+      const next = jest.fn();
 
-+     // Assert
-+     expect(result).toEqual([]);
-+   });
+      // Act
+-     authenticationMiddleware(req, res, next);
++     authenticationMiddleware(req, res, next).then(() => {
+        // Assert
+        expect(res.sendStatus).toHaveBeenCalled();
+        expect(res.sendStatus).toHaveBeenCalledWith(401);
++       done();
++     });
+    });
   });
 });
 
 ```
 
-Should return empty array when it feeds empty array:
+> [Jest testing async code](https://jestjs.io/docs/en/asynchronous.html)
 
-_./src/pods/book/book.mappers.spec.ts_
+Type implementation response:
+
+_./src/pods/security/security.middlewares.ts_
 
 ```diff
+- import { RequestHandler } from 'express';
++ import { RequestHandler, Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { envConstants } from 'core/constants';
+import { UserSession, Role } from 'common-app/models';
+
 ...
 
-+   it('should return empty array when it feeds bookList equals empty array', () => {
-+     // Arrange
-+     const bookList: apiModel.Book[] = [];
+- export const authenticationMiddleware: RequestHandler = async (
++ export const authenticationMiddleware = async (
+- req,
++ req: Request,
+- res,
++ res: Response,
+- next
++ next: NextFunction
+) => {
+  try {
+    const [, token] = req.cookies.authorization?.split(' ') || [];
+    const userSession = await verify(token, envConstants.AUTH_SECRET);
+    req.userSession = userSession;
+    next();
+  } catch (error) {
+    res.sendStatus(401);
+  }
+};
 
-+     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
+...
+```
 
-+     // Assert
-+     expect(result).toEqual([]);
-+   });
+A second approach is using `async/await`:
+
+_./src/pods/security/security.middlewares.spec.ts_
+
+```diff
+import { Request, Response } from 'express';
+import { authenticationMiddleware } from './security.middlewares';
+
+describe('pods/security/security.middlewares specs', () => {
+  describe('authenticationMiddleware', () => {
+-   it('should send 401 status code if it feeds authorization cookie equals undefined', (done) => {
++   it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
+      // Arrange
+      const authorization = undefined;
+
+      const req = {
+        cookies: {
+          authorization,
+        },
+      } as Request;
+      const res = {
+        sendStatus: jest.fn() as any,
+      } as Response;
+      const next = jest.fn();
+
+      // Act
+-     authenticationMiddleware(req, res, next).then(() => {
++     await authenticationMiddleware(req, res, next);
+
+        // Assert
+        expect(res.sendStatus).toHaveBeenCalled();
+        expect(res.sendStatus).toHaveBeenCalledWith(401);
+-       done();
+-     });
+    });
   });
 });
 
 ```
 
-Yep, we are ready to deploy to production :^). Should return array one mapped item when it feed array with one item:
+Remember, we are executing the real implementation of `verify` function, if we want to provide different behaviour we need to mock it:
 
-_./src/pods/book/book.mappers.spec.ts_
+_./src/pods/security/security.middlewares.spec.ts_
 
 ```diff
-+ import { ObjectId } from 'mongodb';
-import * as model from 'dals';
-import * as apiModel from './book.api-model';
-import { mapBookListFromApiToModel } from './book.mappers';
+import { Request, Response } from 'express';
++ import jwt from 'jsonwebtoken';
++ import { UserSession } from 'common-app/models';
+import { authenticationMiddleware } from './security.middlewares';
 
 ...
 
-+   it('should return one mapped item in array when it feeds bookList with one item', () => {
++   it('should call next function and assign userSession if it feeds authorization cookie with token', async () => {
 +     // Arrange
-+     const bookList: apiModel.Book[] = [
-+       {
-+         id: '60c20a334bec6a37b08acec9',
-+         title: 'test-title',
-+         releaseDate: '2021-07-28T12:30:00',
-+         author: 'test-author',
++     const authorization = 'Bearer my-token';
++     const userSession: UserSession = {
++       id: '1',
++       role: 'admin',
++     };
++     const verifyStub = jest
++       .spyOn(jwt, 'verify')
++       .mockImplementation((token, secret, callback: any) => {
++         callback(undefined, userSession);
++       });
+
++     const req = {
++       cookies: {
++         authorization,
 +       },
-+     ];
++     } as Request;
++     const res = {
++       sendStatus: jest.fn() as any,
++     } as Response;
++     const next = jest.fn();
 
 +     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     await authenticationMiddleware(req, res, next);
 
 +     // Assert
-+     expect(result).toEqual([
-+       {
-+         _id: new ObjectId('60c20a334bec6a37b08acec9'),
-+         title: 'test-title',
-+         releaseDate: new Date('2021-07-28T12:30:00'),
-+         author: 'test-author',
-+       },
-+     ]);
++     expect(verifyStub).toHaveBeenCalled();
 +   });
+
+...
+
+```
+
+> Add breakpoints
+
+We could simplify specs if we move the `verify` function to a common place:
+
+_./src/common/helpers/jwt.helpers.ts_
+
+```typescript
+import jwt from 'jsonwebtoken';
+
+export const verifyJWT = <T>(token: string, secret: string): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    jwt.verify(token, secret, (error, payload) => {
+      if (error) {
+        reject(error);
+      }
+
+      if (payload) {
+        resolve(payload as unknown as T);
+      } else {
+        reject();
+      }
+    });
+  });
+
+```
+
+Update barrel file:
+
+_./src/common/helpers/index.ts_
+
+```diff
+export * from './hash-password.helpers';
++ export * from './jwt.helpers';
+
+```
+
+Update security middlewares:
+
+_./src/pods/security/security.middlewares.ts_
+
+```diff
+import { RequestHandler, Request, Response, NextFunction } from 'express';
+- import jwt from 'jsonwebtoken';
+import { envConstants } from 'core/constants';
++ import { verifyJWT } from 'common/helpers';
+import { UserSession, Role } from 'common-app/models';
+
+- const verify = (token: string, secret: string): Promise<UserSession> =>
+-   new Promise((resolve, reject) => {
+-     jwt.verify(token, secret, (error, userSession: UserSession) => {
+-       if (error) {
+-         reject(error);
+-       }
+
+-       if (userSession) {
+-         resolve(userSession);
+-       } else {
+-         reject();
+-       }
+-     });
+-   });
+
+export const authenticationMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [, token] = req.cookies.authorization?.split(' ') || [];
+-   const userSession = await verify(token, envConstants.AUTH_SECRET);
++   const userSession = await verifyJWT<UserSession>(token, envConstants.AUTH_SECRET);
+    req.userSession = userSession;
+    next();
+  } catch (error) {
+    res.sendStatus(401);
+  }
+};
+
+...
+
+```
+
+Update specs:
+
+_./src/pods/security/security.middlewares.spec.ts_
+
+```diff
+import { Request, Response } from 'express';
+- import jwt from 'jsonwebtoken';
++ import * as helpers from 'common/helpers/jwt.helpers';
+import { UserSession } from 'common-app/models';
+import { authenticationMiddleware } from './security.middlewares';
+
+describe('pods/security/security.middlewares specs', () => {
+  describe('authenticationMiddleware', () => {
+    it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
+      // Arrange
+      const authorization = undefined;
++     const verifyJWTStub = jest
++       .spyOn(helpers, 'verifyJWT')
++       .mockRejectedValue('Not valid token');
+
+...
+      // Assert
+      expect(res.sendStatus).toHaveBeenCalled();
+      expect(res.sendStatus).toHaveBeenCalledWith(401);
++     expect(verifyJWTStub).toHaveBeenCalled();
+    });
+
+    it('should call next function and assign userSession if it feeds authorization cookie with token', async () => {
+      // Arrange
+      const authorization = 'Bearer my-token';
+      const userSession: UserSession = {
+        id: '1',
+        role: 'admin',
+      };
+-     const verifyStub = jest
+-       .spyOn(jwt, 'verify')
+-       .mockImplementation((token, secret, callback: any) => {
+-         callback(undefined, userSession);
+-       });
++     const verifyJWTStub = jest
++       .spyOn(helpers, 'verifyJWT')
++       .mockResolvedValue(userSession);
+
+...
+
+      // Assert
+-     expect(verifyStub).toHaveBeenCalled();
++     expect(helpers.verifyJWT).toHaveBeenCalled();
++     expect(next).toHaveBeenCalled();
++     expect(req.userSession).toEqual(userSession);
+    });
   });
 });
 
 ```
 
-Let's update the implementation:
-
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-export const mapBookListFromApiToModel = (
-  bookList: apiModel.Book[]
-- ): model.Book[] => [];
-+ ): model.Book[] => bookList.map(mapBookFromApiToModel);
-
-```
-
-We've break two specs! How to solve them?. Let's start with undefined:
-
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-export const mapBookListFromApiToModel = (
-  bookList: apiModel.Book[]
-- ): model.Book[] => bookList.map(mapBookFromApiToModel);
-+ ): model.Book[] =>
-+   bookList !== undefined ? bookList.map(mapBookFromApiToModel) : [];
-
-```
-
-Let's continue with null:
-
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-export const mapBookListFromApiToModel = (
-  bookList: apiModel.Book[]
-): model.Book[] =>
-- bookList !== undefined ? bookList.map(mapBookFromApiToModel) : [];
-+ bookList !== undefined && bookList !== undefined
-    ? bookList.map(mapBookFromApiToModel)
-    : [];
-
-```
-
-Or if we know about JavaScript Array [isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray) method:
-
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-export const mapBookListFromApiToModel = (
-  bookList: apiModel.Book[]
-): model.Book[] =>
-- bookList !== undefined && bookList !== undefined
-+ Array.isArray(bookList)
-    ? bookList.map(mapBookFromApiToModel)
-    : [];
-
-```
+> NOTE: don't use barrels in spyOn methods.
+>
+> [Related issue](https://github.com/facebook/jest/issues/6914)
 
 # ¿Con ganas de aprender Backend?
 
