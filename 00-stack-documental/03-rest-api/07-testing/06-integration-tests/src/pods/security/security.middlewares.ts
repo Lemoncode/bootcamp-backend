@@ -25,7 +25,7 @@ const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
 export const authorizationMiddleware =
   (allowedRoles?: Role[]): RequestHandler =>
   async (req, res, next) => {
-    if (isAuthorized(req.userSession.role, allowedRoles)) {
+    if (isAuthorized(req.userSession?.role, allowedRoles)) {
       next();
     } else {
       res.sendStatus(403);

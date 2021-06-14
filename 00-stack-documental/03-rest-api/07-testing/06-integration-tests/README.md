@@ -12,7 +12,289 @@ We will start from `05-async`.
 npm install
 ```
 
+This time, we will implement `integration tests`, in this case, the `book api`. To keep simple as possible, we will install [supertest](https://github.com/visionmedia/supertest):
 
+```bash
+npm install supertest @types/supertest --save-dev
+
+```
+
+An important configuration is read the `env variables` for specs too. Let's create a custom env file for tests:
+
+_./.env.test_
+
+```
+NODE_ENV=development
+PORT=3000
+STATIC_FILES_PATH=../public
+CORS_ORIGIN=*
+CORS_METHODS=GET,POST,PUT,DELETE
+API_MOCK=true
+MONGODB_URI=mongodb://localhost:27017/book-store
+AUTH_SECRET=MY_AUTH_SECRET
+
+```
+
+_./config/test/env.config.js_
+
+```javascript
+const { config } = require('dotenv');
+config({
+  path: './.env.test',
+});
+
+```
+
+Update jest config:
+
+_./config/test/jest.js_
+
+```diff
+module.exports = {
+  rootDir: '../../',
+  preset: 'ts-jest',
+  restoreMocks: true,
+  moduleDirectories: ['<rootDir>/src', 'node_modules'],
++ setupFiles: ['<rootDir>/config/test/env.config.js'],
+};
+
+```
+
+Add `book.rest-api` specs:
+
+_./src/pods/book/book.rest-api.spec.ts_
+
+```typescript
+describe('pods/book/book.rest-api specs', () => {
+  describe('get book list', () => {
+    it('', () => {
+      // Arrange
+      // Act
+      // Assert
+    });
+  });
+});
+
+```
+
+`Supertest` needs the app express instance to do a mock request:
+
+_./src/pods/book/book.rest-api.spec.ts_
+
+```diff
++ import supertest from 'supertest';
++ import { createRestApiServer } from 'core/servers';
++ import { booksApi } from './book.rest-api';
+
++ const app = createRestApiServer();
++ app.use(booksApi);
+
+describe('pods/book/book.rest-api specs', () => {
+  describe('get book list', () => {
+-   it('', () => {
++   it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
+      // Arrange
++     const route = '/';
+
+      // Act
++     const response = await supertest(app).get(route);
+
+      // Assert
++     expect(response.statusCode).toEqual(200);
++     expect(response.body).toHaveLength(7);
+    });
+  });
+});
+
+```
+
+Run specs:
+
+```bash
+npm run test:watch book.rest-api
+```
+
+As we see, we are running the app in `mock` mode. If we like to test our repository implementation with a MongoDB memory database, we need to install [jest-mongodb](https://github.com/shelfio/jest-mongodb) preset:
+
+```bash
+npm install @shelf/jest-mongodb --save-dev
+```
+
+Add config file:
+
+_./jest-mongodb-config.js_
+
+```javascript
+module.exports = {
+  mongodbMemoryServerOptions: {
+    binary: {
+      version: '4.4.6',
+      skipMD5: true,
+    },
+    instance: {
+      dbName: 'test-book-store',
+      port: 27017,
+    },
+    autoStart: false,
+  },
+};
+
+```
+
+Update jest config:
+
+_./config/test/jest.js_
+
+```diff
++ const { defaults: tsPreset } = require('ts-jest/presets');
+
+module.exports = {
+  rootDir: '../../',
+- preset: 'ts-jest',
++ preset: '@shelf/jest-mongodb',
++ transform: {
++   ...tsPreset.transform,
++ },
+  restoreMocks: true,
+  moduleDirectories: ['<rootDir>/src', 'node_modules'],
+  setupFiles: ['<rootDir>/config/test/env.config.js'],
++ watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
+};
+
+```
+
+> [Config with multiple presets](https://kulshekhar.github.io/ts-jest/docs/getting-started/presets/#advanced)
+> [Ignore globalConfig](https://github.com/shelfio/jest-mongodb#6-jest-watch-mode-gotcha)
+
+Ignore `globalConfig`:
+
+_./.gitignore_
+
+```diff
+node_modules
+.env
+mongo-data
++ globalConfig.json
+
+```
+
+Update env variable:
+
+_./.env.test_
+
+```diff
+NODE_ENV=development
+PORT=3000
+STATIC_FILES_PATH=../public
+CORS_ORIGIN=*
+CORS_METHODS=GET,POST,PUT,DELETE
+- API_MOCK=true
++ API_MOCK=false
+- MONGODB_URI=mongodb://localhost:27017/book-store
++ MONGODB_URI=mongodb://localhost:27017/test-book-store
+AUTH_SECRET=MY_AUTH_SECRET
+
+```
+
+Update spec to init MongoDB connection:
+
+_./src/pods/book/book.rest-api.spec.ts_
+
+```diff
+import supertest from 'supertest';
++ import { disconnect } from 'mongoose';
+- import { createRestApiServer } from 'core/servers';
++ import { createRestApiServer, connectToDBServer } from 'core/servers';
++ import { envConstants } from 'core/constants';
++ import { bookContext } from 'dals/book/book.context';
+import { booksApi } from './book.rest-api';
+
+const app = createRestApiServer();
+app.use(booksApi);
+
+describe('pods/book/book.rest-api specs', () => {
++ beforeAll(async () => {
++   await connectToDBServer(envConstants.MONGODB_URI);
++ });
++ beforeEach(async () => {
++   await bookContext.insertMany({
++     title: 'book-1',
++     author: 'author-1',
++     releaseDate: new Date('2021-07-28'),
++   });
++ });
+
++ afterEach(async () => {
++   await bookContext.deleteMany();
++ });
++ afterAll(async () => {
++   await disconnect();
++ });
+
+  describe('get book list', () => {
+    it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
+      // Arrange
+      const route = '/';
+
+      // Act
+      const response = await supertest(app).get(route);
+
+      // Assert
+      expect(response.statusCode).toEqual(200);
+-     expect(response.body).toHaveLength(7);
++     expect(response.body).toHaveLength(1);
+    });
+  });
+});
+
+```
+
+If we want insert new book:
+
+_./src/pods/book/book.rest-api.spec.ts_
+
+```diff
+import supertest from 'supertest';
+import { disconnect } from 'mongoose';
+import { createRestApiServer, connectToDBServer } from 'core/servers';
+import { envConstants } from 'core/constants';
+import { bookContext } from 'dals/book/book.context';
++ import { Book } from './book.api-model';
+import { booksApi } from './book.rest-api';
+
+const app = createRestApiServer();
++ app.use((req, res, next) => {
++   req.userSession = {
++     id: '1',
++     role: 'admin',
++   };
++   next();
++ });
+app.use(booksApi);
+
+...
+
++   it('should return return 201 when it inserts new book', async () => {
++     // Arrange
++     const route = '/';
++     const newBook: Book = {
++       id: undefined,
++       title: 'book-2',
++       author: 'author-2',
++       releaseDate: '2021-07-29T00:00:00.000Z',
++     };
+
++     // Act
++     const response = await supertest(app).post(route).send(newBook);
+
++     // Assert
++     expect(response.statusCode).toEqual(201);
++     expect(response.body.id).toEqual(expect.any(String));
++     expect(response.body.title).toEqual(newBook.title);
++     expect(response.body.author).toEqual(newBook.author);
++     expect(response.body.releaseDate).toEqual(newBook.releaseDate);
++   });
+```
 
 # ¿Con ganas de aprender Backend?
 
