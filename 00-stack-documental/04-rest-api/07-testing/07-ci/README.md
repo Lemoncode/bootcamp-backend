@@ -22,6 +22,38 @@ git commit -m "add project with tests"
 git push -u origin master
 ```
 
+Create new branch on repository `feature/add-ci-file` and add ci config [Github workflow](https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow):
+
+### ./.github/workflows/ci.yml
+
+```yml
+name: Ci workflow
+
+on: pull_request
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install
+        run: npm install
+      - name: Tests
+        run: npm test
+
+```
+
+Commit, push:
+
+```bash
+git add .
+git commit -m "add ci file"
+git push
+```
+
+Create a pull request.
+
 # ¿Con ganas de aprender Backend?
 
 En Lemoncode impartimos un Bootcamp Backend Online, centrado en stack node y stack .net, en él encontrarás todos los recursos necesarios: clases de los mejores profesionales del sector, tutorías en cuanto las necesites y ejercicios para desarrollar lo aprendido en los distintos módulos. Si quieres saber más puedes pinchar [aquí para más información sobre este Bootcamp Backend](https://lemoncode.net/bootcamp-backend#bootcamp-backend/banner).
