@@ -95,8 +95,10 @@ export const mockRepository: BookRepository = {
 - getBook: async (id: string) => db.books.find((b) => b.id === id),
 + getBook: async (id: string) => db.books.find((b) => b._id.toHexString() === id),
   saveBook: async (book: Book) =>
--   Boolean(book.id) ? updateBook(book) : insertBook(book),
-+   Boolean(book._id) ? updateBook(book) : insertBook(book),
+-   db.books.some((b) => b.id === book.id)
++   db.books.some((b) => b._id.toHexString() === book._id.toHexString())
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
 -   db.books = db.books.filter((b) => b.id !== id);
 +   db.books = db.books.filter((b) => b._id.toHexString() !== id);

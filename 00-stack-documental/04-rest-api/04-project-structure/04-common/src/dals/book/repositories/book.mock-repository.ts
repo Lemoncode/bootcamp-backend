@@ -1,6 +1,6 @@
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-import { db } from '../../mock-data';
+import { BookRepository } from "./book.repository";
+import { Book } from "../book.model";
+import { db } from "../../mock-data";
 
 const insertBook = (book: Book) => {
   const id = (db.books.length + 1).toString();
@@ -22,7 +22,9 @@ export const mockRepository: BookRepository = {
   getBookList: async () => db.books,
   getBook: async (id: string) => db.books.find((b) => b.id === id),
   saveBook: async (book: Book) =>
-    Boolean(book.id) ? updateBook(book) : insertBook(book),
+    db.books.some((b) => b.id === book.id)
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
     db.books = db.books.filter((b) => b.id !== id);
     return true;

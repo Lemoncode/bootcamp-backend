@@ -22,7 +22,9 @@ export const mockRepository: BookRepository = {
   getBookList: async () => db.books,
   getBook: async (id: string) => db.books.find((b) => b.id === id),
   saveBook: async (book: Book) =>
-    Boolean(book.id) ? updateBook(book) : insertBook(book),
+    db.books.some((b) => b.id === book.id)
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
     db.books = db.books.filter((b) => b.id !== id);
     return true;
