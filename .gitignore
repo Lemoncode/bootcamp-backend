@@ -5,3 +5,4 @@ dist
 .awcache
 .DS_Store
 *.tmp
+*.pem
