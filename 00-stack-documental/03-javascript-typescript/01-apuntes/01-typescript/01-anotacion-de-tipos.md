@@ -181,8 +181,6 @@ whatever = null;
 
 ### object
 
-Representa
-
 Representa a los tipos custom, aquellos que no son primitivos. Es decir,
 todo lo que no sea "number", "string", "boolean", "null" o "undefined".
 

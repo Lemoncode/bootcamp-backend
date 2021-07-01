@@ -4,7 +4,7 @@
   "description": "Plauground to show code snippets via JavaScript",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch ./src --ext js --exec node ./src/index.js"
+    "start": "nodemon --quiet --watch ./src --ext js --exec node ./src/index.js"
   },
   "keywords": [
     "lemoncode",

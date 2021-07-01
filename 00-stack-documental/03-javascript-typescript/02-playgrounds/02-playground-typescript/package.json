@@ -4,7 +4,7 @@
   "description": "Plauground to show code snippets via TypeScript",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch ./src --ext ts --exec ts-node ./src/index.ts"
+    "start": "nodemon --quiet --watch ./src --ext ts --exec ts-node ./src/index.ts"
   },
   "keywords": [
     "lemoncode",
