@@ -1,0 +1,32 @@
+{
+  "name": "02-playground-javascript",
+  "version": "1.0.0",
+  "description": "Plauground to show code snippets via JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --watch ./src --ext js --exec node ./src/index.js"
+  },
+  "keywords": [
+    "lemoncode",
+    "bootcamp",
+    "nodejs",
+    "javascript"
+  ],
+  "license": "MIT",
+  "author": "Lemoncode",
+  "contributors": [
+    "Javier Calzado <javi.calzado@lemoncode.net> (https://github.com/fjcalzado)",
+    "Santiago Camargo <santi.camargo@lemoncode.net> (https://github.com/crsanti)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://Lemoncode/bootcamp-backend.git"
+  },
+  "homepage": "https://github.com/Lemoncode/bootcamp-backend#readme",
+  "bugs": {
+    "url": "https://github.com/Lemoncode/bootcamp-backend/issues"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
