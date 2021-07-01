@@ -8,36 +8,68 @@ las interfaces es que nos permiten dar nombres a las estructuras y
 por lo tanto podemos reusarlos.
 
 ```ts
-interface Geoposition {
-  latitude: number;
-  longitude: number;
+interface Coord {
+  lat: number;
+  lon: number;
 }
 
-const pos: Geoposition = {
-  latitude: 3.3112,
-  longitude: 5.1123,
+const pos: Coord = {
+  lat: 3.3112,
+  lon: 5.1123,
 };
 ```
 
 En caso de no especificar todas las propiedades lanzará un error decompilación:
 
 ```ts
-const pos1: Geoposition = {
-  latitude: 3.3112, // [ts] Type '{ latitude: number; }' is not assignable to type 'Geoposition'.
+const pos1: Coord = {
+  lat: 3.3112, // [ts] Property 'lon' is missing.
 };
 ```
 
 También si especificamos propiedades por exceso, lanzaría un error.
 
 ```ts
-const pos2: Geoposition = {
-  latitude: 3.3112,
-  longitude: 5.1123,
-  altitude: 325,
+const pos2: Coord = {
+  lat: 3.3112,
+  lon: 5.1123,
+  alt: 325,
 };
 ```
 
-Podemos ANIDAR, es decir, utilizar interfaces como tipos dentro de otras inferfaces:
+## Modificadores: propiedades opcionales y read-only
+
+TypeScript soporta propiedades opcionales mediante el operador `?`. Una
+propiedad opcional no es más que aquella cuyo valor puede ser ser definido
+o no (en este segundo caso sería undefined).
+
+Además, podemos forzar a que ciertas propiedades sean de sólo lectura. Para
+ello usaremos el operador `readonly` delante de la propiedad.
+Con esto conseguimos establecer el valor de la propiedad a la hora
+de crear el objeto denegando la posibilidad (a nivel de compilación)
+de reasignar dicha propiedad.
+
+Ejemplo:
+
+```ts
+interface Coord {
+  readonly lat: number;
+  readonly lon: number;
+  alt?: number;
+}
+
+const pos: Coord = {
+  lat: 3.3112,
+  lon: 5.1123,
+  // alt: 350, // Optional
+};
+
+pos.lat = 3.4567; // Cannot assign to 'lat' because it is a read-only property
+```
+
+## Anidado y extensión de interfaces
+
+Podemos **anidar**, es decir, componer interfaces a partir de otros:
 
 ```ts
 interface Address {
@@ -46,101 +78,63 @@ interface Address {
   street: string;
 }
 
-interface Citizen {
-  name: string;
+interface Coord {
+  lat: number;
+  lon: number;
   address: Address;
 }
 
-const citizen: Citizen = {
+const place: Coord = {
+  lat: 3.3112,
+  lon: 5.1123,
   address: {
     city: "Málaga",
     street: "Héroes de Sostoa",
     zipCode: 29002,
   },
-  name: "Javier",
 };
 ```
 
-## Propiedades opcionales
-
-TypeScript soporta propiedades opcionales mediante el operador `?`. Una
-propiedad opcional no es más que aquella cuyo valor puede ser ser definido
-o no (en este segundo caso sería undefined).
-
-Podemos definir propiedades opcionales de una interfaz:
+También es frecuente utilizar la **extensión** de interfaces como método de composición. Es decir, una interfaz puede extender de otra para combinar propiedades:
 
 ```ts
-interface Book {
-  isbn: number;
-  author?: string;
-}
-const book1: Book = { isbn: 764589621 };
-console.log(book1.author); // undefined
-const book2: Book = { isbn: 854632187, author: "Rolan" };
-console.log(book2.author); // Rolan
-```
-
-## Propiedades Read-Only
-
-Podemos forzar a que ciertas propiedades sean de sólo lectura. Para
-ello usaremos el operador "readonly" delante de la propiedad.
-Con esto conseguimos establecer el valor de la propiedad a la hora
-de crear el objeto denegando la posibilidad (a nivel de compilación)
-de reasignar dicha propiedad:
-
-```ts
-interface Product {
-  readonly id: number;
-  stock: number;
-}
-const product: Product = { id: 998, stock: 0 };
-product.stock = 20;
-product.id = 339; // [ts] Cannot assign to 'id' because it is a constant or a 'read-only' property
-```
-
-## Extendiendo interfaces
-
-Una interfaz puede extender de otra para combinar propiedades:
-
-```ts
-interface MyEvent {
-  type: string;
+interface Address {
+  zipCode: number;
+  city: string;
+  street: string;
 }
 
-interface MyKeyboardEvent extends MyEvent {
-  key: string;
+interface Coord {
+  lat: number;
+  lon: number;
 }
 
-const keyboardEvent: MyKeyboardEvent = {
-  key: "shift",
-  type: "keyboard event",
+interface Place extends Coord {
+  address: Address;
+}
+
+const place: Place = {
+  lat: 3.3112,
+  lon: 5.1123,
+  address: {
+    city: "Málaga",
+    street: "Héroes de Sostoa",
+    zipCode: 29002,
+  },
 };
 ```
 
-Podemos extender de varias interfaces a la vez, esto es posible ya
-que las interfaces sólo especifican las propiedades que un objeto
-debe de tener (a pesar de usar `extends` no tiene por qué estar relacionado
-con la herencia prototípica)
+Incluso sería posible la extensión múltiple:
 
 ```ts
-interface Soldier {
-  swordType: string;
-}
+interface Place extends Coord, Address {}
 
-interface Ranger {
-  ammoType: string;
-  totalAmmo: number;
-}
-
-interface Ninja extends Soldier, Ranger {
-  smokeBombs: number;
-}
-
-const ninja: Ninja = {
-  swordType: "katana",
-  ammoType: "shuriken",
-  totalAmmo: 10,
-  smokeBombs: 3,
+const place: Place = {
+  lat: 3.3112,
+  lon: 5.1123,
+  city: "Málaga",
+  street: "Héroes de Sostoa",
+  zipCode: 29002,
 };
 ```
 
