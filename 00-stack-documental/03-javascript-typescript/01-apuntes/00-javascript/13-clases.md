@@ -16,9 +16,9 @@ class Vehicle {
   }
 }
 const car = new Vehicle(4);
-const bicicle = new Vehicle(2);
+const bicycle = new Vehicle(2);
 console.log(car); // Vehicle{wheels: 4, kms: 0}
-console.log(bicicle); // Vehicle{wheels: 2, kms: 0}
+console.log(bicycle); // Vehicle{wheels: 2, kms: 0}
 ```
 
 Dentro del constructor `this` será una variable que referencia a la instancia de la clase que estamos creando. Cada propiedad que asignemos a `this` será añadida como propiedad de la instancia.
@@ -27,10 +27,10 @@ Cada instancia mantiene sus propiedades de forma encapsulada sin alterar a otras
 
 ```js
 console.log(car.kms); // 0
-console.log(bicicle.kms); // 0
+console.log(bicycle.kms); // 0
 car.kms = 100;
 console.log(car.kms); // 100
-console.log(bicicle.kms); // 0
+console.log(bicycle.kms); // 0
 ```
 
 ## Métodos
