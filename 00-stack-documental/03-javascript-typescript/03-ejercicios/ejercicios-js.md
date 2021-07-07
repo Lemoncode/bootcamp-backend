@@ -1,4 +1,4 @@
-# Ejercicios TypeScript
+# Ejercicios JavaScript
 
 ## Ejercicio 1
 
