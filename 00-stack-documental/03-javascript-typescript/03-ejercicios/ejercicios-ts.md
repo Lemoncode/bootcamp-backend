@@ -23,7 +23,7 @@ const logStudent = ({ name, age }: unknown) => {
 };
 
 console.log("Students:");
-users.forEach(logStudent);
+students.forEach(logStudent);
 ```
 
 ## Ejercicio 2
@@ -38,8 +38,6 @@ interface Teacher {
   age: number;
   subject: string;
 }
-
-type User = unknown;
 
 const users: Teacher[] = [
   {
@@ -64,7 +62,7 @@ const users: Teacher[] = [
   },
 ];
 
-const logUser = ({ name, age }: User) => {
+const logUser = ({ name, age }: Teacher) => {
   console.log(`  - ${name}, ${age}`);
 };
 
