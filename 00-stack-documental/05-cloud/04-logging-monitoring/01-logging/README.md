@@ -1,6 +1,6 @@
-# 01 Logging library
+# 01 Logging
 
-In this example we are going to install a configure a logging library.
+In this example we are going to install and configure a logging library.
 
 We will start from `00-boilerplate`.
 
