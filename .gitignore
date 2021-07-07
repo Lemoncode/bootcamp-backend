@@ -3,6 +3,7 @@ dist
 *.log
 *.orig
 *.tmp
+*.sol.*
 .awcache
 .pem
 .DS_Store
