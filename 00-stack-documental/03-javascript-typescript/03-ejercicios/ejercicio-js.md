@@ -69,12 +69,10 @@ console.log(fromCSV(data, 4)); // cada usuario tendrá sólo `id`, `name`, `surn
 
 ## Ejercicio 2
 
-Usando spread operator y `findIndex`
-
 Implementar una funcion `replaceAt` que tome como primer argumento un array, como segundo argumento un índice
 y como tercer argumento un valor y reemplace el elemento dentro del array en el índice indicado.
-**El array de entrada no debe de ser mutado**, eso es, que debes de crear un nuevo array.
-Utiliza _spread operator_, `slice` y `findIndex` para conseguirlo.
+**El array de entrada no debe de ser mutado**, eso es, que debes crear un nuevo array sin modificar el existente.
+Utiliza _spread operator_, y `slice` para conseguirlo.
 
 <!-- prettier-ignore -->
 ```js
@@ -89,7 +87,6 @@ const replaceAt = (arr, index, newElement) => {
 const result = replaceAt(elements, index, newValue);
 console.log(result === elements); // false
 console.log(result); // ['lorem', 'ipsum', 'furor', 'sit', 'amet'];
-console.log(replaceAt(elements, NaN, "unknown")); // Error: Invalid index
 ```
 
 ## Ejercicio 3
@@ -269,8 +266,11 @@ de [Array.prototype](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Ref
 
 ## Ejercicio 5
 
-Implementa una función para eliminar valores _falsys_ de un objeto. Si el argumento es un objeto, eliminar sus propiedades _falsys_.
-Si el argumento es un array, eliminar los elementos _falsys_. Si no es ni un objeto ni un array devolver dicho argumento.
+Implementa una función para eliminar valores _falsys_ de una estructura de datos.
+Si el argumento es un objeto, deberá eliminar sus propiedades _falsys_.
+Si el argumento es un array, deberá eliminar los elementos _falsys_.
+Si el argumento es un objeto o un array no deberán ser mutados. Siempre deberá de crear una estructura nueva.
+Si no es ni un objeto ni un array deberá de devolver dicho argumento.
 
 <!-- prettier-ignore -->
 ```js
