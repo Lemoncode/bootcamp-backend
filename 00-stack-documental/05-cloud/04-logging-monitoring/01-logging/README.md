@@ -30,7 +30,7 @@ npm install winston
 
 Let's configure a `logger` instance:
 
-_./back/src/logger/logger.ts_
+_./back/src/core/logger/logger.ts_
 
 ```javascript
 import { createLogger, transports } from "winston";
@@ -44,7 +44,7 @@ export const logger = createLogger({
 
 Add barrel file:
 
-_./back/src/logger/index.ts_
+_./back/src/core/logger/index.ts_
 
 ```javascript
 export * from "./logger";
