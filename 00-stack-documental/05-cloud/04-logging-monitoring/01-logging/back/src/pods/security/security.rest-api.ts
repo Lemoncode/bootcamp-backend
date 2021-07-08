@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
+import { logger } from 'core/logger';
 import { UserSession } from 'common-app/models';
 import { userRepository } from 'dals';
 import { authenticationMiddleware } from './security.middlewares';
@@ -32,6 +33,7 @@ securityApi
         });
         res.sendStatus(204);
       } else {
+        logger.warn(`Invalid credentials for email ${email}`);
         res.sendStatus(401);
       }
     } catch (error) {
