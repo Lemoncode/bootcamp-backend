@@ -42,7 +42,7 @@ npm install rollbar --save
 Since there isn't any official winston rollbar transport, we will create a custom transport. We will explicitly install `winston`'s internal dependencies to create new transport:
 
 ```bash
-npm install winston-transport --save
+npm install winston-transport triple-beam --save
 ```
 
 > [Adding custom transports](https://github.com/winstonjs/winston#adding-custom-transports)
@@ -54,6 +54,7 @@ _./back/src/common/logger-transports/rollbar.transport.ts_
 ```javascript
 import Transport from 'winston-transport';
 import Rollbar, { Configuration } from 'rollbar';
+import { MESSAGE } from 'triple-beam';
 
 type Config = Transport.TransportStreamOptions & Configuration;
 
@@ -73,7 +74,7 @@ export class RollbarTransport extends Transport {
   log(info, next) {
     setImmediate(() => this.emit('logged', info));
     const level = info.level;
-    const message = info.message;
+    const message = info[MESSAGE];
 
     if (level === 'warn' || level === 'error') {
       this.rollbar[level](message);
@@ -85,6 +86,10 @@ export class RollbarTransport extends Transport {
 ```
 
 > In future, we could create a custom library for it.
+
+We need to access `info[MESSAGE]` if we want to log the formatted message instead the raw one:
+
+![03-winston-symbol-message](./readme-resources/03-winston-symbol-message.png)
 
 Add barrel file
 
@@ -100,14 +105,18 @@ Add rollbar transport instance (NOTE: Pending to add constants):
 _./back/src/core/logger/transports/rollbar.transport.ts_
 
 ```javascript
+import { format } from 'winston';
 import { RollbarTransport } from 'common/logger-transports';
 import { envConstants } from 'core/constants';
+
+const { combine, timestamp, prettyPrint } = format;
 
 export const rollbar = new RollbarTransport({
   accessToken: envConstants.ROLLBAR_ACCESS_TOKEN,
   environment: envConstants.NODE_ENV,
   captureUncaught: envConstants.isProduction,
   captureUnhandledRejections: envConstants.isProduction,
+  format: combine(timestamp(), prettyPrint()),
 });
 
 ```
@@ -188,7 +197,7 @@ export const logger = createLogger({
 
 Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in rollbar.
 
-![03-rollbar-dashboard](./readme-resources/03-rollbar-dashboard.png)
+![04-rollbar-dashboard](./readme-resources/04-rollbar-dashboard.png)
 
 Another features supported by Rollbar:
 
