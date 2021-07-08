@@ -93,6 +93,9 @@ const handleRequest = (req, res) => {
 + } else if (req.url.match(".png$")) {
 +   res.writeHead(200, { "Content-Type": "image/png" });
 +   fs.createReadStream("logo.png").pipe(res);
++ } else {
++   res.write("OK");
++   res.end();
 + }
 };
 
