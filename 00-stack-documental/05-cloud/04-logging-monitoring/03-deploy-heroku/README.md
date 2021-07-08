@@ -24,20 +24,84 @@ npm install
 
 Let's update the code for production:
 
-_./back/src/core/logger/transports/rollbar.transport.ts_
+_./back/src/core/logger/logger.ts_
 
 ```diff
-import { RollbarTransport } from 'common/logger-transports';
-import { envConstants } from 'core/constants';
+import { createLogger } from 'winston';
++ import Transport from 'winston-transport';
++ import { envConstants } from 'core/constants';
+import { console, file, rollbar } from './transports';
 
-export const rollbar = new RollbarTransport({
-  accessToken: envConstants.ROLLBAR_ACCESS_TOKEN,
-  environment: envConstants.NODE_ENV,
-  captureUncaught: envConstants.isProduction,
-  captureUnhandledRejections: envConstants.isProduction,
++ let transports: Transport[] = [console, file];
++ if (envConstants.isProduction) {
++   transports = [...transports, rollbar];
++ }
+
+export const logger = createLogger({
+- transports: [console, file, rollbar],
++ transports,
+  exitOnError: false,
 });
 
 ```
+
+We will create a new heroku app:
+
+![01-create-heroku-app](./readme-resources/01-create-heroku-app.png)
+
+![02-create-heroku-app](./readme-resources/02-create-heroku-app.png)
+
+Create new repository and upload files:
+
+```bash
+git init
+git remote add origin https://github.com/...
+git add .
+git commit -m "initial commit"
+git push -u origin master
+
+```
+
+We need an [auth token](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-authorizations-create) to login inside Github Action job:
+
+```bash
+heroku login
+heroku authorizations:create -d <description>
+```
+
+> -d: Set a custom authorization description
+> -e: Set expiration in seconds (default no expiration)
+> `heroku authorizations`: Get auth token list.
+
+Add `Auth token` to git repository secrets:
+
+![03-github-secret](./readme-resources/03-github-secret.png)
+
+![04-token-as-secret](./readme-resources/04-token-as-secret.png)
+
+> [Heroku API KEY storage](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-authorizations-create)
+
+We will add `HEROKU_APP_NAME` as secret too:
+
+![05-heroku-app-name](./readme-resources/05-heroku-app-name.png)
+
+> We need Heroku app name as identifier Heroku deployment.
+
+Run again github actions:
+
+![06-open-failed-job](./readme-resources/06-open-failed-job.png)
+
+![07-re-run-job](./readme-resources/07-re-run-job.png)
+
+Add heroku env variables:
+
+![08-heroku-env-variables](./readme-resources/08-heroku-env-variables.png)
+
+Open browser at `https://<app-name>.herokuapp.com/` and run `info`, `warn` and `error` logs.
+
+Check results in rollbar, remember filter by environment:
+
+![09-rollbar-env-filter](./readme-resources/09-rollbar-env-filter.png)
 
 # ¿Con ganas de aprender Backend?
 
