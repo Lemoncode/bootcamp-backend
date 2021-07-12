@@ -13,7 +13,6 @@ export const booksApi = Router();
 booksApi
   .get('/', authorizationMiddleware(), async (req, res, next) => {
     try {
-      throw new Error('Some unexpected error');
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList();
