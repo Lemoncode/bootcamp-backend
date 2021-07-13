@@ -190,7 +190,7 @@ type Query {
 
 ```diff
 + query {
-+   repository(name: "graphql-playground-example", owner:"nasdan") {
++   repository(name: "graphql-playground-example", owner:"lemoncode") {
 +     id
 +     name
 +     description
@@ -204,7 +204,7 @@ type Query {
 ```diff
 - query {
 + query QueryA {
-  repository(name: "graphql-playground-example", owner:"nasdan") {
+  repository(name: "graphql-playground-example", owner:"lemoncode") {
     id
     name
     description
@@ -214,7 +214,7 @@ type Query {
 + mutation MutationA {
 +   updateRepository(input: {
 +     repositoryId: "<repository-id>"
-+     description: "This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
++     description: "Updated This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
 +   }) {
 +     repository {
 +       name
@@ -233,7 +233,7 @@ type Query {
 + mutation MutationA($repositoryInput: UpdateRepositoryInput!) {
 -   updateRepository(input: {
 -     repositoryId: "<repository-id>"
--     description: "This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
+-     description: "Updated This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
 -   }) {
 +   updateRepository(input: $repositoryInput) {
     repository {
@@ -248,7 +248,7 @@ type Query {
 {
   "repositoryInput": {
     "repositoryId": "<repository-id>",
-    "description": "Updated This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
+    "description": "This is a repository for play with Graphql Playground: https://developer.github.com/v4/explorer/"
   }
 }
 ```
