@@ -315,7 +315,7 @@ import { userApi } from 'pods/user';
 ...
 ```
 
-Now, we can run it and check:
+Now, we can run and check it:
 
 ```bash
 npm start

@@ -9,6 +9,19 @@ export const bookTypeDefs = gql`
   }
 
   type Query {
-    books: [Book!]!
+    books(page: Int, pageSize: Int): [Book!]!
+    book(id: ID!): Book!
+  }
+
+  input BookInput {
+    id: String
+    title: String!
+    releaseDate: String!
+    author: String!
+  }
+
+  type Mutation {
+    saveBook(book: BookInput!): Book!
+    deleteBook(id: ID!): Boolean!
   }
 `;

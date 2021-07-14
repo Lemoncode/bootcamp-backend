@@ -30,7 +30,10 @@ export const mockRepository: BookRepository = {
       ? updateBook(book)
       : insertBook(book),
   deleteBook: async (id: string) => {
-    db.books = db.books.filter((b) => b._id.toHexString() !== id);
-    return true;
+    const exist = db.books.some((b) => b._id.toHexString() === id);
+    if (exist) {
+      db.books = db.books.filter((b) => b._id.toHexString() !== id);
+    }
+    return exist;
   },
 };
