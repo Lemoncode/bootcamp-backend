@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import { GraphQLContext } from 'common-app/models';
 import {
   createRestApiServer,
   connectToDBServer,
@@ -12,15 +13,31 @@ import {
   logErrorRequestMiddleware,
 } from 'common/middlewares';
 import { booksApi, bookTypeDefs, bookResolvers } from 'pods/book';
-import { securityApi, authenticationMiddleware } from 'pods/security';
+import {
+  securityApi,
+  authenticationMiddleware,
+  securityTypeDefs,
+  securityResolvers,
+  securityDirectives,
+} from 'pods/security';
 import { userApi } from 'pods/user';
 
 (async function () {
   const restApiServer = createRestApiServer();
-  const graphqlServer = await createGraphQLServer(restApiServer, {
-    typeDefs: bookTypeDefs,
-    resolvers: bookResolvers,
-  });
+  const graphqlServer = await createGraphQLServer(
+    restApiServer,
+    {
+      typeDefs: [securityTypeDefs, bookTypeDefs],
+      resolvers: [securityResolvers, bookResolvers],
+      directiveResolvers: securityDirectives,
+    },
+    {
+      context: async ({ req, res }): Promise<GraphQLContext> => ({
+        req,
+        res,
+      }),
+    }
+  );
 
   const staticFilesPath = path.resolve(
     __dirname,

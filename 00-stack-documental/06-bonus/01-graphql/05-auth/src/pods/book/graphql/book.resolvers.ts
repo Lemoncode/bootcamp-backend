@@ -1,6 +1,6 @@
 import { UserInputError } from 'apollo-server-express';
-import { GraphQLResolveInfo } from 'graphql';
 import { IResolvers } from '@graphql-tools/utils';
+import { GraphQLResolver } from 'common-app/models';
 import { logger } from 'core/logger';
 import { bookRepository } from 'dals';
 import { Book } from '../book.api-model';
@@ -10,15 +10,6 @@ import {
   mapBookFromApiToModel,
 } from '../book.mappers';
 import { paginateBookList } from '../book.helpers';
-
-// TODO: Move to common/models/graphql.model.ts
-// Add more types when needed
-type GraphQLResolver<ReturnedType, Args = any> = (
-  rootObject: any,
-  args: Args,
-  context: any,
-  info: GraphQLResolveInfo
-) => Promise<ReturnedType>;
 
 interface BookResolvers extends IResolvers {
   Query: {

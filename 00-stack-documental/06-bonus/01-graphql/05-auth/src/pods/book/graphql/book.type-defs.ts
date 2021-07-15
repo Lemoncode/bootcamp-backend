@@ -8,9 +8,9 @@ export const bookTypeDefs = gql`
     author: String!
   }
 
-  type Query {
-    books(page: Int, pageSize: Int): [Book!]!
-    book(id: ID!): Book!
+  extend type Query {
+    books(page: Int, pageSize: Int): [Book!]! @isAuthenticated
+    book(id: ID!): Book! @isAuthenticated
   }
 
   input BookInput {
@@ -20,8 +20,8 @@ export const bookTypeDefs = gql`
     author: String!
   }
 
-  type Mutation {
-    saveBook(book: BookInput!): Book!
-    deleteBook(id: ID!): Boolean!
+  extend type Mutation {
+    saveBook(book: BookInput!): Book! @isAuthenticated
+    deleteBook(id: ID!): Boolean! @isAuthenticated
   }
 `;
