@@ -13,7 +13,8 @@ npm install
 ```
 
 Let's remove all `calculator` stuff.
-  - `./src/business.ts`
+  - `./src/business/calculator.business.ts`
+  - `./src/business/index.ts`
   - `./src/calculator.spec.ts`
   - `./src/calculator.ts`
   - `./src/second.spec.ts`
