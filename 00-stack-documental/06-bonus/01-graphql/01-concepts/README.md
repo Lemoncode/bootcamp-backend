@@ -199,6 +199,8 @@ type Query {
 
 ```
 
+> [Repository](https://github.com/Lemoncode/graphql-playground-example)
+
 - If we want to update the description, we have to use a mutation:
 
 ```diff
