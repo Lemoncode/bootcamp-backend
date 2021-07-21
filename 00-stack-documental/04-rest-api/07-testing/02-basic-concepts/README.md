@@ -62,6 +62,12 @@ _./src/calculator.spec.ts_
 
 ```
 
+> Differences between `toEqual` vs `toBe` vs `toStrictEqual`:
+>
+> `toBe` fails if `expect({ id: 1 }).toBe({ id: 1 });`: it's not the same object. We should use `toEqual` if we only want the value not the reference
+>
+> `toStrictEqual` pass if `expect({ id: 1 }).toStrictEqual({ id: 1 });` but it fails if `expect({ id: 1 }).toStrictEqual({ id: 1, name: undefined });`: it should have same fields, even undefined values. We should use `toEqual` if we don't care about it.
+
 Now, we need passing a method as parameter, whatever it is, we only want to check that it was called and with which arguments:
 
 _./src/calculator.ts_
@@ -125,12 +131,21 @@ describe("Calculator tests", () => {
 
 Sometimes, we need to `import` dependencies that we can't pass throught function parameters, we need to import as `external dependency`:
 
-_./src/business.ts_
+_./src/business/calculator.business.ts_
 
 ```javascript
 export const isLowerThanFive = value => {
   console.log(`The value: ${value} is lower than 5`);
 };
+```
+
+- Add barrel file:
+
+_./src/business/index.ts_
+
+```javascript
+export * from './calculator.business';
+
 ```
 
 Use it:
@@ -194,6 +209,19 @@ describe('Calculator tests', () => {
     })
   })
 })
+
+```
+
+Why the second spec is failing? `TypeError: Cannot redefine property: isLowerThanFive`. We could find [many related issues](https://github.com/facebook/jest/issues/880) like this one. We should update the code:
+
+_./src/calculator.spec.ts_
+
+```diff
+import * as calculator from './calculator';
+- import * as business from './business';
++ import * as business from './business/calculator.business';
+
+...
 
 ```
 
@@ -298,7 +326,7 @@ describe('Calculator tests', () => {
 
 Finally, we could have a business with too much methods, or even, it is exporting an object:
 
-_./src/business.ts_
+_./src/business/calculator.business.ts_
 
 ```diff
 - export const isLowerThanFive = (value) => {
@@ -338,10 +366,10 @@ In this case, we need to mock the whole module:
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from './calculator'
-import * as business from './business'
+import * as calculator from './calculator';
+import * as business from './business/calculator.business';
 
-+ jest.mock('./business', () => ({
++ jest.mock('./business/calculator.business', () => ({
 +   isLowerThan: jest.fn().mockImplementation(() => {
 +     console.log('Another implementation');
 +   }),

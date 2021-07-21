@@ -59,7 +59,7 @@ _./package.json_
 }
 ```
 
-- [ts-jest basic configuration](https://kulshekhar.github.io/ts-jest/user/config/#basic-usage):
+- [ts-jest basic configuration](https://kulshekhar.github.io/ts-jest/docs/getting-started/presets#basic-usage):
 
 _./package.json_
 
@@ -72,6 +72,8 @@ _./package.json_
 +   "preset": "ts-jest"
 + }
 ```
+
+> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
 
 # Dummy spec
 
