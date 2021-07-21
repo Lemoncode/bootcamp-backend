@@ -127,7 +127,6 @@ app.use(express.json());
 +   cors({
 +     methods: "GET",
 +     origin: "http://localhost:8080",
-+     credentials: true,
 +   })
 + );
 
