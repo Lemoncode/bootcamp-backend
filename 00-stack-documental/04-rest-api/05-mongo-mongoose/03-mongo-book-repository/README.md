@@ -176,7 +176,7 @@ export const db: DB = {
 
 Update `mappers`:
 
-_./src/dals/mock-data.ts_
+_./src/pods/book/book.mappers.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
@@ -334,7 +334,12 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ```diff
 ...
   deleteBook: async (id: string) => {
-    throw new Error("Not implemented");
+-   throw new Error("Not implemented");
++   const db = getDBInstance();
++   const { deletedCount } = await db.collection<Book>('books').deleteOne({
++     _id: new ObjectId(id),
++   });
++   return deletedCount === 1;
   },
 
 ```
