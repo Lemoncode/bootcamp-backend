@@ -7,7 +7,7 @@ Para ello, necesitamos las siguientes características:
 - Ver listado de películas con los campos: `id`, `title`, `released`, `plot`, `poster`.
 - Al navegar al detalle de una de ellas, se quiere poder editar los campos: `id`, `title`, `released`, `plot`, `poster`, `cast`, `directors`, `imdbRating`, `tomatoesRating`.
 - Además, se quiere poder insertar y borrar películas.
-- Por último, se quiere un apartado de comentarios donde listarlos con los campos: `id`, `name`, `email`, `movie`, `text`, `date`
+- Por último, se quiere un apartado de comentarios donde listarlos con los campos: `id`, `name`, `email`, `movie`*, `text`, `date`
 - E insertar un comentario.
 
 *Donde `movie` es un objeto con los campos:
