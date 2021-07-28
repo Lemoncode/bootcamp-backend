@@ -90,6 +90,8 @@ export const generateSalt = async (): Promise<string> => {
 
 ```
 
+> 64 bits min recommended -> 8 bytes. We are using 16 bytes.
+
 And use a `key derivation function`, in this case, we will use [PBKDF2](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_digest_callback):
 
 _./src/common/helpers/hash-password.helpers.ts_
@@ -175,7 +177,7 @@ export const run = async () => {
 +   const salt = await generateSalt();
 +   const hashedPassword = await hashPassword(user.password, salt);
 
-+   await userContext.insertMany({
++   await userContext.create({
 +     ...user,
 +     password: hashedPassword,
 +     salt,
@@ -187,6 +189,10 @@ export const run = async () => {
 };
 
 ```
+
+> In mongoose doesn't exist `insertOne`.
+>
+> We could use `insertMany` here too.
 
 Let's run the `seed-data` runner:
 
@@ -234,6 +240,19 @@ npm start
 
 ```
 
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+
+GET http://localhost:3000/api/books
+
+```
+
 ## Appendix
 
 We could try with a modern key derivation function like [Scrypt](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback):
@@ -252,7 +271,6 @@ export const generateSalt = async (): Promise<string> => {
 };
 
 const passwordLength = 64; // 64 bytes = 512 bits
-const digestAlgorithm = 'sha512';
 const iterations = 16384; // Must be a power of two greater than one (2^x)
 
 // Memory required = 128 * N * r * p (128 * cost * blockSize * parallelization)
