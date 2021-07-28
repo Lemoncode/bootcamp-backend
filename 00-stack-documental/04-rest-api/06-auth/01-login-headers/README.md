@@ -216,14 +216,6 @@ export const dbRepository: UserRepository = {
 
 ```
 
-Let's install [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) library to create JWT tokens in Nodejs:
-
-```bash
-npm install jsonwebtoken --save
-npm install @types/jsonwebtoken --save-dev
-
-```
-
 Getting valid user:
 
 _./src/pods/security/security.rest-api.ts_
@@ -256,6 +248,14 @@ securityApi.post('/login', async (req, res, next) => {
 
 ```
 > [401 Unauthorized](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401)
+
+Let's install [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) library to create JWT tokens in Nodejs:
+
+```bash
+npm install jsonwebtoken --save
+npm install @types/jsonwebtoken --save-dev
+
+```
 
 Generate JWT token with user info:
 
