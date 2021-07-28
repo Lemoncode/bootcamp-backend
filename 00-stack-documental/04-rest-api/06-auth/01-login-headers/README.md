@@ -167,7 +167,7 @@ securityApi.post('/login', async (req, res, next) => {
 
 ```
 
-> We cannot use `GET` method because browsers could save URL/Query Qarameters as plain text in the history.
+> We cannot use `GET` method because browsers could save URL/Query Parameters as plain text in the history.
 > POST vs PUT: `PUT` method is idempotent (same input same output) and a login method could return different token value for same inputs.
 
 Add barrel file:
