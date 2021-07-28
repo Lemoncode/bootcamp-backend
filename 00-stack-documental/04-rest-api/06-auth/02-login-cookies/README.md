@@ -109,6 +109,19 @@ npm start
 
 ```
 
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+
+GET http://localhost:3000/api/books
+
+```
+
 > We should install [Postman interceptor](https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo) to check cookies on postman.
 > With cookies we could check it on browser too.
 
@@ -126,6 +139,11 @@ _./src/pods/security/security.rest-api.ts_
 +   res.clearCookie('authorization');
     res.sendStatus(200);
   });
+
+```
+
+```md
+POST http://localhost:3000/api/security/logout
 
 ```
 
