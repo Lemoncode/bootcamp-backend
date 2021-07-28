@@ -497,6 +497,8 @@ export const authenticationMiddleware: RequestHandler = async (
 
 ```
 
+> We will have Typescript issues if we try to use `utils.promisify` from NodeJS.
+
 We could extend Express's Request types:
 
 _./global-types.d.ts_
