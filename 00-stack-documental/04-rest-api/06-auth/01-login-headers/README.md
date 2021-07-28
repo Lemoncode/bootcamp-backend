@@ -327,6 +327,8 @@ import { userRepository } from 'dals';} from 'dals';
 > [Options](https://github.com/auth0/node-jsonwebtoken#usage)
 >
 > We could create a certificate with [OpenSSL tool](https://www.openssl.org/docs/manmaster/man1/openssl-req.html)
+>
+> [Authentication schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
 
 Let's update the app with this new API:
 
