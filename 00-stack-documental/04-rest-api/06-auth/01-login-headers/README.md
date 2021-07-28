@@ -362,6 +362,16 @@ Let's run app in `mock` mode:
 npm start
 ```
 
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+```
+
 > [Check jwt info](https://jwt.io/)
 
 On the other hand, we will secure the `book` api:
@@ -637,6 +647,29 @@ restApiServer.use('/api/security', securityApi);
 
 ```
 
+Let's try now `/api/books`:
+
+> Stop and run again to read new env variable
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+```
+
+> Sign jwt with new env variable
+
+```md
+GET http://localhost:3000/api/books
+
+## Headers
+Authorization: Bearer my-token
+```
+
 Let's add a role for each user:
 
 _./src/common-app/models/role.ts_
@@ -664,6 +697,7 @@ _./src/common-app/models/index.ts_
 
 ```diff
 export * from './user-session';
++ export * from './role';
 
 ```
 
