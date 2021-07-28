@@ -788,6 +788,16 @@ npm start
 
 ```
 
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+```
+
 Now, we could create a new `authorization middleware`:
 
 _./src/pods/security/security.middlewares.ts_
@@ -895,6 +905,23 @@ booksApi
 
 ```
 
+Let's try this:
+
+```
+npm start
+
+```
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "user@email.com",
+	"password": "test"
+}
+```
+
 Finally, we will implement the `logout` method:
 
 _./src/pods/security/security.rest-api.ts_
@@ -905,6 +932,7 @@ import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
 import { UserSession } from 'common-app/models';
 import { userRepository } from 'dals';
++ import { authenticationMiddleware } from './security.middlewares';
 
 ...
 
