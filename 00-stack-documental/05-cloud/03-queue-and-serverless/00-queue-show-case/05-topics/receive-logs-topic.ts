@@ -8,18 +8,18 @@ const run = async () => {
 
     if (args.length === 0) {
       console.log(
-        `Usage: $(npm bin)/ts-node 04-routing/receive-logs-direct.ts [info] [warning] [error]`
+        `Usage: $(npm bin)/ts-node 05-topics/receive-logs-topic.ts <facility>.<severity>`
       );
       process.exit(1);
     }
 
     const channel = await openChannel();
-    const exchange = "direct_logs";
-    await channel.assertExchange(exchange, "direct", { durable: false });
+    const exchange = "topic_logs";
+    await channel.assertExchange(exchange, "topic", { durable: false });
     const { queue } = await channel.assertQueue("");
 
-    for (const severity of args) {
-      await channel.bindQueue(queue, exchange, severity);
+    for (const key of args) {
+      await channel.bindQueue(queue, exchange, key);
     }
 
     channel.consume(
