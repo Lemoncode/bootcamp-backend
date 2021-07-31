@@ -7,7 +7,7 @@ const run = async () => {
         const channel = await openChannel();
         const queue = 'hello';
         const msg = 'Hello World';
-        channel.assertQueue(queue, { durable: false });
+        channel.assertQueue(queue, { durable: false }); // [1]
         channel.sendToQueue(queue, Buffer.from(msg));
         console.log(`[x] Sent ${msg}`);
 
@@ -18,3 +18,5 @@ const run = async () => {
 };
 
 run();
+
+// [1]. if true, the queue will survive broker restarts, modulo the effects of
