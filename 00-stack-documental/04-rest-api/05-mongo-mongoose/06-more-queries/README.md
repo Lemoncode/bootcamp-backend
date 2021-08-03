@@ -146,7 +146,15 @@ const runQueries = async () => {
 
 ```
 
-> nested form; e.g. { tomatoes: { viewer: { rating: 1 } } } (Starting in MongoDB 4.4)
+> _id: this field is optionally
+>
+> title: this is a string field
+>
+> genres: this is an array field
+>
+> imdb: this will retrieve all fields inside imdb.
+>
+> 'tomatoes.viewer.rating': this will retrieve only the rating field inside.
 
 We want to insert a new `genre` for a movie with `_id` equals `573a1390f29313caabcd4135`:
 
@@ -218,7 +226,50 @@ const runQueries = async () => {
 ...
 
 ```
+
 > [Reference .$](https://docs.mongodb.com/manual/reference/operator/update/positional/#---update-)
+>
+> This only update the first Match
+>
+> 'genres.$[]': for all items in array without any condition
+
+To update all values that match with some condition, we have to use `$[<identifier>]` + `arrayFIlters`:
+
+_./src/console-runners/queries.runner.ts_
+
+```diff
+...
+const runQueries = async () => {
+  const result = await movieContext
+    .findOneAndUpdate(
+      {
+        _id: new ObjectId('573a1390f29313caabcd4135'),
+-       genres: 'Drama',
+      },
+      {
+        $set: {
+-         'genres.$': 'Fantasy',
++         'genres.$[drama]': 'Fantasy',
+        },
+      },
+      {
++       arrayFilters: [{ drama: 'Drama' }],
+        new: true,
+        projection: {
+          _id: 1,
+          title: 1,
+          genres: 1,
+          imdb: 1,
+          'tomatoes.viewer.rating': 1,
+        },
+      }
+...
+
+```
+
+> Update array in Mongo Compass like ['Short', 'Drama', 'Drama'].
+>
+> [Reference](https://docs.mongodb.com/v5.0/reference/operator/update/positional-filtered/#mongodb-update-up.---identifier--)
 
 We want delete `Fantasy` genre in this document:
 
@@ -240,6 +291,17 @@ const runQueries = async () => {
 +         genres: 'Fantasy',
         },
       },
+      {
+-       arrayFilters: [{ drama: 'Drama' }],
+        new: true,
+        projection: {
+          _id: 1,
+          title: 1,
+          genres: 1,
+          imdb: 1,
+          'tomatoes.viewer.rating': 1,
+        },
+      }
 ...
 
 ```
@@ -274,23 +336,6 @@ genres: [{ type: Schema.Types.Mixed }],
     },
   },
 
-// Get only updated genre
-  {
-    new: true,
-    projection: {
-      _id: 1,
-      title: 1,
-      genres: {
-        $elemMatch: {
-          _id: new ObjectId('...'),
-        },
-      },
-      imdb: 1,
-      'tomatoes.viewer.rating': 1,
-    },
-  }
-
-
 // Delete
 
   {
@@ -314,11 +359,7 @@ We could use projections like:
     projection: {
       _id: 1,
       title: 1,
--     genres: {
--       $elemMatch: {
--         _id: new ObjectId('...'),
--       },
--     },
+-     genres: 1,
 +     'genres.name': 1,
       imdb: 1,
       'tomatoes.viewer.rating': 1,
@@ -326,7 +367,25 @@ We could use projections like:
   }
 ```
 
-> But we cannot combine both `$elemMatch` and specific fields together since MongoDB 4.4
+> Advanced scenario: we cannot combine both `$elemMatch` and specific fields together since MongoDB 4.4
+
+```diff
+ // Get only updated genre
+  {
+    new: true,
+    projection: {
+      _id: 1,
+      title: 1,
++     genres: {
++       $elemMatch: {
++         _id: new ObjectId('...'),
++       },
++     },
+      imdb: 1,
+      'tomatoes.viewer.rating': 1,
+    },
+  }
+```
 > [Projection restrictions](https://docs.mongodb.com/manual/reference/limits/#mongodb-limit-Projection-Restrictions)
 
 ## Queries over object subdocuments
@@ -404,19 +463,11 @@ const runQueries = async () => {
 > [Reference $set](https://docs.mongodb.com/manual/reference/operator/update/set/)
 > Update full object it's the same code
 
-We want `partial update` `imdb` review object in this document. For root documents, we could do a
-partial update like:
-
-_./src/console-runners/queries.runner.ts_
+Update only one field inside subdocument:
 
 ```diff
 ...
 const runQueries = async () => {
-+ const partialMovie = {
-+   plot: undefined,
-+   runtime: 2,
-+ };
-
   const result = await movieContext
     .findOneAndUpdate(
       {
@@ -429,57 +480,9 @@ const runQueries = async () => {
 -           votes: 1189,
 -           id: 5,
 -         },
-+         ...partialMovie,
++         'imdb.rating': 8.2,
         },
       },
-      {
-        new: true,
-        projection: {
-          _id: 1,
-          title: 1,
-          genres: 1,
-          imdb: 1,
-          'tomatoes.viewer.rating': 1,
-        },
-+       omitUndefined: true,
-      }
-...
-```
-
-The `omitUndefined` is only for root fields, with subdocuments we shouldn't include the undefined fields:
-
-_./src/console-runners/queries.runner.ts_
-
-```diff
-...
-const runQueries = async () => {
-- const partialMovie = {
--   plot: undefined,
--   runtime: 2,
-- };
-
-  const result = await movieContext
-    .findOneAndUpdate(
-      {
-        _id: new ObjectId('573a1390f29313caabcd4135'),
-      },
-      {
-        $set: {
--         ...partialMovie,
-+         'imdb.rating': 8
-        },
-      },
-      {
-        new: true,
-        projection: {
-          _id: 1,
-          title: 1,
-          genres: 1,
-          imdb: 1,
-          'tomatoes.viewer.rating': 1,
-        },
--       omitUndefined: true,
-      }
 ...
 ```
 
@@ -677,10 +680,10 @@ const runQueries = async () => {
         name: 1,
         email: 1,
         movie_id: 1,
-+       'movie.title': 1,
         text: 1,
         date: 1,
 -       movies: 1,
++       'movie.title': 1,
       },
     },
   ]);
