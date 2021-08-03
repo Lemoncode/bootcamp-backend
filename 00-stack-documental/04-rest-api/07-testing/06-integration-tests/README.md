@@ -141,6 +141,8 @@ module.exports = {
 
 ```
 
+> [MongoDB In-Memory server](https://github.com/nodkz/mongodb-memory-server#available-options)
+
 Update jest config:
 
 _./config/test/jest.js_
@@ -295,6 +297,8 @@ app.use(booksApi);
 +     expect(response.body.releaseDate).toEqual(newBook.releaseDate);
 +   });
 ```
+
+> Timeouts when run again due to `disconnect` after all
 
 # ¿Con ganas de aprender Backend?
 
