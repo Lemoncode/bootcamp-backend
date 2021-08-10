@@ -55,6 +55,8 @@ If we want to deploy our code, we can cd into `gpc-api` and run:
 $ serverless deploy
 ```
 
+> NOTE: If we want to use deploy command we need an AWS account completely set on the container. Follow the [link](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) to find the AWS CLI basic configuration documentation. 
+
 What this is going to do behind the scenes is use `CloudFormation` to deploy our code, the way that we can specify the configuration for that deployment come with `serverless.yml`
 
 ```yml

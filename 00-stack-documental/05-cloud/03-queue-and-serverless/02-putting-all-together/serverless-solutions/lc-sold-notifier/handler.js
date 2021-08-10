@@ -1,14 +1,20 @@
 'use strict';
 
+const Publisher = require('./publisher');
+
 module.exports.sold = async (event) => {
   const { body } = event;
-  console.log(body);
+  const publisher = new Publisher('sales', 'fanout');
+  await publisher.startConnection();
+  await publisher.assertExchange({durable: false});
+  publisher.publish(body);
+  await publisher.close();
+  
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v2.0! Your function executed successfully!',
-        input: event,
+        message: 'message send to queue',
       },
       null,
       2

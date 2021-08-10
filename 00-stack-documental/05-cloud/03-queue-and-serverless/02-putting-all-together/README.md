@@ -156,4 +156,233 @@ Now we can check the log output on lambda console and we must see:
 
 ## Pushing a message to the queue
 
+When ever a new sold request arrives to our lambda function we will publish a new message into the queue. We need to install a new package to deal with our queue, `cd` into `02-putting-all-together/serverless-solutions/lc-sold-notifier`
+
+```bash
+$ npm i amqplib -S
+```
+
+```bash
+$ npm i @types/amqplib -D
+```
+
+
+Let's create a new publisher, but before, let's create some utils, to make our code more readable, `02-putting-all-together/serverless-solutions/lc-sold-notifier/amqp-utils.js`
+
+```js
+const amqp = require('amqplib');
+
+const url = 'amqp://guest:guest@localhost:5672';
+
+let connection;
+
+module.exports.openChannel = async () => {
+    connection = await amqp.connect(url);
+    return connection.createChannel();
+};
+
+module.exports.close = async () => {
+    await connection.close();
+};
+
+```
+
+Now we cna create `02-putting-all-together/serverless-solutions/lc-sold-notifier/publisher.js`
+
+```js
+const { openChannel, close } = require('./amqp-utils');
+
+module.exports.Publisher = class {
+    constructor(exchange, type) {
+        this.channel = null;
+        this.exchange = exchange;
+        this.type = type;
+    }
+
+    async startConnection() {
+        try {
+            this.channel = await openChannel();
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async assertExchange(options) {
+        if (!this.channel) {
+            throw 'Not channel initialised, you must open a channel before use this method.';
+        }
+
+        try {
+            await this.channel.assertExchange(this.exchange, this.type, options);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    publish(msg) {
+        try {
+            this.channel.publish(this.exchange, '', Buffer.from(msg));
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async close() {
+        await close();
+    }
+};
+
+```
+
+Now we have to update `02-putting-all-together/serverless-solutions/lc-sold-notifier/handler.js`, to publish the message.
+
+```js
+'use strict';
+
+const Publisher = require('./publisher');
+
+module.exports.sold = async (event) => {
+  const { body } = event;
+  const publisher = new Publisher('sales', 'fanout');
+  await publisher.startConnection();
+  await publisher.assertExchange();
+  publisher.publish(body);
+  
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      {
+        message: 'message send to queue',
+      },
+      null,
+      2
+    ),
+  };
+};
+
+```
+
 ## Consume the message
+
+Now let's create a new project to host the message consumers. At the same level as `serverless-solutions`, run:
+
+```bash
+$ mkdir subscriber; cd subscriber
+```
+
+```bash
+$ npm init -y 
+```
+
+```bash
+$ npm install amqplib -S
+```
+
+```bash
+$ npm install @types/amqplib -D
+```
+
+Just for simplicity of demo, we're going to create inside `susbscriber` directory `amqp-utils.js`. This duplicity is bad, really bad, there are better approaches to this, such as reference a lib inside of the same diretory tree, and the best one create an external library that we can import from a package manager such as `npm registry`. As bonus track, we will include how to import libraries from the sametree directory.
+
+```js
+const amqp = require('amqplib');
+
+const url = 'amqp://guest:guest@localhost:5672';
+
+let connection;
+
+module.exports.openChannel = async () => {
+    connection = await amqp.connect(url);
+    return connection.createChannel();
+};
+
+module.exports.close = async () => {
+    await connection.close();
+};
+
+```
+
+Now let's create `02-putting-all-together/subscriber/index.js`
+
+```js
+const { openChannel } = require('./amqp-utils');
+
+const run = async () => { 
+    try {
+        const channel = await openChannel();
+        const exchange = 'sales';
+        await channel.assertExchange(exchange, 'fanout', { durable: false});
+        const { queue } = await channel.assertQueue('');
+        await channel.bindQueue(queue, exchange, '');
+        channel.consume(
+            queue,
+            (msg) => {
+                const { content } = msg;
+                console.log(content.toString());
+                channel.ack(msg);
+            }
+        );
+    } catch (error) {
+        
+    }
+};
+
+run();
+
+```
+
+Update `package.json`
+
+```diff
+{
+  "name": "subscriber",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
++   "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.8.0"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.8.1"
+  }
+}
+
+```
+
+## Running the solution
+
+
+```bash
+$ ./02-putting-all-together/start-up-message-broker.sh
+$ cd ./02-putting-all-together/serverless-solutions/lc-sold-notifier
+$ npm start
+```
+
+From a new terminal
+
+```bash
+$ cd ./02-putting-all-together/subscriber
+$ npm start
+```
+
+Open a new terminal to send a new request:
+
+```bash
+$ curl -d '{"bookId":"fagd-3452", "value":"9,99$"}' -H "Content-Type: application/json" -X POST http://localhost:3000/dev/sold
+```
+
+## Clenup
+
+```bash
+$ docker stop rabbit
+```

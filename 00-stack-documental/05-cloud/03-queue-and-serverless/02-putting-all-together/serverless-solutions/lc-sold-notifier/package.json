@@ -11,7 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/amqplib": "^0.8.1",
     "npx": "^10.2.2",
     "serverless-offline": "^8.0.0"
+  },
+  "dependencies": {
+    "amqplib": "^0.8.0"
   }
 }

@@ -1,17 +1,19 @@
 {
-  "name": "serverless-solutions",
+  "name": "subscriber",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "npx": "^10.2.2",
-    "serverless": "^2.53.1"
+  "dependencies": {
+    "amqplib": "^0.8.0"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@types/amqplib": "^0.8.1"
+  }
 }
