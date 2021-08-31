@@ -49,7 +49,12 @@ npm run build:prod
 
 ```
 
-Copy `front/dist` files into `back/public`.
+Copy `front/dist` files into `back/public`. We can do this from terminal by running (from parent directory of both solutions):
+
+```bash
+cp -R front/dist/ back/public
+```
+
 
 Run only `back` app:
 

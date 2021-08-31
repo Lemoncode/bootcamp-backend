@@ -60,6 +60,14 @@ Let's copy all necessary files:
 - `public` folder.
 - `package.json`: Heroku will install `production` dependencies before start the server.
 
+We can do previous actions from terminal by running (from parent directory):
+
+```bash
+cp -R ./back/dist/ <heroku-repo-directory>/
+cp -R ./back/public <heroku-repo-directory>/
+cp ./back/package.json <heroku-repo-directory>/
+```
+
 Create new `.gitignore` file, ignoring the `node_modules` folder:
 
 _./.gitignore_

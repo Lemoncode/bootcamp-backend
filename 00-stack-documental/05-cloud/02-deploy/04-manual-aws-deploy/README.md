@@ -92,6 +92,39 @@ Create `zip` file:
 
 ![04-create-zip-file](./readme-resources/04-create-zip-file.png)
 
+Before we move forward, we can also zip the app from terminal
+
+```bash
+mkdir book-store-app
+cp -R ./back/dist/ ./book-store-app
+cp -R ./back/public ./book-store-app
+cat <<EOF | tee ./book-store-app/package.json
+{
+  "name": "01-config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.18.0",
+    "@aws-sdk/s3-request-presigner": "^3.18.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.12"
+  }
+}
+EOF
+cd ./book-store-app; zip -r ../book-store-app *; cd ../
+```
 Update code:
 
 ![05-upload-code](./readme-resources/05-upload-code.png)
