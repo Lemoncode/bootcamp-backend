@@ -52,7 +52,7 @@ Now, we can clone the repo in _another folder outside backend app_:
 git clone https://git.heroku.com/<heroku-app-name>.git .
 ```
 
-> Check `Delpoy` tab for other deploy methods.
+> Check `Deploy` tab for other deploy methods.
 
 Let's copy all necessary files:
 
