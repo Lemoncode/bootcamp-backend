@@ -178,7 +178,8 @@ Finally, if we want to log each query that `mongoose` request to mongo, we could
 _./src/core/servers/db.server.ts_
 
 ```diff
-import { connect } from "mongoose";
+- import { connect } from "mongoose";
++ import { connect, set } from 'mongoose';
 + import { envConstants } from "core/constants";
 
 + set("debug", !envConstants.isProduction);

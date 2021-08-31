@@ -167,7 +167,7 @@ securityApi.post('/login', async (req, res, next) => {
 
 ```
 
-> We cannot use `GET` method because browsers could save URL/Query Qarameters as plain text in the history.
+> We cannot use `GET` method because browsers could save URL/Query Parameters as plain text in the history.
 > POST vs PUT: `PUT` method is idempotent (same input same output) and a login method could return different token value for same inputs.
 
 Add barrel file:
@@ -216,14 +216,6 @@ export const dbRepository: UserRepository = {
 
 ```
 
-Let's install [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) library to create JWT tokens in Nodejs:
-
-```bash
-npm install jsonwebtoken --save
-npm install @types/jsonwebtoken --save-dev
-
-```
-
 Getting valid user:
 
 _./src/pods/security/security.rest-api.ts_
@@ -256,6 +248,14 @@ securityApi.post('/login', async (req, res, next) => {
 
 ```
 > [401 Unauthorized](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401)
+
+Let's install [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) library to create JWT tokens in Nodejs:
+
+```bash
+npm install jsonwebtoken --save
+npm install @types/jsonwebtoken --save-dev
+
+```
 
 Generate JWT token with user info:
 
@@ -327,6 +327,8 @@ import { userRepository } from 'dals';} from 'dals';
 > [Options](https://github.com/auth0/node-jsonwebtoken#usage)
 >
 > We could create a certificate with [OpenSSL tool](https://www.openssl.org/docs/manmaster/man1/openssl-req.html)
+>
+> [Authentication schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
 
 Let's update the app with this new API:
 
@@ -358,6 +360,16 @@ Let's run app in `mock` mode:
 
 ```bash
 npm start
+```
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
 ```
 
 > [Check jwt info](https://jwt.io/)
@@ -494,6 +506,8 @@ export const authenticationMiddleware: RequestHandler = async (
 };
 
 ```
+
+> We will have Typescript issues if we try to use `utils.promisify` from NodeJS.
 
 We could extend Express's Request types:
 
@@ -633,6 +647,29 @@ restApiServer.use('/api/security', securityApi);
 
 ```
 
+Let's try now `/api/books`:
+
+> Stop and run again to read new env variable
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
+```
+
+> Sign jwt with new env variable
+
+```md
+GET http://localhost:3000/api/books
+
+## Headers
+Authorization: Bearer my-token
+```
+
 Let's add a role for each user:
 
 _./src/common-app/models/role.ts_
@@ -660,6 +697,7 @@ _./src/common-app/models/index.ts_
 
 ```diff
 export * from './user-session';
++ export * from './role';
 
 ```
 
@@ -748,6 +786,16 @@ Let's run app and [check new jwt](https://jwt.io/):
 ```bash
 npm start
 
+```
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "admin@email.com",
+	"password": "test"
+}
 ```
 
 Now, we could create a new `authorization middleware`:
@@ -857,6 +905,23 @@ booksApi
 
 ```
 
+Let's try this:
+
+```
+npm start
+
+```
+
+```md
+POST http://localhost:3000/api/security/login
+
+### Body
+{
+	"email": "user@email.com",
+	"password": "test"
+}
+```
+
 Finally, we will implement the `logout` method:
 
 _./src/pods/security/security.rest-api.ts_
@@ -867,6 +932,7 @@ import jwt from 'jsonwebtoken';
 import { envConstants } from 'core/constants';
 import { UserSession } from 'common-app/models';
 import { userRepository } from 'dals';
++ import { authenticationMiddleware } from './security.middlewares';
 
 ...
 
