@@ -1,0 +1,6 @@
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\bin\Debug\TiendaDB.dacpac
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\bin\Debug\TiendaDB.dll
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\bin\Debug\TiendaDB.pdb
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\obj\Debug\TiendaDB.sqlprojAssemblyReference.cache
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\obj\Debug\TiendaDB.dll
+C:\lemoncode\bootcamp-backend\sql-server\git\sql-server-by-sample\05-publish-database\TiendaDB\obj\Debug\TiendaDB.pdb
