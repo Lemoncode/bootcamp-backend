@@ -493,6 +493,8 @@ Scott	        12
 
 ## Cruzando tablas (JOIN)
 
+Vamos a necesitar cruzar dos o más tablas para recuperar campos relacionados. Esto es posible gracias a la cláusula `JOIN`. Vamos a ver cada tipo:
+
 ### CROSS JOIN
 
 - Es el JOIN más simple
@@ -501,8 +503,12 @@ Scott	        12
 - Producto Cartesiano
 
 ```sql
-
+SELECT  T.NombreTipo, T2.NombreTipo
+FROM    dbo.TipoArticulo T
+CROSS JOIN dbo.TipoCliente T2
 ```
+
+> No iguala ninguna columna, por tanto devolverá el cruce de todas las filas de la primera tabla con todas las filas de la segunda tabla. Si tenemos 4 filas en cada una, obtendremos 16 filas como resultado. ¡Imagina con 2000 filas en cada tabla! Rara vez se justificará el uso de este `JOIN`.
 
 ### INNER JOIN
 
