@@ -736,3 +736,41 @@ HAVING COUNT(*) = (
 	) as T
 )
 ```
+
+## Ordenando los resultados
+
+Podemos devolver los resultados ordenados por las columnas que necesitemos, tanto en orden ascendente como descendente, gracias a la cláusula `ORDER BY <columnas>`:
+
+```sql
+SELECT	C.CustomerID,
+		C.FirstName,
+		C.LastName
+FROM	SalesLT.Customer C
+ORDER BY C.FirstName ASC, C.LastName ASC
+```
+
+En este ejemplo, ordenará por la primera columna de forma ascendente, y en caso de que sean iguales, tendrá en cuenta la segunda (y posteriores), como vemos en el resultado:
+
+```
+CustomerID	FirstName	LastName
+202	        A.	        Leonetti
+29943	    A.	        Leonetti
+29792	    Abigail	    Gonzalez
+345	        Abigail	    Gonzalez
+511	        Abraham	    Swearengin
+30052	    Abraham 	Swearengin
+29702	    Aidan   	Delaney
+75	        Aidan	    Delaney
+659	        Ajay	    Manchepalli
+29978	    Ajay    	Manchepalli
+29583	    Alan    	Brewer
+148	        Alan	    Brewer
+595	        Alan	    Steiner
+30031	    Alan    	Steiner
+294	        Alberto	    Baltazar
+408	        Alexander	Berger
+29557	    Alexander	Berger
+66	        Alexander	Deborde
+29699	    Alexander	Deborde
+...
+```
