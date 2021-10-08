@@ -403,7 +403,7 @@ FROM    SalesLT.SalesOrderHeader;
 
 ## Filas de resultado únicas
 
-Podemos quitar de los resultados filas repetidas (filas cuyas columnas tienen los mismos valores) con la cláusula `DISTINCT`:
+Podemos quitar de los resultados las filas repetidas (**filas cuyas columnas tienen los mismos valores**) con la cláusula `DISTINCT`:
 
 ```sql
 -- Listar todos los nombres (sin repetir) de mis clientes:
@@ -415,7 +415,7 @@ FROM    SalesLT.Customer C;
 
 ## Agrupando filas
 
-Podemos agrupa los resultados en Subsets con la cláusula `GROUP BY <columnas>`. Los subsets estarán dictados por las columnas definidas en el `GROUP BY`:
+Podemos agrupar los resultados en _subsets_ con la cláusula `GROUP BY <columnas>`. Los _subsets_ estarán dictados por las columnas definidas en el `GROUP BY`:
 
 ```sql
 SELECT  C.FirstName
