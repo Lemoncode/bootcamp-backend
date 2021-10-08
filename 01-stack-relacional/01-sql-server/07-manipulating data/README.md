@@ -739,7 +739,7 @@ HAVING COUNT(*) = (
 
 ## Ordenando los resultados
 
-Podemos devolver los resultados ordenados por las columnas que necesitemos, tanto en orden ascendente como descendente, gracias a la cláusula `ORDER BY <columnas>`:
+Podemos devolver los resultados ordenados por las columnas que necesitemos, tanto en orden ascendente como descendente, gracias a la cláusula `ORDER BY`:
 
 ```sql
 SELECT	C.CustomerID,
