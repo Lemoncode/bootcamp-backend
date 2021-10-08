@@ -774,3 +774,24 @@ CustomerID	FirstName	LastName
 29699	    Alexander	Deborde
 ...
 ```
+
+## Unir resultados
+
+Podemos tener el caso en que necesitemos unir el resultado de dos `SELECT`, por ejemplo si tenemos una tabla de empleados y otra de clientes, y queremos mostrar un listado con todos los registros de ambas.
+
+Para esto utilizaremos la cláusula `UNION`, teniendo en cuenta que el numero y tipo de columnas debe coincidir en ambas `SELECT`:
+
+```sql
+-- Listar la información de los empleados y los clientes:
+SELECT  E.Id,
+        E.Nombre,
+        E.Apellidos,
+        E.Email
+FROM    Empleado E
+UNION
+SELECT  C.Id,
+        C.Nombre,
+        C.Apellidos,
+        C.Email
+FROM    Cliente C
+```
