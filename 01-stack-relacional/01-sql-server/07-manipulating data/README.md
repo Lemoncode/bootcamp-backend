@@ -2,7 +2,9 @@
 
 Vamos a aprender y practicar cómo manipular datos de nuestra base de datos. De ahí las siglas DML (Data Manipulation Language). Recordemos que trabajamos con Transact SQL (T-SQL), el lenguaje de Microsoft SQL Server.
 
-Para los ejemplos utilizaremos las bases de datos de **AdventureWorks** que restauramos en el paso anterior (tanto la normal como la LT).
+Para los ejemplos utilizaremos las bases de datos de **AdventureWorksLT**, una versión ligera de la base de datos que hemos restaurado en el paso anterior (_06-restore-sample-database)_.
+
+La tenéis disponible en [este enlace](https://docs.microsoft.com/es-es/sql/samples/adventureworks-install-configure?view=sql-server-ver15&tabs=ssms).
 
 ## QUERY
 
