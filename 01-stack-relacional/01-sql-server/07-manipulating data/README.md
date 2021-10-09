@@ -546,7 +546,7 @@ INNER JOIN SalesLT.Address A
 	ON A.AddressID = CA.AddressID
 ```
 
-## OUTER JOIN
+### OUTER JOIN
 
 Los `OUTER JOIN` nos va a permitir contemplar los valores `NULL` de la relación de columnas en nuestros resultados.
 
@@ -579,7 +579,7 @@ Esto nos indica que hay 32 pedidos y por tanto muchos clientes no han realizado 
 
 Para esto utilizaremos `OUTER JOIN`, y tenemos 3 tipos dependiendo en que parte está nuestra tabla principal, si está a la izquierda (`LEFT JOIN`), derecha (`RIGHT JOIN`) o aceptamos `NULL` en ambas (`FULL JOIN`).
 
-### LEFT JOIN
+#### LEFT JOIN
 
 Para esto podemos utilizar `LEFT JOIN` y permitir que en la tabla secundaria (pedidos) no encuentre al cliente (y por tanto devuelva todos los campos de esta tabla a `NULL` para ese registro):
 
@@ -627,7 +627,7 @@ LEFT JOIN SalesLT.SalesOrderHeader O
 WHERE   O.CustomerID IS NULL
 ```
 
-### RIGHT JOIN
+#### RIGHT JOIN
 
 Actúa igual que `LEFT JOIN` pero entendiendo que la tabla principal está a la derecha:
 
@@ -679,7 +679,7 @@ FROM	SalesLT.vPedidosClientesDireccion V
 WHERE	V.SalesOrderID = 71899
 ```
 
-### SELECT ... SELECT
+## Subqueries: SELECT ... SELECT
 
 A partir de la vista anterior, podríamos pensar que el segundo ejemplo (el que hace una `Query` sobre la vista), sabiendo que la vista es una `Query`, podemos hacer algo como esto:
 
@@ -753,6 +753,7 @@ En este ejemplo, ordenará por la primera columna de forma ascendente, y en caso
 
 ```
 CustomerID	FirstName	LastName
+------------------------------------
 202	        A.	        Leonetti
 29943	    A.	        Leonetti
 29792	    Abigail	    Gonzalez
