@@ -68,7 +68,6 @@ export const App = () => {
             <textarea
               style={{ height: "400px" }}
               value={chatlog}
-              onChange={(e) => setChatlog(e.target.value)}
               readOnly
             ></textarea>
           </div>

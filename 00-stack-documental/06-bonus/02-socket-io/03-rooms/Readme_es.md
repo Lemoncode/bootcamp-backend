@@ -61,18 +61,18 @@ _./src/app.tsx_
 +    const socketConnection = createSocket(nickname, room);
 ```
 
-_./src/api.tsx_
+_./src/api.ts_
 
 ```diff
 export const createSocket = (
   nickname: string,
 + room : string
-): globalThis.SocketIOClient.Socket => {
+): Socket => {
   const url = baseSocketUrl;
 
-  const options: SocketIOClient.ConnectOpts = {
+  const options: Partial<ManagerOptions & SocketOptions> = {
 -    query: { nickname },
-+    query: { nickname, room },,
++    query: { nickname, room },
     timeout: 60000,
 ```
 
@@ -85,7 +85,6 @@ io.on('connection', function (socket: Socket) {
   console.log('** connection recieved');
 -  addUserSession(socket.conn.id, socket.handshake.query['nickname']);
 +  addUserSession(socket.conn.id, socket.handshake.query['nickname'] as string, socket.handshake.query['room'] as string);
-+  socket.join(socket.handshake.query['room']);
 ```
 
 Bueno hacemos un _addUserSession_ para almacenarlo en nuestra _base de datos_ (memoria) pero... tenemos que decirle a _socket.io_
@@ -132,7 +131,7 @@ _./back/src/store.ts_
 };
 ```
 
-- Y Vamos a recogerla a la hora de enviar el mensaje que solo se envíe a los que estén en esa habitación:
+- Y vamos a recogerla a la hora de enviar el mensaje que solo se envíe a los que estén en esa habitación:
 
 _./backend/src/app.ts_
 

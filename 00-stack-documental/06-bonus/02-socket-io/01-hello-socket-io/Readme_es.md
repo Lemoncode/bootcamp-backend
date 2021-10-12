@@ -111,7 +111,7 @@ io.on("connection", function (socket: Socket) {
 
 - Ahora vamos a implementar nuestra aplicación de chat básica, nos quedamos
   esperando a que un usuario envíe un mensaje de chat, cuando recibamos dicho mensaje
-  lo reenviamos a todos los usarios
+  lo reenviamos a todos los usuarios
 
 ```diff
 // whenever a user connects on port 3000 via
@@ -128,7 +128,7 @@ socket.emit("message", { type: "CONNECTION_SUCCEEDED" });
 ```
 
 > Aquí podríamos enviar el mensaje a todo el mundo menos al que envío el mensaje,
-> ¿ Cómo podrámos hacer para enviarselo a todo el mundo? ¿Lo pruebas?
+> ¿ Cómo podríamos hacer para enviarselo a todo el mundo? ¿Lo pruebas?
 
 Vamos a probar con esta tool (importante contact, y pestaña emit y message, despude payload y como json)
 
@@ -189,7 +189,7 @@ export const createSocket = (): Socket => {
 };
 ```
 
-- Vamos ahora a por app.ts, vamos a crear
+- Vamos ahora a por app.tsx, vamos a crear
 
 ```diff
 import React from "react";
@@ -292,7 +292,6 @@ Y vamos a dar un punto de entrada para enviar mensajes:
 +            <textarea
 +              style={{ height: "400px" }}
 +              value={chatlog}
-+              onChange={(e) => setChatlog(e.target.value)}
 +              readOnly
 +            ></textarea>
 +          </div>

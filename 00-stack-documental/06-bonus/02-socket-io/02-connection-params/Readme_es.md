@@ -22,7 +22,7 @@ npm install
 
 - En el Front vamos a probar a informar de un parametro harcodeado en la conexión:
 
-_./frontend/src/api.ts_
+_./front/src/api.ts_
 
 ```diff
 export const createSocket = (): globalThis.SocketIOClient.Socket => {
@@ -39,7 +39,7 @@ export const createSocket = (): globalThis.SocketIOClient.Socket => {
 
 - En el backend vamos a probar a recoger este valor y mostrarlo por consola.
 
-_./backend/src/app.ts_
+_./back/src/app.ts_
 
 ```diff
 io.on('connection', function (socket: Socket) {
@@ -56,7 +56,7 @@ _En front y back_
 npm start
 ```
 
-- Seguimos ahora queremos que el usuario introduzca el nombre que quiera y el de a conectar:
+- Seguimos ahora queremos que el usuario introduzca el nombre que quiera y le de a conectar:
 
 - ¡Genial! ya nos llega a servidor el valor, ¿Qué vamos a hacer ahora? Vamos a asociar el nickname
   al connectionId del websocket de cliente asociado
@@ -64,7 +64,7 @@ npm start
 - Primero nos vamos a crear un sitio donde guardar esa info (lo ponemos en memoria en una aplicación
   real podría por ejemplo ir a base de de datos).
 
-_./backend/src/store.ts_
+_./back/src/store.ts_
 
 ```ts
 interface UserSession {
@@ -89,7 +89,7 @@ export const getNickname = (connectionId: string) => {
 
 - Ahora lo guardamos.
 
-_./backend/src/app.ts_
+_./back/src/app.ts_
 
 ```diff
 import { createApp } from './express.server';
@@ -103,7 +103,7 @@ import cors from 'cors';
 + import { addUserSession, getNickname } from './store';
 ```
 
-_./backend/src/app.ts_
+_./back/src/app.ts_
 
 ```diff
 io.on('connection', function (socket: Socket) {
@@ -130,7 +130,7 @@ io.on('connection', function (socket: Socket) {
 
 - En el Front ya lo podemos mostrar
 
-_./src/front/app.ts_
+_./front/src/app.ts_
 
 ```diff
     case "CHAT_MESSAGE":
