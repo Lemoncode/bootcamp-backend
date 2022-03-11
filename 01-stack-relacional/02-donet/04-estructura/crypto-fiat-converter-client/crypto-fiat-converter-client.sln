@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4E48304F-B091-43DC-8DD8-5984CDAE76FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lemoncode.CryptoFiatConverter.Sample", "src\Lemoncode.CryptoFiatConverter.Sample\Lemoncode.CryptoFiatConverter.Sample.csproj", "{29F9841A-01BB-4D41-8B9D-C34587E0B218}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|x64.Build.0 = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Debug|x86.Build.0 = Debug|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|x64.ActiveCfg = Release|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|x64.Build.0 = Release|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|x86.ActiveCfg = Release|Any CPU
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{29F9841A-01BB-4D41-8B9D-C34587E0B218} = {4E48304F-B091-43DC-8DD8-5984CDAE76FF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61848654-CF4E-4E2E-8E7B-A682223AD57E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+	    <IsPackable>false</IsPackable>
+	    <IsPublishable>true</IsPublishable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lemoncode.Soccer.Domain\Lemoncode.Soccer.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
