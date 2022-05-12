@@ -1,3 +1,5 @@
+# Temario
+
     Sesion 1:
         Convenciones x
         Variables
@@ -6,12 +8,14 @@
     Sesion 2: 
         LINQ
 
-# CONVENCIONES
+## CONVENCIONES
+
 Las convenciones en el código nos ayudan a:
- - Tener un código consistente, con lo que un desarrollador que lea el código se pueda centrar en el contenido del código.
- - Ayuda al desarrollador a entender de manera más fácil y rápida el código ya que todos seguimos las mismas convenciones.
- - Facilita copiar, cambiar y mantener el código.
- - En general, son buenas prácticas que todos hemos de seguir
+
+- Tener un código consistente, con lo que un desarrollador que lea el código se pueda centrar en el contenido del código.
+- Ayuda al desarrollador a entender de manera más fácil y rápida el código ya que todos seguimos las mismas convenciones.
+- Facilita copiar, cambiar y mantener el código.
+- En general, son buenas prácticas que todos hemos de seguir
 
 ### CONVENCIONES DE NOMENCLATURA
 En .Net como en cualquier otro lenguaje existen unas normas básicas para el uso de mayúsculas y minúsculas.
