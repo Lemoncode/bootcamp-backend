@@ -18,7 +18,7 @@ Podemos usar la licencia de la versión community si cumplimos las siguiente res
 
 ## Tipos de proyectos de Visual Studio
 
-Una vez instalado, vamos a iniciar la herramienta y creamos nuestro primer proyecto. 
+Una vez instalado, vamos a iniciar la herramienta y creamos nuestro primer proyecto.
 
 ![Crear un proyecto](./content/new_project.png)
 
@@ -54,7 +54,7 @@ Vamos a ver cual es el resultado que obtenemos:
 
 ### A nivel de carpeta
 
-Vemos que se ha creado una carpeta con el nombre de la solucion donde dentro tenemos los siguientes elementos:
+Vemos que se ha creado una carpeta con el nombre de la solución donde dentro tenemos los siguientes elementos:
 
 ![Carpeta de la solución](./content/solution_folder.png)
 
