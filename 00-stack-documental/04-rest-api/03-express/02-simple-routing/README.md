@@ -15,6 +15,8 @@ npm install
 
 Add `mock-db` files:
 
+_./src/mock-db.ts_
+
 ```typescript
 let mockBookList = [
   {
