@@ -211,10 +211,13 @@ _./package.json_
     "start": "run-p -l type-check:watch start:dev",
 -   "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
 +   "start:dev": "nodemon --exec babel-node -r dotenv/config --extensions \".ts\" src/index.ts",
-    "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
   },
+```
+
+```bash
+npm start
 ```
 
 Another approach is load config script from code, it's a nice way to provide [config's options](https://github.com/motdotla/dotenv#options). Move to production dependencies:
@@ -234,7 +237,6 @@ _./package.json_
     "start": "run-p -l type-check:watch start:dev",
 -   "start:dev": "nodemon --exec babel-node -r dotenv/config --extensions \".ts\" src/index.ts",
 +   "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
   },
