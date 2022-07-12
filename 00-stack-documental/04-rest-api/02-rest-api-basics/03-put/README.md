@@ -6,7 +6,7 @@ We will start from `02-post`.
 
 # Steps to build it
 
-Now, we can implement the route for update existing book. We could apply same concepts previously learned in `POST` and use it in `PUT` method: 
+Now, we can implement the route for update existing book. We could apply same concepts previously learned in `POST` and use it in `PUT` method:
 
 _./index.js_
 
@@ -52,13 +52,16 @@ const handleRequest = (req, res) => {
 
 ```
 
-The request body:
+The request:
 
 ```
+URL: http://localhost:3000/api/books/1
+
+BODY:
 {
-    "title": "Harry Potter y la piedra filosofal",
-    "releaseDate": "21/07/1999",
-    "author": "J. K. Rowling"
+    "title": "Choque de reyes Actualizado",
+    "releaseDate": "21/07/2022",
+    "author": "Otro autor"
 }
 ```
 
