@@ -42,7 +42,6 @@ _./front/index.html_
     <script src="./app.js"></script>
   </body>
 </html>
-
 ```
 
 Add js file:
@@ -50,16 +49,15 @@ Add js file:
 _./front/app.js_
 
 ```javascript
-console.log("Running front app");
+console.log('Running front app');
 
-fetch("http://localhost:3000/api/books/2")
+fetch('http://localhost:3000/api/books/2')
   .then((response) => {
     return response.json();
   })
   .then((book) => {
     console.log({ book });
   });
-
 ```
 
 We could create another express app to serve this files in another process, but to be simple we will install [lite-server](https://github.com/johnpapa/lite-server) to serve this front app.
@@ -76,7 +74,6 @@ _./front/lite-server.config.json_
 {
   "port": 8080
 }
-
 ```
 
 Finally, create the start command:
@@ -152,6 +149,23 @@ npm start
 ```
 
 If we need for example send some headers or cookies with authorization token, we need to enable `credentials` mode:
+
+_./back/src/index.ts_
+
+```diff
+...
+  .get('/:id', async (req, res) => {
+    const { id } = req.params;
+    const bookId = Number(id);
+    const book = await getBook(bookId);
++   res.setHeader('Authorization', 'Basic my-user:my-password');
+    res.send(book);
+  })
+...
+```
+
+> Check Reponse Headers in Chrome
+> [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
 
 _./front/app.js_
 
