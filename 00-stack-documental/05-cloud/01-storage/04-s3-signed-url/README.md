@@ -168,6 +168,8 @@ userApi.get('/', async (req, res, next) => {
 
 Update `mock-data`:
 
+_./back/src/dals/mock-data.ts_
+
 ```diff
 ...
 export const db: DB = {
@@ -178,7 +180,7 @@ export const db: DB = {
       password: 'test',
       salt: '',
       role: 'admin',
--     avatar: '/admin-avatar.png',
+-     avatar: 'https://<bucket-name>.s3.<region>.amazonaws.com/admin-avatar-in-s3.png',
 +     avatar: 'admin-avatar-in-s3.png',
     },
     {

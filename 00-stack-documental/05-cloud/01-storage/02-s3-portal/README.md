@@ -132,24 +132,6 @@ npm start
 
 Open browser in `http://localhost:8080`
 
-Restore it:
-
-_./back/src/dals/mock-data.ts_
-
-```diff
-...
-    {
-      _id: new ObjectId(),
-      email: 'admin@email.com',
-      password: 'test',
-      salt: '',
-      role: 'admin',
--     avatar: 'https://<bucket-name>.s3.<region>.amazonaws.com/admin-avatar-in-s3.png',
-+     avatar: '/admin-avatar.png',
-    },
-...
-```
-
 # ¿Con ganas de aprender Backend?
 
 En Lemoncode impartimos un Bootcamp Backend Online, centrado en stack node y stack .net, en él encontrarás todos los recursos necesarios: clases de los mejores profesionales del sector, tutorías en cuanto las necesites y ejercicios para desarrollar lo aprendido en los distintos módulos. Si quieres saber más puedes pinchar [aquí para más información sobre este Bootcamp Backend](https://lemoncode.net/bootcamp-backend#bootcamp-backend/banner).
