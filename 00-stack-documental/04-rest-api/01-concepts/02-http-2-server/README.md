@@ -42,7 +42,7 @@ node index
 > Check with Chrome
 > Check with Firefox to see raw http request / response
 
-Why does not work? It's because [HTTP2 has to works with https for browser connections](https://nodejs.org/api/http2.html#http2_http2_createserver_options_onrequesthandler).
+Why does not work? It's because [HTTP2 has to works with https for browser connections](https://nodejs.org/api/http2.html#http2createserveroptions-onrequesthandler).
 
 It means that we need to create a certificate, for example, we will create a self signed for develop:
 
