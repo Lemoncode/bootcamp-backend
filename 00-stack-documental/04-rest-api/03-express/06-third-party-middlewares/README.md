@@ -13,6 +13,8 @@ npm install
 
 ```
 
+Remove `node_modules`and move all files to back folder.
+
 Middlewares allow us to extend express functionality as a unique global point of app's configuration and we could install existing third party middlewares for concepts like enable CORS, JWT tokens, Cookie parser, etc.
 
 We will start creating a simple front-end application that it will fetch a book detail. Create `front` folder and init a new package.json:
@@ -89,7 +91,7 @@ _./front/package.json_
   },
 ```
 
-Let's runs both servers:
+Let's runs both servers (run back in `debug` mode):
 
 ```bash
 cd back/
@@ -99,6 +101,8 @@ cd front/
 npm start
 
 ```
+
+> Notice that the backend doesn't block the request. The browser blocks it
 
 This kind of request is a cross-origin request and we need enable [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (Cross-Origin Resource Sharing) in backend side to allow sharing resources between different domains.
 
@@ -166,6 +170,8 @@ console.log("Running front app");
   });
 
 ```
+
+> [Official docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials)
 
 Let's runs both servers:
 
