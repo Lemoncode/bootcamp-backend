@@ -24,13 +24,13 @@ _./.babelrc_
       "@babel/preset-env",
       {
         "targets": {
-          "node": "14"
+          "node": "16"
         }
       }
     ],
     "@babel/preset-typescript"
-  ],
-  "plugins": ["@babel/plugin-proposal-optional-chaining"],
+- ]
++ ],
 + "env": {
 +   "development": {
 +     "sourceMaps": "inline"
@@ -40,10 +40,15 @@ _./.babelrc_
 
 ```
 
-- And run app in `JavaScript Debug Terminal`:
+Using `JavaScript Debug Terminal`:
+
+![02-js-debug-terminal](./readme-resources/02-js-debug-terminal.png)
+
+And run the command:
 
 ```bash
 npm start
+
 ```
 
 - Another option is adding debug `launch.json` in VS Code:
@@ -64,7 +69,6 @@ _./.vscode/launch.json_
       "address": "localhost",
       "restart": true,
       "sourceMaps": true,
-      "stopOnEntry": false,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "${workspaceFolder}",
       "skipFiles": ["node_modules/**", "<node_internals>/**"]
@@ -97,17 +101,6 @@ _./package.json_
 
 ```bash
 npm run start:debug
-```
-
-The new way is using `JavaScript Debug Terminal`:
-
-![02-js-debug-terminal](./readme-resources/02-js-debug-terminal.png)
-
-And run the command:
-
-```bash
-npm start
-
 ```
 
 # ¿Con ganas de aprender Backend?
