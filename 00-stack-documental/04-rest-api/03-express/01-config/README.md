@@ -36,7 +36,6 @@ app.get("/", (req, res) => {
 app.listen(3000, () => {
   console.log("Server ready at port 3000");
 });
-
 ```
 
 Instead of execute this index file with node, we could create a npm script command that it will do it for us:
@@ -86,7 +85,7 @@ Let's install necessary dev libraries for that:
 - [npm-run-all](https://github.com/mysticatea/npm-run-all): is a tool that helps you run multiple npm scripts commands in parallel
 
 ```bash
-npm install @babel/cli @babel/core @babel/node @babel/preset-env @babel/plugin-proposal-optional-chaining @babel/preset-typescript typescript nodemon npm-run-all --save-dev
+npm install @babel/cli @babel/core @babel/node @babel/preset-env @babel/preset-typescript typescript nodemon npm-run-all --save-dev
 
 ```
 
@@ -101,17 +100,14 @@ _./.babelrc_
       "@babel/preset-env",
       {
         "targets": {
-          "node": "14"
+          "node": "16"
         }
       }
     ],
     "@babel/preset-typescript"
-  ],
-  "plugins": ["@babel/plugin-proposal-optional-chaining"]
+  ]
 }
-
 ```
-
 
 Add typescript config file:
 
@@ -134,7 +130,6 @@ _./tsconfig.json_
   },
   "include": ["src/**/*"]
 }
-
 ```
 
 Let's create npm commands:
@@ -180,6 +175,8 @@ Let's install typings for express:
 npm install @types/express --save-dev
 
 ```
+
+> Let's try some changes
 
 # ¿Con ganas de aprender Backend?
 
