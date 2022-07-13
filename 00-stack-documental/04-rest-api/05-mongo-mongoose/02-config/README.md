@@ -17,9 +17,10 @@ Let's install the official [MongoDB's driver](https://github.com/mongodb/node-mo
 
 ```bash
 npm install mongodb --save
-npm install @types/mongodb --save-dev
 
 ```
+
+> It includes typings.
 
 Create the connection URI as env variable:
 
@@ -72,18 +73,17 @@ Configure `mongo server` instance:
 _./src/core/servers/db.server.ts_
 
 ```typescript
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db } from 'mongodb';
 
-let dbInstance: Db;
+export let db: Db;
 
 export const connectToDBServer = async (connectionURI: string) => {
   const client = new MongoClient(connectionURI);
   await client.connect();
 
-  dbInstance = client.db();
+  db = client.db();
 };
 
-export const getDBInstance = (): Db => dbInstance;
 ```
 
 Update barrel file:
@@ -104,7 +104,7 @@ _./src/app.ts_
 import express from "express";
 import path from "path";
 - import { createRestApiServer } from "core/servers";
-+ import { createRestApiServer, connectToDBServer, getDBInstance } from "core/servers";
++ import { createRestApiServer, connectToDBServer, db } from 'core/servers';
 import { envConstants } from "core/constants";
 import {
   logRequestMiddleware,
@@ -115,14 +115,12 @@ import { booksApi } from "pods/book";
 
 - restApiServer.listen(envConstants.PORT, () => {
 + restApiServer.listen(envConstants.PORT, async () => {
-+ if (!envConstants.isApiMock) {
-+   await connectToDBServer(envConstants.MONGODB_URI);
-+   console.log("Connected to DB");
-+   const db = getDBInstance();
-+   await db.collection("books").insertOne({ name: "Book 1" });
-+ } else {
-+   console.log("Running API mock");
-+ }
++   if (!envConstants.isApiMock) {
++     await connectToDBServer(envConstants.MONGODB_URI);
++     await db.collection('books').insertOne({ name: 'Book 1' });
++   } else {
++     console.log('Running API mock');
++   }
   console.log(`Server ready at port ${envConstants.PORT}`);
 });
 
@@ -139,13 +137,11 @@ _./src/app.ts_
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
     await connectToDBServer(envConstants.MONGODB_URI);
-    console.log("Connected to DB");
-    const db = getDBInstance();
--   await db.collection("books").insertOne({ name: "Book 1" });
+-   await db.collection('books').insertOne({ name: 'Book 1' });
 +   const books = await db.collection("books").find().toArray();
 +   console.log({ books });
   } else {
-    console.log("Running API mock");
+    console.log('Running API mock');
   }
   console.log(`Server ready at port ${envConstants.PORT}`);
 });
