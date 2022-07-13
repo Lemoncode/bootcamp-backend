@@ -20,7 +20,7 @@ _./src/app.ts_
 ```diff
 import express from "express";
 import path from "path";
-- import { createRestApiServer, connectToDBServer, getDBInstance } from "core/servers";
+- import { createRestApiServer, connectToDBServer, db } from "core/servers";
 + import { createRestApiServer, connectToDBServer } from "core/servers";
 import { envConstants } from "core/constants";
 import {
@@ -33,10 +33,9 @@ import { booksApi } from "pods/book";
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
     await connectToDBServer(envConstants.MONGODB_URI);
-    console.log("Connected to DB");
--   const db = getDBInstance();
 -   const books = await db.collection("books").find().toArray();
 -   console.log({ books });
++   console.log("Connected to DB");
   } else {
     console.log("Running API mock");
   }
@@ -90,8 +89,11 @@ const updateBook = (book: Book) => {
   return book;
 };
 
+...
+
 export const mockRepository: BookRepository = {
-  getBookList: async () => db.books,
+  getBookList: async (page?: number, pageSize?: number) =>
+    paginateBookList(db.books, page, pageSize),
 - getBook: async (id: string) => db.books.find((b) => b.id === id),
 + getBook: async (id: string) => db.books.find((b) => b._id.toHexString() === id),
   saveBook: async (book: Book) =>
@@ -187,7 +189,7 @@ export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
 - id: book.id,
 + id: book._id.toHexString(),
   title: book.title,
-  releaseDate: book.releaseDate.toISOString(),
+  releaseDate: book.releaseDate?.toISOString(),
   author: book.author,
 });
 
@@ -244,14 +246,13 @@ Implement `get book list`:
 _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
-+ import { getDBInstance } from "core/servers";
++ import { db } from 'core/servers';
 import { BookRepository } from "./book.repository";
 import { Book } from "../book.model";
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => {
+  getBookList: async (page?: number, pageSize?: number) => {
 -   throw new Error("Not implemented");
-+   const db = getDBInstance();
 +   return await db.collection<Book>("books").find().toArray();
   },
 ...
@@ -266,7 +267,6 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
   saveBook: async (book: Book) => {
 -   throw new Error("Not implemented");
-+   const db = getDBInstance();
 +   const { insertedId } = await db.collection<Book>("books").insertOne(book);
 +   return {
 +     ...book,
@@ -276,6 +276,30 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
 ```
 
+Implement pagination:
+
+_./src/dals/book/repositories/book.db-repository.ts_
+
+```diff
+...
+getBookList: async (page?: number, pageSize?: number) => {
++   const skip = Boolean(page) ? (page - 1) * pageSize : 0;
++   const limit = pageSize ?? 0;;
+    return await db
+      .collection<Book>('books')
+      .find()
++     .skip(skip)
++     .limit(limit)
+      .toArray();
+  },
+...
+```
+
+> [Skip](https://www.mongodb.com/docs/manual/reference/method/cursor.skip/)
+> [Skip Nodejs API](https://mongodb.github.io/node-mongodb-native/4.8/classes/FindCursor.html#skip)
+> [limit](https://www.mongodb.com/docs/manual/reference/method/cursor.limit/)
+> [Limit Nodejs API](https://mongodb.github.io/node-mongodb-native/4.8/classes/FindCursor.html#limit)
+
 Implement `update book`:
 
 _./src/dals/book/repositories/book.db-repository.ts_
@@ -283,7 +307,6 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ```diff
 ...
   saveBook: async (book: Book) => {
-    const db = getDBInstance();
 -   const { insertedId } = await db.collection<Book>("books").insertOne(book);
 +   const { value } = await db.collection<Book>("books").findOneAndUpdate(
 +     {
@@ -303,7 +326,59 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ```
 
 > NOTE: Show `updateOne` method.
+> In the Mongo v4 does not exist `returnDocument`, but it does in v5.
 > [Mongo Console docs](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/) differs from [Mongo Driver docs](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate)
+
+In order to avoid repeat `db.collection<Book>("books")` we can move to a file and use it:
+
+_./src/dals/book/book.context.ts_
+
+```typescript
+import { db } from 'core/servers';
+import { Book } from './book.model';
+
+export const getBookContext = () => db?.collection<Book>('books');
+
+```
+
+Update `db-repository`:
+
+_./src/dals/book/repositories/book.db-repository.ts_
+
+```diff
+- import { db } from 'core/servers';
+import { BookRepository } from './book.repository';
+import { Book } from '../book.model';
++ import { getBookContext } from '../book.context';
+
+export const dbRepository: BookRepository = {
+  getBookList: async (page?: number, pageSize?: number) => {
+    const skip = Boolean(page) ? (page - 1) * pageSize : 0;
+    const limit = pageSize ?? 0;
+-   return await db
+-     .collection<Book>('books')
++   return await getBookContext()
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+  },
+...
+  saveBook: async (book: Book) => {
+-   const { value } = await db.collection<Book>('books').findOneAndUpdate(
++   const { value } = await getBookContext().findOneAndUpdate(
+      {
+        _id: book._id,
+      },
+      {
+        $set: book,
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
+    return value;
+  },
+...
+```
 
 Implement `get book`:
 
@@ -311,15 +386,14 @@ _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
-import { getDBInstance } from "core/servers";
 import { BookRepository } from "./book.repository";
 import { Book } from "../book.model";
+import { getBookContext } from '../book.context';
 
 ...
   getBook: async (id: string) => {
 -   throw new Error("Not implemented");
-+   const db = getDBInstance();
-+   return await db.collection<Book>("books").findOne({
++   return await getBookContext().findOne({
 +     _id: new ObjectId(id),
 +   });
   },
@@ -335,8 +409,7 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
   deleteBook: async (id: string) => {
 -   throw new Error("Not implemented");
-+   const db = getDBInstance();
-+   const { deletedCount } = await db.collection<Book>('books').deleteOne({
++   const { deletedCount } = await getBookContext().deleteOne({
 +     _id: new ObjectId(id),
 +   });
 +   return deletedCount === 1;
@@ -350,6 +423,20 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 ...
+  .put('/:id', async (req, res, next) => {
+    try {
+      const { id } = req.params;
++     if (await bookRepository.getBook(id)) {
+        const book = mapBookFromApiToModel({ ...req.body, id });
+        await bookRepository.saveBook(book);
+        res.sendStatus(204);
++     } else {
++       res.sendStatus(404);
++     }
+    } catch (error) {
+      next(error);
+    }
+  })
   .delete("/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -362,6 +449,8 @@ _./src/pods/book/book.rest-api.ts_
     }
   });
 ```
+
+> NOTE: We can improve this code using [countDocument](https://www.mongodb.com/docs/manual/reference/method/db.collection.countDocuments/) instead of get the book
 
 # ¿Con ganas de aprender Backend?
 

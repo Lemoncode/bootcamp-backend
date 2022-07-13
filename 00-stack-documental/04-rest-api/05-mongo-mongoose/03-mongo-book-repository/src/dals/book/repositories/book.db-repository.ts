@@ -1,33 +1,33 @@
 import { ObjectId } from 'mongodb';
-import { getDBInstance } from 'core/servers';
 import { BookRepository } from './book.repository';
 import { Book } from '../book.model';
+import { getBookContext } from '../book.context';
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => {
-    const db = getDBInstance();
-    return await db.collection<Book>('books').find().toArray();
+  getBookList: async (page?: number, pageSize?: number) => {
+    const skip = Boolean(page) ? (page - 1) * pageSize : 0;
+    const limit = pageSize ?? 0;
+    return await getBookContext().find().skip(skip).limit(limit).toArray();
   },
   getBook: async (id: string) => {
-    const db = getDBInstance();
-    return await db.collection<Book>('books').findOne({
+    return await getBookContext().findOne({
       _id: new ObjectId(id),
     });
   },
   saveBook: async (book: Book) => {
-    const db = getDBInstance();
-    const { value } = await db.collection<Book>('books').findOneAndUpdate(
+    const { value } = await getBookContext().findOneAndUpdate(
       {
         _id: book._id,
       },
-      { $set: book },
+      {
+        $set: book,
+      },
       { upsert: true, returnDocument: 'after' }
     );
     return value;
   },
   deleteBook: async (id: string) => {
-    const db = getDBInstance();
-    const { deletedCount } = await db.collection<Book>('books').deleteOne({
+    const { deletedCount } = await getBookContext().deleteOne({
       _id: new ObjectId(id),
     });
     return deletedCount === 1;

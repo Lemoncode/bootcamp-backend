@@ -5,7 +5,7 @@ import * as apiModel from './book.api-model';
 export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
   id: book._id.toHexString(),
   title: book.title,
-  releaseDate: book.releaseDate.toISOString(),
+  releaseDate: book.releaseDate?.toISOString(),
   author: book.author,
 });
 
