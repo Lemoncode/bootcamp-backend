@@ -57,7 +57,6 @@ _./package.json_
   "scripts": {
     "start": "run-p -l type-check:watch start:dev",
     "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
 +   "start:console-runners": "npm run type-check && babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
@@ -65,7 +64,26 @@ _./package.json_
 ...
 ```
 
-We could create a folder for each `runner`:
+Running it:
+
+```bash
+npm run start:console-runners
+```
+
+> If fails because the [inquirer@9](https://github.com/SBoudrias/Inquirer.js/releases/tag/inquirer%409.0.0) supports native ES Modules.
+> We will install the 8.x version instead of migrate the whole project
+
+```bash
+npm install inquirer@8 --save-dev
+```
+
+Running it again:
+
+```bash
+npm run start:console-runners
+```
+
+We can create a file for each `runner`:
 
 _./src/console-runners/create-admin.runner.ts_
 
@@ -107,7 +125,7 @@ export const run = async () => {
 
 ```
 
-We could create a folder for each `runner`:
+Update main file:
 
 _./src/console-runners/index.ts_
 
