@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { createRestApiServer } from 'core/servers';
 import { envConstants } from 'core/constants';
-import { booksApi } from 'pods/book';
+import { booksApi } from './pods/book';
 
 const restApiServer = createRestApiServer();
 
