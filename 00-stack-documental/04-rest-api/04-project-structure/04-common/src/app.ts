@@ -6,7 +6,7 @@ import {
   logRequestMiddleware,
   logErrorRequestMiddleware,
 } from 'common/middlewares';
-import { booksApi } from 'pods/book';
+import { booksApi } from './pods/book';
 
 const restApiServer = createRestApiServer();
 
