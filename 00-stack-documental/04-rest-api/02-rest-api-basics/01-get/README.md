@@ -61,8 +61,8 @@ const http = require("http");
 const handleRequest = (req, res) => {
 + const { url, method } = req;
 + if (url === "/api/books" && method === "GET") {
-+   res.statusCode = 200;
 +   res.write(getBookList());
++   res.statusCode = 200;
 +   res.end();
 + } else {
     res.write("My awesome books portal");
@@ -83,9 +83,9 @@ const handleRequest = (req, res) => {
   const { url, method } = req;
   if (url === "/api/books" && method === "GET") {
 +   res.setHeader("Content-Type", "application/json");
-    res.statusCode = 200;
 -   res.write(getBookList());
 +   res.write(JSON.stringify(getBookList()));
+    res.statusCode = 200;
     res.end();
   } else {
     res.write("My awesome books portal");
