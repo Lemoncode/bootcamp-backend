@@ -276,6 +276,16 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
 ```
 
+> Body
+
+```
+{
+    "title": "El señor de los anillos",
+    "releaseDate": "1954-07-29T00:00:00.000Z",
+    "author": "J. R. R. Tolkien"
+}
+```
+
 Implement pagination:
 
 _./src/dals/book/repositories/book.db-repository.ts_
@@ -284,7 +294,7 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
 getBookList: async (page?: number, pageSize?: number) => {
 +   const skip = Boolean(page) ? (page - 1) * pageSize : 0;
-+   const limit = pageSize ?? 0;;
++   const limit = pageSize ?? 0;
     return await db
       .collection<Book>('books')
       .find()
