@@ -2,7 +2,7 @@ import { BookRepository } from './book.repository';
 import { Book } from '../book.model';
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => {
+  getBookList: async (page?: number, pageSize?: number) => {
     throw new Error('Not implemented');
   },
   getBook: async (id: string) => {

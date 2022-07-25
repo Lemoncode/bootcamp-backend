@@ -22,7 +22,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:4.4.6
+    image: mongo:5.0.9
     ports:
       - '27017:27017'
 
@@ -41,10 +41,8 @@ _./package.json_
 -   "start": "run-p -l type-check:watch start:dev",
 +   "start": "run-p -l type-check:watch start:dev start:local-db",
     "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
     "start:console-runners": "npm run type-check && babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
-+   "start:local-db": "docker-compose up || echo \"Fail running docker-compose up, do it manually!\"",
-+   "remove:local-db": "docker-compose down || echo \"Fail running docker-compose down, do it manually!\"",
++   "start:local-db": "docker-compose up -d",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch"
   },
@@ -75,11 +73,14 @@ exit
 
 > Try Mongo Compass after commands
 > Try to stop and running container again
+> `docker stop book-store-db` and `npm run start:local-db`
 
 Remove local db:
 
 ```bash
-npm run remove:local-db
+docker-compose down
+
+npm run start:local-db
 
 ```
 
@@ -92,17 +93,27 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:4.4.6
+    image: mongo:5.0.9
     ports:
       - '27017:27017'
-+   volumes:
-+     - './mongo-data:/data/db'
++     volumes:
++       - type: bind
++         source: ./mongo-data
++         target: /data/db
++ volumes:
++   mongo-data:
 
 ```
 
+> The short hand but could have some issues in linux or mac
+>  volumes:
+>    - './mongo-data:/data/db'
+>  volumes:
+>    mongo-data:
+
 ```bash
 npm run start:local-db
-npm run remove:local-db
+docker-compose down
 ```
 
 Let's ignore the `volume` folder:

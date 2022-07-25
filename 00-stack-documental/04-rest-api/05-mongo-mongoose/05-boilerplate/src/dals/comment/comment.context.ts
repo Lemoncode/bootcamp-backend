@@ -1,6 +1,4 @@
-import mongoose, { Schema, SchemaDefinition } from 'mongoose';
+import { db } from 'core/servers';
 import { Comment } from './comment.model';
 
-const commentSchema = new Schema({} as SchemaDefinition<Comment>);
-
-export const commentContext = mongoose.model<Comment>('Comment', commentSchema);
+export const getCommentContext = () => db?.collection<Comment>('comments');
