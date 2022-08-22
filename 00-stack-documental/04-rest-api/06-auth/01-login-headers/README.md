@@ -216,6 +216,8 @@ export const dbRepository: UserRepository = {
 
 ```
 
+> NOTE: We can throw a not implemented error too.
+
 Getting valid user:
 
 _./src/pods/security/security.rest-api.ts_
@@ -387,7 +389,6 @@ import {
   mapBookFromModelToApi,
   mapBookFromApiToModel,
 } from './book.mappers';
-import { paginateBookList } from './book.helpers';
 
 ...
 
@@ -400,9 +401,8 @@ booksApi
 +       if (userSession) {
           const page = Number(req.query.page);
           const pageSize = Number(req.query.pageSize);
-          const bookList = await bookRepository.getBookList();
-          const paginatedBookList = paginateBookList(bookList, page, pageSize);
-          res.send(mapBookListFromModelToApi(paginatedBookList));
+          const bookList = await bookRepository.getBookList(page, pageSize);
+          res.send(mapBookListFromModelToApi(bookList));
 +       } else {
 +         res.sendStatus(401);
 +       }
@@ -416,6 +416,13 @@ booksApi
 
 > [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
 > `Authorization: Bearer my-token`
+
+```md
+GET http://localhost:3000/api/books
+
+## Headers
+Authorization: Bearer my-token
+```
 
 Let's refactor this code
 
@@ -508,6 +515,9 @@ export const authenticationMiddleware: RequestHandler = async (
 ```
 
 > We will have Typescript issues if we try to use `utils.promisify` from NodeJS.
+>
+> import { promisify } from 'util';
+> const verify = promisify(jwt.verify);
 
 We could extend Express's Request types:
 
@@ -605,9 +615,8 @@ booksApi
 -       if (userSession) {
           const page = Number(req.query.page);
           const pageSize = Number(req.query.pageSize);
-          const bookList = await bookRepository.getBookList();
-          const paginatedBookList = paginateBookList(bookList, page, pageSize);
-          res.send(mapBookListFromModelToApi(paginatedBookList));
+          const bookList = await bookRepository.getBookList(page, pageSize);
+          res.send(mapBookListFromModelToApi(bookList));
 -       } else {
 -         res.sendStatus(401);
 -       }
@@ -840,7 +849,6 @@ import {
   mapBookFromModelToApi,
   mapBookFromApiToModel,
 } from './book.mappers';
-import { paginateBookList } from './book.helpers';
 
 export const booksApi = Router();
 
@@ -850,9 +858,8 @@ booksApi
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      res.send(mapBookListFromModelToApi(paginatedBookList));
+      const bookList = await bookRepository.getBookList(page, pageSize);
+      res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
@@ -870,8 +877,8 @@ booksApi
 - .post('/', async (req, res, next) => {
 + .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
-      const modelBook = mapBookFromApiToModel(req.body);
-      const newBook = await bookRepository.saveBook(modelBook);
+      const book = mapBookFromApiToModel(req.body);
+      const newBook = await bookRepository.saveBook(book);
       res.status(201).send(mapBookFromModelToApi(newBook));
     } catch (error) {
       next(error);
@@ -881,9 +888,13 @@ booksApi
 + .put('/:id', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
       const { id } = req.params;
-      const modelBook = mapBookFromApiToModel({ ...req.body, id });
-      await bookRepository.saveBook(modelBook);
-      res.sendStatus(204);
+      if (await bookRepository.getBook(id)) {
+        const book = mapBookFromApiToModel({ ...req.body, id });
+        await bookRepository.saveBook(book);
+        res.sendStatus(204);
+      } else {
+        res.sendStatus(404);
+      }
     } catch (error) {
       next(error);
     }
