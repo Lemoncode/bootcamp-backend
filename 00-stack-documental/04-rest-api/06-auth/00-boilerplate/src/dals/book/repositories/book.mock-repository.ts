@@ -21,8 +21,24 @@ const updateBook = (book: Book) => {
   return book;
 };
 
+const paginateBookList = (
+  bookList: Book[],
+  page: number,
+  pageSize: number
+): Book[] => {
+  let paginatedBookList = [...bookList];
+  if (page && pageSize) {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, paginatedBookList.length);
+    paginatedBookList = paginatedBookList.slice(startIndex, endIndex);
+  }
+
+  return paginatedBookList;
+};
+
 export const mockRepository: BookRepository = {
-  getBookList: async () => db.books,
+  getBookList: async (page?: number, pageSize?: number) =>
+    paginateBookList(db.books, page, pageSize),
   getBook: async (id: string) =>
     db.books.find((b) => b._id.toHexString() === id),
   saveBook: async (book: Book) =>
