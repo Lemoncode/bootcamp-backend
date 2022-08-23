@@ -73,7 +73,7 @@ export const db: DB = {
 
 ```
 
-We need to implement a function to create a `hashed password` with a secure random `salt` using [randomBytes](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_randombytes_size_callback) defined in nodejs's `crypto` library:
+We need to implement a function to create a `hashed password` with a secure random `salt` using [randomBytes](https://nodejs.org/dist/latest/docs/api/crypto.html#cryptorandombytessize-callback) defined in nodejs's `crypto` library:
 
 _./src/common/helpers/hash-password.helpers.ts_
 
@@ -87,12 +87,11 @@ export const generateSalt = async (): Promise<string> => {
   const salt = await randomBytes(saltLength);
   return salt.toString('hex');
 };
-
 ```
 
 > 64 bits min recommended -> 8 bytes. We are using 16 bytes.
 
-And use a `key derivation function`, in this case, we will use [PBKDF2](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_digest_callback):
+And use a `key derivation function`, in this case, we will use [PBKDF2](https://nodejs.org/dist/latest/docs/api/crypto.html#cryptopbkdf2password-salt-iterations-keylen-digest-callback):
 
 _./src/common/helpers/hash-password.helpers.ts_
 
@@ -135,7 +134,6 @@ _./src/common/helpers/index.ts_
 
 ```typescript
 export * from './hash-password.helpers';
-
 ```
 
 Finally, we need to create the `db context`:
@@ -143,18 +141,10 @@ Finally, we need to create the `db context`:
 _./src/dals/user/user.context.ts_
 
 ```typescript
-import mongoose, { Schema, SchemaDefinition } from 'mongoose';
+import { db } from 'core/servers';
 import { User } from './user.model';
 
-const userSchema = new Schema({
-  email: { type: Schema.Types.String, required: true },
-  password: { type: Schema.Types.String, required: true },
-  salt: { type: Schema.Types.String, required: true },
-  role: { type: Schema.Types.String, required: true },
-} as SchemaDefinition<User>);
-
-export const userContext = mongoose.model<User>('User', userSchema);
-
+export const getUserContext = () => db?.collection<User>('users');
 ```
 
 Let's insert some users from `console-runners`:
@@ -162,13 +152,12 @@ Let's insert some users from `console-runners`:
 _./src/console-runners/seed-data.runner.ts_
 
 ```diff
-import { disconnect } from 'mongoose';
-import { connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-import { bookContext } from 'dals/book/book.context';
-+ import { userContext } from 'dals/user/user.context';
-import { db } from 'dals/mock-data';
 + import { generateSalt, hashPassword } from 'common/helpers';
+import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
+import { envConstants } from 'core/constants';
+import { getBookContext } from 'dals/book/book.context';
++ import { getUserContext } from 'dals/user/user.context';
+import { db } from 'dals/mock-data';
 
 export const run = async () => {
   await connectToDBServer(envConstants.MONGODB_URI);
@@ -177,22 +166,18 @@ export const run = async () => {
 +   const salt = await generateSalt();
 +   const hashedPassword = await hashPassword(user.password, salt);
 
-+   await userContext.create({
++   await getUserContext().insertOne({
 +     ...user,
 +     password: hashedPassword,
 +     salt,
 +   });
 + }
 
-  await bookContext.insertMany(db.books);
+  await getBookContext().insertMany(db.books);
   await disconnect();
 };
 
 ```
-
-> In mongoose doesn't exist `insertOne`.
->
-> We could use `insertMany` here too.
 
 Let's run the `seed-data` runner:
 
@@ -201,27 +186,27 @@ npm run start:console-runners
 
 ```
 
+> Run in Javascript Debug Terminal
+
 Let's implement the `user db repository`:
 
 _./src/dals/user/repositories/user.db-repository.ts_
 
 ```diff
 + import { hashPassword } from 'common/helpers';
-+ import { userContext } from '../user.context';
++ import { getUserContext } from '../user.context';
 + import { User } from '../user.model';
 import { UserRepository } from './user.repository';
 
 export const dbRepository: UserRepository = {
 - getUserByEmailAndPassword: async (email: string, password: string) => null,
 + getUserByEmailAndPassword: async (email: string, password: string) => {
-+   const user = await userContext
-+     .findOne({
-+       email,
-+     })
-+     .lean();
++   const user = await getUserContext().findOne({
++     email,
++   });
 
-+   const hashedPassword = await hashPassword(password, user.salt);
-+   return user.password === hashedPassword
++   const hashedPassword = await hashPassword(password, user?.salt);
++   return user?.password === hashedPassword
 +     ? ({
 +         _id: user._id,
 +         email: user.email,
@@ -240,17 +225,19 @@ npm start
 
 ```
 
+> Run in Javascript Debug Terminal
+
 ```md
 POST http://localhost:3000/api/security/login
 
 ### Body
+
 {
-	"email": "admin@email.com",
-	"password": "test"
+"email": "admin@email.com",
+"password": "test"
 }
 
 GET http://localhost:3000/api/books
-
 ```
 
 ## Appendix
@@ -303,7 +290,6 @@ export const hashPassword = async (
 
   return promise;
 };
-
 ```
 
 # ¿Con ganas de aprender Backend?
