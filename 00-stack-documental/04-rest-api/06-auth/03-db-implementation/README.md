@@ -242,7 +242,7 @@ GET http://localhost:3000/api/books
 
 ## Appendix
 
-We could try with a modern key derivation function like [Scrypt](https://nodejs.org/dist/latest-v14.x/docs/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback):
+We could try with a modern key derivation function like [Scrypt](https://nodejs.org/dist/latest/docs/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback):
 
 _./src/common/helpers/hash-password.helpers.ts_
 
