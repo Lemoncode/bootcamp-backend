@@ -74,10 +74,8 @@ Run specs:
 npm run test:watch security.middlewares.spec
 
 ```
-
-Why it cannot find a module `'core/constants'`? Because we need to configure alias in specs too:
-
-_./config/test/jest.js_
+> If we have some conflicts with import alias
+> _./config/test/jest.js_
 
 ```diff
 module.exports = {
@@ -88,12 +86,11 @@ module.exports = {
 };
 
 ```
-
 > [moduleDirectories default value](https://jestjs.io/docs/configuration#moduledirectories-arraystring)
 >
 > [More info](https://www.basefactor.com/configuring-aliases-in-webpack-vs-code-typescript-jest)
 
- Why is it still failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
+ Why is it failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
 
 _./src/pods/security/security.middlewares.spec.ts_
 
@@ -298,8 +295,8 @@ _./src/pods/security/security.middlewares.ts_
 ```diff
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 - import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
 + import { verifyJWT } from 'common/helpers';
+import { envConstants } from 'core/constants';
 import { UserSession, Role } from 'common-app/models';
 
 - const verify = (token: string, secret: string): Promise<UserSession> =>

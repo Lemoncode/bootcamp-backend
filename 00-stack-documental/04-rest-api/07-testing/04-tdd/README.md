@@ -40,7 +40,6 @@ describe('pods/book/book.mappers spec', () => {
   });
 });
 
-
 ```
 
 Should return empty array when it feeds undefined:
@@ -222,7 +221,7 @@ export const mapBookListFromApiToModel = (
   bookList: apiModel.Book[]
 ): model.Book[] =>
 - bookList !== undefined ? bookList.map(mapBookFromApiToModel) : [];
-+ bookList !== undefined && bookList !== undefined
++ bookList !== undefined && bookList !== null
     ? bookList.map(mapBookFromApiToModel)
     : [];
 
@@ -242,6 +241,68 @@ export const mapBookListFromApiToModel = (
 + Array.isArray(bookList)
     ? bookList.map(mapBookFromApiToModel)
     : [];
+
+```
+
+- Another tool provided by jest is the [each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) method.
+
+> We could have some issues typing arrays.
+> That's why the `any` casting
+
+### ./src/mapper.spec.ts
+
+```diff
+...
+
+describe('mapper specs', () => {
+  describe('mapBookListFromApiToModel', () => {
++   it.each<apiModel.Book[]>([undefined, null, []])(
++     'should return empty array when it feeds bookList equals %p',
++     (bookList: any) => {
++       // Arrange
+
++       // Act
++       const result: model.Book[] = mapBookListFromApiToModel(bookList);
+
++       // Assert
++       expect(result).toEqual([]);
++     }
++   );
+
+-   it('should return empty array when it feeds bookList equals undefined', () => {
+-     // Arrange
+-     const bookList: apiModel.Book[] = undefined;
+
+-     // Act
+-     const result: model.Book[] = mapBookListFromApiToModel(bookList);
+
+-     // Assert
+-     expect(result).toEqual([]);
+-   });
+
+-   it('should return empty array when it feeds bookList equals null', () => {
+-     // Arrange
+-     const bookList: apiModel.Book[] = null;
+
+-     // Act
+-     const result: model.Book[] = mapBookListFromApiToModel(bookList);
+
+-     // Assert
+-     expect(result).toEqual([]);
+-   });
+
+-   it('should return empty array when it feeds bookList equals empty array', () => {
+-     // Arrange
+-     const bookList: apiModel.Book[] = [];
+
+-     // Act
+-     const result: model.Book[] = mapBookListFromApiToModel(bookList);
+
+-     // Assert
+-     expect(result).toEqual([]);
+-   });
+
+...
 
 ```
 

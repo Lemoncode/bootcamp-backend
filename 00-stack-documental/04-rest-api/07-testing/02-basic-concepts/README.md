@@ -300,7 +300,7 @@ _./config/test/jest.js_
 ```diff
 module.exports = {
   rootDir: '../../',
-  preset: 'ts-jest',
+  verbose: true,
 + restoreMocks: true,
 };
 

@@ -19,12 +19,13 @@ We are going to install the main library which we base all our unit tests, [Jest
 
 - [jest](https://github.com/facebook/jest): JavaScript Testing library with runner, assertion, mocks, etc.
 - [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/df38f202a0185eadfb6012e47dd91f8975eb6151/types/jest): Typings for jest.
-- [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
 
 ```bash
-npm install jest @types/jest ts-jest --save-dev
+npm install jest @types/jest --save-dev
 ```
 
+> If we are using `@babel/preset-typescript` it is not necessary install [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
+> [Official docs](https://jestjs.io/docs/getting-started)
 > NOTE: [Since jest v26.x it drops support for Node 8](https://github.com/facebook/jest/releases/tag/v26.0.0)
 
 # Config
@@ -58,22 +59,6 @@ _./package.json_
   ...
 }
 ```
-
-- [ts-jest basic configuration](https://kulshekhar.github.io/ts-jest/docs/getting-started/presets#basic-usage):
-
-_./package.json_
-
-```diff
-{
-    ...
-- }
-+ },
-+ "jest": {
-+   "preset": "ts-jest"
-+ }
-```
-
-> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
 
 # Dummy spec
 
@@ -128,48 +113,27 @@ describe('dummy specs', () => {
 
 # External config
 
-One step over, we could be moved jest config outside `package.json` to improve maintainability.
+We could create a jest config outside `package.json` to improve maintainability.
 
-Move config to `config/test/jest.js` file:
+> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
 
-_./package.json_
-
-```diff
-...
-- },
-+ }
-- "jest": {
--   "preset": "ts-jest"
-- }
-}
-
-```
+- Create config in `config/test/jest.js` file:
 
 _./config/test/jest.js_
 
 ```js
 module.exports = {
-  preset: 'ts-jest',
+  rootDir: '../../',
+  verbose: true,
 };
 
 ```
+> Check `verbose: false` to see differences
+> We will add some configuration in next examples when needed
 
-We only need a detail to keep working with this Jest config, we need to use `rootDir`:
+- And use that file:
 
-_./config/test/jest.js_
-
-```diff
-module.exports = {
-+ rootDir: '../../',
-  preset: 'ts-jest'
-};
-
-
-```
-
-And use that file:
-
-_./package.json_
+### ./package.json
 
 ```diff
 {
@@ -177,7 +141,7 @@ _./package.json_
   "scripts": {
     ...
 -   "test": "jest --verbose",
-+   "test": "jest -c ./config/test/jest.js --verbose",
++   "test": "jest -c ./config/test/jest.js",
     "test:watch": "npm run test -- --watchAll -i"
   },
   ...

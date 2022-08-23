@@ -16,10 +16,10 @@ We will configure [Github actions](https://github.com/features/actions) to run a
 
 ```bash
 git init
-git remote add origin https://github.com/...
+git remote add origin git@...git
 git add .
 git commit -m "add project with tests"
-git push -u origin master
+git push -u origin main
 ```
 
 Create new branch on repository `feature/add-ci-file` and add ci config [Github workflow](https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow):
@@ -36,9 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install
-        run: npm install
+        run: npm ci
       - name: Tests
         run: npm test
 
@@ -49,7 +49,7 @@ Commit, push:
 ```bash
 git add .
 git commit -m "add ci file"
-git push
+git push -u origin feature/add-ci-file
 ```
 
 Create a pull request.

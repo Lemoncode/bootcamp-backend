@@ -54,7 +54,6 @@ module.exports = {
   rootDir: '../../',
   preset: 'ts-jest',
   restoreMocks: true,
-  moduleDirectories: ['<rootDir>/src', 'node_modules'],
 + setupFiles: ['<rootDir>/config/test/env.config.js'],
 };
 
@@ -148,24 +147,17 @@ Update jest config:
 _./config/test/jest.js_
 
 ```diff
-+ const { defaults: tsPreset } = require('ts-jest/presets');
-
 module.exports = {
   rootDir: '../../',
-- preset: 'ts-jest',
-+ preset: '@shelf/jest-mongodb',
-+ transform: {
-+   ...tsPreset.transform,
-+ },
+  verbose: true,
   restoreMocks: true,
-  moduleDirectories: ['<rootDir>/src', 'node_modules'],
   setupFiles: ['<rootDir>/config/test/env.config.js'],
++ preset: '@shelf/jest-mongodb',
 + watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
 };
 
 ```
 
-> [Config with multiple presets](https://kulshekhar.github.io/ts-jest/docs/getting-started/presets/#advanced)
 > [Ignore globalConfig](https://github.com/shelfio/jest-mongodb#6-jest-watch-mode-gotcha)
 
 Ignore `globalConfig`:
@@ -203,12 +195,15 @@ Update spec to init MongoDB connection:
 _./src/pods/book/book.rest-api.spec.ts_
 
 ```diff
++ import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-+ import { disconnect } from 'mongoose';
-- import { createRestApiServer } from 'core/servers';
-+ import { createRestApiServer, connectToDBServer } from 'core/servers';
+import {
+  createRestApiServer,
++ connectToDBServer,
++ disconnectFromDBServer,
+} from 'core/servers';
 + import { envConstants } from 'core/constants';
-+ import { bookContext } from 'dals/book/book.context';
++ import { getBookContext } from 'dals/book/book.context';
 import { booksApi } from './book.rest-api';
 
 const app = createRestApiServer();
@@ -219,7 +214,8 @@ describe('pods/book/book.rest-api specs', () => {
 +   await connectToDBServer(envConstants.MONGODB_URI);
 + });
 + beforeEach(async () => {
-+   await bookContext.insertMany({
++   await getBookContext().insertOne({
++     _id: new ObjectId(),
 +     title: 'book-1',
 +     author: 'author-1',
 +     releaseDate: new Date('2021-07-28'),
@@ -227,10 +223,10 @@ describe('pods/book/book.rest-api specs', () => {
 + });
 
 + afterEach(async () => {
-+   await bookContext.deleteMany();
++   await getBookContext().deleteMany({});
 + });
 + afterAll(async () => {
-+   await disconnect();
++   await disconnectFromDBServer();
 + });
 
   describe('get book list', () => {
@@ -256,11 +252,15 @@ If we want insert new book:
 _./src/pods/book/book.rest-api.spec.ts_
 
 ```diff
+import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-import { disconnect } from 'mongoose';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
+import {
+  createRestApiServer,
+  connectToDBServer,
+  disconnectFromDBServer,
+} from 'core/servers';
 import { envConstants } from 'core/constants';
-import { bookContext } from 'dals/book/book.context';
+import { getBookContext } from 'dals/book/book.context';
 + import { Book } from './book.api-model';
 import { booksApi } from './book.rest-api';
 
@@ -297,8 +297,6 @@ app.use(booksApi);
 +     expect(response.body.releaseDate).toEqual(newBook.releaseDate);
 +   });
 ```
-
-> Timeouts when run again due to `disconnect` after all
 
 # ¿Con ganas de aprender Backend?
 
