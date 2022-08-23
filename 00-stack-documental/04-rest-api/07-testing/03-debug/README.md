@@ -20,6 +20,8 @@ Jest is running over node, so we could use VS Code for debugging jest specs:
 
 Since `jest` is a nodejs process, we could use the integraded `JavaScript Debug Terminal` provided by VS Code.
 
+> More info [here](https://www.lemoncode.tv/curso/vs-code-js-debugging/leccion/javascript-debug-terminal)
+
 We could run all specs as `single run` in this terminal and adding some breakpoints:
 
 ```bash
