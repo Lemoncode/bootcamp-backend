@@ -1,6 +1,5 @@
 module.exports = {
   rootDir: '../../',
-  preset: 'ts-jest',
+  verbose: true,
   restoreMocks: true,
-  moduleDirectories: ['<rootDir>/src', 'node_modules'],
 };
