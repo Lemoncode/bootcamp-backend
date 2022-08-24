@@ -96,7 +96,7 @@ npm run build
 
 A nice improvement is ignore not necessary files for production:
 
-_./back/.bablerc_
+_./back/.babelrc_
 
 ```diff
 ...
