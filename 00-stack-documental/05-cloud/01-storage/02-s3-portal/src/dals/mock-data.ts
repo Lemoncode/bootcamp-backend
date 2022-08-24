@@ -15,7 +15,7 @@ export const db: DB = {
       password: 'test',
       salt: '',
       role: 'admin',
-      avatar: '/admin-avatar.png',
+      avatar: 'https://<bucket-name>.s3.<region>.amazonaws.com/admin-avatar-in-s3.png',
     },
     {
       _id: new ObjectId(),

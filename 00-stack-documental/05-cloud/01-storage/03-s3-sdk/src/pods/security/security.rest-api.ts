@@ -15,7 +15,6 @@ securityApi
         email,
         password
       );
-
       if (user) {
         const userSession: UserSession = {
           id: user._id.toHexString(),
