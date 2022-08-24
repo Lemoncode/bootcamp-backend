@@ -1,8 +1,12 @@
+import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-import { disconnect } from 'mongoose';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
+import {
+  createRestApiServer,
+  connectToDBServer,
+  disconnectFromDBServer,
+} from 'core/servers';
 import { envConstants } from 'core/constants';
-import { bookContext } from 'dals/book/book.context';
+import { getBookContext } from 'dals/book/book.context';
 import { Book } from './book.api-model';
 import { booksApi } from './book.rest-api';
 
@@ -21,7 +25,8 @@ describe('pods/book/book.rest-api specs', () => {
     await connectToDBServer(envConstants.MONGODB_URI);
   });
   beforeEach(async () => {
-    await bookContext.insertMany({
+    await getBookContext().insertOne({
+      _id: new ObjectId(),
       title: 'book-1',
       author: 'author-1',
       releaseDate: new Date('2021-07-28'),
@@ -29,10 +34,10 @@ describe('pods/book/book.rest-api specs', () => {
   });
 
   afterEach(async () => {
-    await bookContext.deleteMany();
+    await getBookContext().deleteMany({});
   });
   afterAll(async () => {
-    await disconnect();
+    await disconnectFromDBServer();
   });
 
   describe('get book list', () => {
