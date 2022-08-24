@@ -7,5 +7,5 @@ export interface User {
   password: string;
   salt: string;
   role: Role;
-  avatar: string;
+  avatar: string
 }

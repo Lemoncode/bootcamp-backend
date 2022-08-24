@@ -42,6 +42,8 @@ Open browser in `http://localhost:8080`
 
 Since we have users's images in `public` folder: `admin-avatar.png` and `user-avatar.png`, we will refactor `back` project like:
 
+> Check: http://localhost:3000/admin-avatar.png or http://localhost:3000/user-avatar.png
+
 _.back/src/dals/user/user.model.ts_
 
 ```diff
