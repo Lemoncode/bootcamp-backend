@@ -51,6 +51,20 @@ npm run build:prod
 
 Copy `front/dist` files into `back/public`.
 
+Update `gitignore`
+
+_back/.gitignore_
+
+```diff
+node_modules
+.env
+mongo-data
+globalConfig.json
++ public
++ dist
+
+```
+
 Run only `back` app:
 
 _back terminal_
