@@ -1,13 +1,8 @@
-const { defaults: tsPreset } = require('ts-jest/presets');
-
 module.exports = {
   rootDir: '../../',
-  preset: '@shelf/jest-mongodb',
-  transform: {
-    ...tsPreset.transform,
-  },
+  verbose: true,
   restoreMocks: true,
-  moduleDirectories: ['<rootDir>/src', 'node_modules'],
   setupFiles: ['<rootDir>/config/test/env.config.js'],
+  preset: '@shelf/jest-mongodb',
   watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
 };
