@@ -42,7 +42,7 @@ git init
 git remote add origin https://github.com/...
 git add .
 git commit -m "initial commit"
-git push -u origin master
+git push -u origin main
 
 ```
 
@@ -81,7 +81,7 @@ name: Continuos Deployment Workflow
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Login heroku app Docker registry
         run: heroku container:login
       - name: Build docker image
@@ -134,7 +134,7 @@ git push
 ```
 
 ```bash
-heroku logs -a <name>
+heroku logs -a <name> --tail
 ```
 
 The app deployed is working! But it's in `API MOCK mode`, let's configure the env variables that we could keep on Dockerfile and the other ones in Heroku:

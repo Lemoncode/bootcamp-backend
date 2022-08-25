@@ -6,7 +6,6 @@ import {
   mapBookFromModelToApi,
   mapBookFromApiToModel,
 } from './book.mappers';
-import { paginateBookList } from './book.helpers';
 
 export const booksApi = Router();
 
@@ -15,9 +14,8 @@ booksApi
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      res.send(mapBookListFromModelToApi(paginatedBookList));
+      const bookList = await bookRepository.getBookList(page, pageSize);
+      res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
@@ -33,8 +31,8 @@ booksApi
   })
   .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
-      const modelBook = mapBookFromApiToModel(req.body);
-      const newBook = await bookRepository.saveBook(modelBook);
+      const book = mapBookFromApiToModel(req.body);
+      const newBook = await bookRepository.saveBook(book);
       res.status(201).send(mapBookFromModelToApi(newBook));
     } catch (error) {
       next(error);
@@ -43,9 +41,13 @@ booksApi
   .put('/:id', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
       const { id } = req.params;
-      const modelBook = mapBookFromApiToModel({ ...req.body, id });
-      await bookRepository.saveBook(modelBook);
-      res.sendStatus(204);
+      if (await bookRepository.getBook(id)) {
+        const book = mapBookFromApiToModel({ ...req.body, id });
+        await bookRepository.saveBook(book);
+        res.sendStatus(204);
+      } else {
+        res.sendStatus(404);
+      }
     } catch (error) {
       next(error);
     }

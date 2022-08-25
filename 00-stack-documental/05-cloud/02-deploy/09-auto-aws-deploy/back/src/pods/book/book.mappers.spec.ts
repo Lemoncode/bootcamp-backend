@@ -5,38 +5,18 @@ import { mapBookListFromApiToModel } from './book.mappers';
 
 describe('pods/book/book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
-    it('should return empty array when it feeds bookList equals undefined', () => {
-      // Arrange
-      const bookList: apiModel.Book[] = undefined;
+    it.each<apiModel.Book[]>([undefined, null, []])(
+      'should return empty array when it feeds bookList equals %p',
+      (bookList: any) => {
+        // Arrange
 
-      // Act
-      const result: model.Book[] = mapBookListFromApiToModel(bookList);
+        // Act
+        const result: model.Book[] = mapBookListFromApiToModel(bookList);
 
-      // Assert
-      expect(result).toEqual([]);
-    });
-
-    it('should return empty array when it feeds bookList equals null', () => {
-      // Arrange
-      const bookList: apiModel.Book[] = null;
-
-      // Act
-      const result: model.Book[] = mapBookListFromApiToModel(bookList);
-
-      // Assert
-      expect(result).toEqual([]);
-    });
-
-    it('should return empty array when it feeds bookList equals empty array', () => {
-      // Arrange
-      const bookList: apiModel.Book[] = [];
-
-      // Act
-      const result: model.Book[] = mapBookListFromApiToModel(bookList);
-
-      // Assert
-      expect(result).toEqual([]);
-    });
+        // Assert
+        expect(result).toEqual([]);
+      }
+    );
 
     it('should return one mapped item in array when it feeds bookList with one item', () => {
       // Arrange

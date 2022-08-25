@@ -23,6 +23,4 @@ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
 export const mapBookListFromApiToModel = (
   bookList: apiModel.Book[]
 ): model.Book[] =>
-  Array.isArray(bookList)
-    ? bookList.map(mapBookFromApiToModel)
-    : [];
+  Array.isArray(bookList) ? bookList.map(mapBookFromApiToModel) : [];

@@ -1,6 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
-import { envConstants } from 'core/constants';
 import { verifyJWT } from 'common/helpers';
+import { envConstants } from 'core/constants';
 import { UserSession, Role } from 'common-app/models';
 
 export const authenticationMiddleware = async (
@@ -10,7 +10,10 @@ export const authenticationMiddleware = async (
 ) => {
   try {
     const [, token] = req.cookies.authorization?.split(' ') || [];
-    const userSession = await verifyJWT<UserSession>(token, envConstants.AUTH_SECRET);
+    const userSession = await verifyJWT<UserSession>(
+      token,
+      envConstants.AUTH_SECRET
+    );
     req.userSession = userSession;
     next();
   } catch (error) {
