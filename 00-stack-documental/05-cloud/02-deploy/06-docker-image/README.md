@@ -27,7 +27,7 @@ We can create our custom images. In this case, we will use [the node image](http
 _./Dockerfile_
 
 ```Docker
-FROM node:14-alpine
+FROM node:16-alpine
 ```
 
 > You can use [Docker VSCode extension](https://code.visualstudio.com/docs/containers/overview)
@@ -37,7 +37,7 @@ Let's create the path where we are going to copy our app:
 _./Dockerfile_
 
 ```diff
-FROM node:14-alpine
+FROM node:16-alpine
 + RUN mkdir -p /usr/app
 + WORKDIR /usr/app
 
@@ -77,7 +77,7 @@ Copy all files:
 _./Dockerfile_
 
 ```diff
-FROM node:14-alpine
+FROM node:16-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -90,7 +90,7 @@ Execute install and build:
 _./Dockerfile_
 
 ```diff
-FROM node:14-alpine
+FROM node:16-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -124,7 +124,7 @@ We could run this server after build it:
 _./Dockerfile_
 
 ```diff
-FROM node:14-alpine
+FROM node:16-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -158,6 +158,7 @@ docker images
 Run new container:
 
 ```bash
+docker ps -a
 docker container rm book-store-app
 docker run --name book-store-app book-store-app:1
 docker exec -it book-store-app sh
@@ -205,13 +206,13 @@ If we check `docker images` we can see dangling images, due to use same tags for
 docker image prune
 ```
 
-On the other hand, we have an image with `322MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
+On the other hand, we have an image with `271MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
 
 _./Dockerfile_
 
 ```diff
-- FROM node:14-alpine
-+ FROM node:14-alpine AS base
+- FROM node:16-alpine
++ FROM node:16-alpine AS base
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -255,6 +256,8 @@ docker build -t book-store-app:2 .
 docker images
 
 docker run --name book-store-app --rm -d -p 3001:3000 book-store-app:2
+
+docker exec -it book-store-app sh
 
 ```
 
