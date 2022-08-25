@@ -92,17 +92,17 @@ _./Dockerfile_
 Build and upload again:
 
 ```bash
-docker build -t <user-name>/book-store-app:3 .
+docker build -t <user-name>/<app-name>:3 .
 docker images
-docker push <user-name>/book-store-app:3
+docker push <user-name>/<app-name>:3
 ```
 
 We should update the `latest` version to tag equals `3`:
 
 ```bash
-docker tag <user-name>/book-store-app:3 <user-name>/book-store-app
+docker tag <user-name>/<app-name>:3 <user-name>/<app-name>
 docker images
-docker push <user-name>/book-store-app
+docker push <user-name>/<app-name>
 ```
 
 > `latest` version doesn't upload automatically
@@ -110,7 +110,7 @@ docker push <user-name>/book-store-app
 We could remove all local images:
 
 ```bash
-docker image rm book-store-app:1 book-store-app:2 <user-name>/book-store-app:2 <user-name>/book-store-app:3 <user-name>/book-store-app:latest
+docker image rm book-store-app:1 book-store-app:2 <user-name>/<app-name>:2 <user-name>/<app-name>:3 <user-name>/<app-name>:latest
 
 docker images
 ```
@@ -118,7 +118,7 @@ docker images
 And create a container from Dockerhub's image:
 
 ```bash
-docker run --name book-store-app --rm -d -p 3001:3001 <user-name>/book-store-app:3
+docker run --name book-store-app --rm -d -p 3001:3001 <user-name>/<app-name>:3
 ```
 
 # ¿Con ganas de aprender Backend?
