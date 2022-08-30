@@ -1,0 +1,166 @@
+# Excepciones
+
+El control de excepciones es muy necesario para poder manejar errores que se producen en tiempos de ejecución de un programa.
+En .Net usamos las palabras clave `try` `catch` y `finally` para ello.
+
+- `try`: encapsula el código que puede causar excepciones.
+- `catch`: encapsula el manejo de la excepción
+- `finally`: código que se ejecuta haya o no excepciones. No se usa siempre, un ejemplo de uso es para liberar objetos de memoria, o cerrar alguna cadena de conexión a la base de datos.
+
+Las excepciones pueden ser generadas por el CLR (Common Language Runtime), .NET, librerías de terceros o el propio código de la aplicación que estemos desarrollando.
+
+Veamos un ejemplo de excepción no controlada:
+
+```csharp
+Console.WriteLine("Inserta un número: ");
+string valor = Console.ReadLine();
+
+if (valor is not null)
+{
+    var numero = int.Parse(valor);
+    var doble = 2 * numero;
+    Console.WriteLine($"El doble de {numero} es {doble}");
+    Console.ReadLine();
+}
+```
+
+En este caso al ejecutar el código nos devuelve una excepción del tipo `System.FormatException`
+
+Vamos a capturar y manejar la excepción
+
+```diff
++   try
++   {
+        Console.WriteLine("Inserta un número: ");
+        string valor = Console.ReadLine();
+        if (valor is not null)
+        {
+            var numero = int.Parse(valor);
+            var doble = 2 * numero;
+            Console.WriteLine($"El doble de {numero} es {doble}");
+-           Console.ReadLine();
+        }
++   }
++   catch (Exception ex)
++   {
++       Console.WriteLine("Por favor, ingrese un número");
++   }
++   Console.ReadLine();
+```
+
+En este ejemplo como la línea `var numero = int.Parse(valor)` da una excepción, la excepción es capturada y el código sigue ejecutandose por el `catch`
+
+## Tipos de Excepciones
+En C# todas la excepciones derivan de `System.Exception`,
+Con el bloque `catch` podemos capturar este `System.Exception` o podemos capturar excepciones de forma más específica.
+Algunas excepciones más comunes:
+- ArgumentException: se lanza cuando uno de los argumentos que se pasan a un método no es válido. 
+Ejemplo: 
+```csharp
+ internal class Program
+    {
+        private static int DividirPorDos(int numero)
+        {
+            // Si el número no es par, entonces 
+            // se lanzará la excepción `ArgumentException`:
+            if ((numero % 2) == 1)
+            {
+                throw new ArgumentException("El número debe ser par.", "numero");
+            }
+
+            return numero / 2;
+        }
+        static void Main(string[] args)
+        {
+            Console.WriteLine("División de 100 entre 2 = {0}", DividirPorDos(100));
+
+            try
+            {
+                // Aquí la excepción ArgumentException es lanzada debido a que el 
+                // dividendo es un número impar:
+                Console.WriteLine("13 dividido por 2 = {0}", DividirPorDos(13));
+            }
+            catch (ArgumentException ae)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+            }
+        }
+    }
+```
+
+De esta excepción derivan otras dos:
+
+- ArgumentNullException: se lanza cuando una referencia `null` es pasada a un método que no acepta este valor:
+
+    ```csharp
+     internal class Program
+    {
+        private static void ImprimirMensaje(string mensaje)
+        {
+            if (mensaje == null)
+            {
+                throw new ArgumentNullException("mensaje","El mensaje no puede ser nulo");
+            }
+
+            Console.WriteLine(mensaje);
+        }
+        static void Main(string[] args)
+        {
+
+            try
+            {
+                string mensaje = "Hola mundo";
+                ImprimirMensaje(mensaje);
+
+                string mensaje2 = null;
+                ImprimirMensaje(mensaje2);
+            }
+            catch (ArgumentNullException ae)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+            }
+        }
+    }
+    ```
+- ArgumentOutOfRangeException: se lanza cuando el valor de un argumento está fuera de los límites inferior y superior:
+```csharp
+internal class Program
+    {
+        public class Votante
+        {
+            private string _nombre;
+            private int _edad;
+
+            public Votante(string nombre, int edad)
+            {
+                _nombre = nombre;
+
+                if(edad <= 18)
+                {
+                    throw new ArgumentOutOfRangeException("edad", "El votante no puede ser menor de edad");
+                }
+                else
+                {
+                    _edad = edad;
+                }
+            }
+        }
+     
+        static void Main(string[] args)
+        {
+
+            try
+            {
+                var votante1 = new Votante("Maria", 25);
+                Console.WriteLine($"Votante 1: Maria");
+                var votante2 = new Votante("Antonio", 7);
+                Console.WriteLine($"Votante 2: Antonio");
+            }
+            catch (ArgumentOutOfRangeException ae)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+            }
+        }
+    }
+```
+
