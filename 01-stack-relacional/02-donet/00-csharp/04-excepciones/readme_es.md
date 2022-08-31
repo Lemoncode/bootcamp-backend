@@ -51,17 +51,20 @@ Vamos a capturar y manejar la excepción
 En este ejemplo como la línea `var numero = int.Parse(valor)` da una excepción, la excepción es capturada y el código sigue ejecutandose por el `catch`
 
 ## Tipos de Excepciones
+
 En C# todas la excepciones derivan de `System.Exception`,
 Con el bloque `catch` podemos capturar este `System.Exception` o podemos capturar excepciones de forma más específica.
 Algunas excepciones más comunes:
-- ArgumentException: se lanza cuando uno de los argumentos que se pasan a un método no es válido. 
-Ejemplo: 
+
+- ArgumentException: se lanza cuando uno de los argumentos que se pasan a un método no es válido.
+  Ejemplo:
+
 ```csharp
  internal class Program
     {
         private static int DividirPorDos(int numero)
         {
-            // Si el número no es par, entonces 
+            // Si el número no es par, entonces
             // se lanzará la excepción `ArgumentException`:
             if ((numero % 2) == 1)
             {
@@ -76,7 +79,7 @@ Ejemplo:
 
             try
             {
-                // Aquí la excepción ArgumentException es lanzada debido a que el 
+                // Aquí la excepción ArgumentException es lanzada debido a que el
                 // dividendo es un número impar:
                 Console.WriteLine("13 dividido por 2 = {0}", DividirPorDos(13));
             }
@@ -92,37 +95,39 @@ De esta excepción derivan otras dos:
 
 - ArgumentNullException: se lanza cuando una referencia `null` es pasada a un método que no acepta este valor:
 
-    ```csharp
-     internal class Program
-    {
-        private static void ImprimirMensaje(string mensaje)
-        {
-            if (mensaje == null)
-            {
-                throw new ArgumentNullException("mensaje","El mensaje no puede ser nulo");
-            }
+  ```csharp
+   internal class Program
+  {
+      private static void ImprimirMensaje(string mensaje)
+      {
+          if (mensaje == null)
+          {
+              throw new ArgumentNullException("mensaje","El mensaje no puede ser nulo");
+          }
 
-            Console.WriteLine(mensaje);
-        }
-        static void Main(string[] args)
-        {
+          Console.WriteLine(mensaje);
+      }
+      static void Main(string[] args)
+      {
 
-            try
-            {
-                string mensaje = "Hola mundo";
-                ImprimirMensaje(mensaje);
+          try
+          {
+              string mensaje = "Hola mundo";
+              ImprimirMensaje(mensaje);
 
-                string mensaje2 = null;
-                ImprimirMensaje(mensaje2);
-            }
-            catch (ArgumentNullException ae)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
-            }
-        }
-    }
-    ```
+              string mensaje2 = null;
+              ImprimirMensaje(mensaje2);
+          }
+          catch (ArgumentNullException ae)
+          {
+              Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+          }
+      }
+  }
+  ```
+
 - ArgumentOutOfRangeException: se lanza cuando el valor de un argumento está fuera de los límites inferior y superior:
+
 ```csharp
 internal class Program
     {
@@ -145,7 +150,7 @@ internal class Program
                 }
             }
         }
-     
+
         static void Main(string[] args)
         {
 
@@ -164,3 +169,100 @@ internal class Program
     }
 ```
 
+- DivideByZeroException: se lanza cuando intentamos dividir por cero
+
+```csharp
+internal class Program
+    {
+        static void Main(string[] args)
+        {
+
+            try
+            {
+                Console.WriteLine("Añade el primer número: ");
+                var numero1 = int.Parse(Console.ReadLine());
+                Console.WriteLine("Añade el segundo número: ");
+                var numero2 = int.Parse(Console.ReadLine());
+
+                var resultado = numero1 / numero2;
+            }
+            catch(FormatException ce)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ce.Message);
+
+            }
+            catch (DivideByZeroException ae)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+            }
+        }
+    }
+```
+
+- NullReferenceException: se lanza cuando se intenta acceder o manipular el estado de una variable que tiene asignada la referencia null:
+
+```csharp
+  internal class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                ArrayList array = null;
+
+                array.Add("hola");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+
+            }
+        }
+    }
+```
+
+- OverflowException: se lanza cuando operaciones aritméticas o de conversiones sobrepasan los límites de memoria de tipos de datos:
+
+```csharp
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                checked
+                {
+                    int suma = Int32.MaxValue + Int32.Parse("1");
+                    Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
+                }
+            }
+            catch(OverflowException ex)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+
+            }
+        }
+    }
+```
+
+Para que la operación aritmética o de conversión produzca una `OverflowException` la operación tiene que producirse en un contexto comprobado: `checked`. En caso contrario el resultado se trunca descartando los bits mayores que no caben el tipo de destino.
+
+```csharp
+ internal class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+            int suma = Int32.MaxValue + Int32.Parse("1");
+            Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
+
+            }
+            catch(OverflowException ex)
+            {
+                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+
+            }
+        }
+    }
+```
