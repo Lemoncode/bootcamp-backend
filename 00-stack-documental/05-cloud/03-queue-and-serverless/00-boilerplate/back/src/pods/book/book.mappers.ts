@@ -7,6 +7,7 @@ export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
   title: book.title,
   releaseDate: book.releaseDate?.toISOString(),
   author: book.author,
+  price: book.price,
 });
 
 export const mapBookListFromModelToApi = (
@@ -18,6 +19,7 @@ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
   title: book.title,
   releaseDate: new Date(book.releaseDate),
   author: book.author,
+  price: book.price,
 });
 
 export const mapBookListFromApiToModel = (

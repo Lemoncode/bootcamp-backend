@@ -26,6 +26,7 @@ describe('pods/book/book.mappers spec', () => {
           title: 'test-title',
           releaseDate: '2021-07-28T12:30:00',
           author: 'test-author',
+          price: 1,
         },
       ];
 
@@ -39,6 +40,7 @@ describe('pods/book/book.mappers spec', () => {
           title: 'test-title',
           releaseDate: new Date('2021-07-28T12:30:00'),
           author: 'test-author',
+          price: 1,
         },
       ]);
     });

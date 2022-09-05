@@ -5,4 +5,5 @@ export interface Book {
   title: string;
   releaseDate: Date;
   author: string;
+  price: number;
 }
