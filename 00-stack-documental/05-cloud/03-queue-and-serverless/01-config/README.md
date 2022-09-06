@@ -1,6 +1,6 @@
-# 01
+# 01 Config
 
-In this example we are going to config .
+In this example we are going to config a message broker server.
 
 We will start from `00-boilerplate`.
 

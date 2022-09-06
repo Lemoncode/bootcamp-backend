@@ -30,6 +30,7 @@ describe('pods/book/book.rest-api specs', () => {
       title: 'book-1',
       author: 'author-1',
       releaseDate: new Date('2021-07-28'),
+      price: 1,
     });
   });
 
@@ -61,6 +62,7 @@ describe('pods/book/book.rest-api specs', () => {
         title: 'book-2',
         author: 'author-2',
         releaseDate: '2021-07-29T00:00:00.000Z',
+        price: 1,
       };
 
       // Act
