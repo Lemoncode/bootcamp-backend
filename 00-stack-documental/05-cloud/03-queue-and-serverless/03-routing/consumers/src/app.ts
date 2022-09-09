@@ -1,24 +1,22 @@
-import { AMQPChannel, QueueParams } from '@cloudamqp/amqp-client';
+import { AMQPChannel } from '@cloudamqp/amqp-client';
 import { envConstants } from 'core/constants';
 import { connectToMessageBrokerServer, messageBroker } from 'core/servers';
+
+const exchangeName = 'price-archive';
 
 const run = async () => {
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
   const channel = await messageBroker.channel(2);
   channel.prefetch(1);
-  const queueName = 'price-archive-queue';
-  const queueParams: QueueParams = { durable: true };
-  await priceArchiveConsumerOne(channel, queueName, queueParams);
-  await priceArchiveConsumerTwo(channel, queueName, queueParams);
+  channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+  await priceArchiveConsumerOne(channel);
+  await priceArchiveConsumerTwo(channel);
 };
 
-const priceArchiveConsumerOne = async (
-  channel: AMQPChannel,
-  queueName: string,
-  queueParams: QueueParams
-) => {
+const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue(queueName, queueParams);
+    const queue = await channel.queue('low-prices-queue', { durable: true });
+    await queue.bind(exchangeName, 'low-prices');
     await queue.subscribe(
       {
         noAck: false,
@@ -29,7 +27,7 @@ const priceArchiveConsumerOne = async (
         console.log(
           `Saving book with title "${book.title}" and price ${book.price}`
         );
-        // message.ack();
+        message.ack();
       }
     );
     console.log('Price archive consumer 1 configured');
@@ -38,13 +36,10 @@ const priceArchiveConsumerOne = async (
   }
 };
 
-const priceArchiveConsumerTwo = async (
-  channel: AMQPChannel,
-  queueName: string,
-  queueParams: QueueParams
-) => {
+const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue(queueName, queueParams);
+    const queue = await channel.queue('high-prices-queue', { durable: true });
+    await queue.bind(exchangeName, 'high-prices');
     await queue.subscribe(
       {
         noAck: false,

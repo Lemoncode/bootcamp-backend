@@ -11,10 +11,12 @@ import {
 export const booksApi = Router();
 
 const sendBookToArchive = async (book: Book) => {
-  const queueName = 'price-archive-queue';
+  const exchangeName = 'price-archive';
+  const routingKey = book.price <= 100 ? 'low-prices' : 'high-prices';
   const channel = await messageBroker.channel(1);
-  const queue = await channel.queue(queueName, { durable: true });
-  await queue.publish(JSON.stringify(book), { deliveryMode: 2 });
+  await channel.basicPublish(exchangeName, routingKey, JSON.stringify(book), {
+    deliveryMode: 2,
+  });
 };
 
 booksApi
