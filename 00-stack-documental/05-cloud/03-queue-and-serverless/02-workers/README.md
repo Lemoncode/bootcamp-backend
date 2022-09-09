@@ -103,7 +103,8 @@ export const booksApi = Router();
   })
 ```
 
-<!-- ***  TODO ** -->  OJO: mirar diferencia entre durable: true y persistent: true
+> queue `durable`: The server keeps the queue with its own config available after some restart or issue.
+> `persistent` message: If a queue is durable, this message persist after some restart or issue.
 
 Run insert new book:
  
@@ -139,7 +140,7 @@ import { connectToMessageBrokerServer, messageBroker } from 'core/servers';
 
 - const helloConsumer = async () => {
 + const priceArchiveConsumerOne = async (
-+   channel: AMQPChannel,,
++   channel: AMQPChannel,
 +   queueName: string,
 +   queueParams: QueueParams
 + ) => {
@@ -238,7 +239,7 @@ const priceArchiveConsumerOne = async (
 ...
 ```
 
-The first worker is getting more messages without finish the first one, let's solve this using `prefetch`:
+The first worker is getting more messages without resolve the first one, let's solve this using `prefetch`:
 
 _./consumers/src/app.ts_
 
@@ -257,7 +258,36 @@ const run = async () => {
 ...
 ```
 
-<!-- ******* TODO ****** --> Montar volumen para persistir cola
+_./docker-compose.yml_
+
+```diff
+version: '3.8'
+services:
+  book-store-db:
+    container_name: book-store-db
+    image: mongo:5.0.9
+    ports:
+      - '27017:27017'
+    volumes:
+      - type: bind
+        source: ./mongo-data
+        target: /data/db
+  message-broker:
+    container_name: message-broker
+    image: rabbitmq:3.10-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
++   hostname: 'localhost'
++   volumes:
++     - type: bind
++       source: ./message-broker-data
++       target: /var/lib/rabbitmq/mnesia/rabbit@localhost
+volumes:
+  mongo-data:
++ message-broker-data:
+
+```
 
 # ¿Con ganas de aprender Backend?
 

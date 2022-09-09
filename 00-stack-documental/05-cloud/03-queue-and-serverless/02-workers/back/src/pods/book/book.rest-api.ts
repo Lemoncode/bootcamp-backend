@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { bookRepository } from 'dals';
+import { messageBroker } from 'core/servers';
+import { Book, bookRepository } from 'dals';
 import { authorizationMiddleware } from 'pods/security';
 import {
   mapBookListFromModelToApi,
@@ -8,6 +9,13 @@ import {
 } from './book.mappers';
 
 export const booksApi = Router();
+
+const sendBookToArchive = async (book: Book) => {
+  const queueName = 'price-archive-queue';
+  const channel = await messageBroker.channel(1);
+  const queue = await channel.queue(queueName, { durable: true });
+  await queue.publish(JSON.stringify(book), { deliveryMode: 2 });
+};
 
 booksApi
   .get('/', authorizationMiddleware(), async (req, res, next) => {
@@ -33,6 +41,7 @@ booksApi
     try {
       const book = mapBookFromApiToModel(req.body);
       const newBook = await bookRepository.saveBook(book);
+      await sendBookToArchive(newBook);
       res.status(201).send(mapBookFromModelToApi(newBook));
     } catch (error) {
       next(error);
@@ -44,6 +53,7 @@ booksApi
       if (await bookRepository.getBook(id)) {
         const book = mapBookFromApiToModel({ ...req.body, id });
         await bookRepository.saveBook(book);
+        await sendBookToArchive(book);
         res.sendStatus(204);
       } else {
         res.sendStatus(404);

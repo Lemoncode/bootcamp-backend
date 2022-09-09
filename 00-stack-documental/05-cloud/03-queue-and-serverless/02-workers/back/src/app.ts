@@ -4,7 +4,6 @@ import {
   createRestApiServer,
   connectToDBServer,
   connectToMessageBrokerServer,
-  messageBroker,
 } from 'core/servers';
 import { envConstants } from 'core/constants';
 import {
@@ -35,11 +34,7 @@ restApiServer.listen(envConstants.PORT, async () => {
   } else {
     console.log('Running API mock');
   }
-
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-  const channel = await messageBroker.channel();
-  const queue = await channel.queue('hello-queue', { durable: false });
-  await queue.publish('Hello Rabbit!');
 
   console.log(`Server ready at port ${envConstants.PORT}`);
 });
