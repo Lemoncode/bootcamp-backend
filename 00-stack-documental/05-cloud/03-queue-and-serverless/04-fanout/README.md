@@ -19,7 +19,6 @@ npm install
 
 If we want all the workers to get all the messages:
 
-
 _./back/src/pods/book/book.rest-api.ts_
 
 ```diff
