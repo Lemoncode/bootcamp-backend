@@ -8,15 +8,15 @@ const run = async () => {
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
   const channel = await messageBroker.channel(2);
   channel.prefetch(1);
-  channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+  channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });
   await priceArchiveConsumerOne(channel);
   await priceArchiveConsumerTwo(channel);
 };
 
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('low-prices-queue', { durable: true });
-    await queue.bind(exchangeName, 'low-prices');
+    const queue = await channel.queue('', { durable: true, exclusive: true });
+    await queue.bind(exchangeName);
     await queue.subscribe(
       {
         noAck: false,
@@ -38,8 +38,8 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
 
 const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('high-prices-queue', { durable: true });
-    await queue.bind(exchangeName, 'high-prices');
+    const queue = await channel.queue('', { durable: true, exclusive: true });
+    await queue.bind(exchangeName);
     await queue.subscribe(
       {
         noAck: false,

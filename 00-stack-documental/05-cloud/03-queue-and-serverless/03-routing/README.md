@@ -17,7 +17,7 @@ npm install
 
 ```
 
-The previous example was using the default AMQP `exchange`, that is, we will update the example but using an explicit exchange:
+The previous example was using the default AMQP `exchange`, that is, we will update the example but using an explicit one:
 
 _./back/src/pods/book/book.rest-api.ts_
 

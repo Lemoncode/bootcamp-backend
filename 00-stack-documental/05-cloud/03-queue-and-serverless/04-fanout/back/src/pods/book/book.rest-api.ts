@@ -12,7 +12,7 @@ export const booksApi = Router();
 
 const sendBookToArchive = async (book: Book) => {
   const exchangeName = 'price-archive';
-  const routingKey = book.price <= 100 ? 'low-prices' : 'high-prices';
+  const routingKey = '';
   const channel = await messageBroker.channel(1);
   await channel.basicPublish(exchangeName, routingKey, JSON.stringify(book), {
     deliveryMode: 2,
