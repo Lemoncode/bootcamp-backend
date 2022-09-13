@@ -8,15 +8,16 @@ const run = async () => {
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
   const channel = await messageBroker.channel(2);
   channel.prefetch(1);
-  channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });
+  channel.exchangeDeclare(exchangeName, 'topic', { durable: true, });
   await priceArchiveConsumerOne(channel);
   await priceArchiveConsumerTwo(channel);
 };
 
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { durable: true, exclusive: true });
-    await queue.bind(exchangeName);
+    const queue = await channel.queue('', { exclusive: true });
+    await queue.bind(exchangeName, 'low-prices.*.new');
+    await queue.bind(exchangeName, '*.Jane Doe.*');
     await queue.subscribe(
       {
         noAck: false,
@@ -25,7 +26,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
         console.log('Worker 1 message received');
         const book = JSON.parse(message.bodyToString());
         console.log(
-          `Saving book with title "${book.title}" and price ${book.price}`
+          `Saving book with price ${book.price}, author ${book.author} and year ${book.releaseDate}`
         );
         message.ack();
       }
@@ -38,8 +39,9 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
 
 const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { durable: true, exclusive: true });
-    await queue.bind(exchangeName);
+    const queue = await channel.queue('', { exclusive: true });
+    await queue.bind(exchangeName, 'high-prices.#');
+    await queue.bind(exchangeName, '#.old');
     await queue.subscribe(
       {
         noAck: false,
@@ -48,7 +50,7 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
         console.log('Worker 2 message received');
         const book = JSON.parse(message.bodyToString());
         console.log(
-          `Saving book with title "${book.title}" and price ${book.price}`
+          `Saving book with price ${book.price}, author ${book.author} and year ${book.releaseDate}`
         );
         message.ack();
       }

@@ -64,7 +64,7 @@ const run = async () => {
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
 -   const queue = await channel.queue('low-prices-queue', { durable: true });
-+   const queue = await channel.queue('', { durable: true, exclusive: true });
++   const queue = await channel.queue('', { exclusive: true });
 -   await queue.bind(exchangeName, 'low-prices');
 +   await queue.bind(exchangeName);
     await queue.subscribe(
@@ -76,7 +76,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
 const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
 -   const queue = await channel.queue('high-prices-queue', { durable: true });
-+   const queue = await channel.queue('', { durable: true, exclusive: true });
++   const queue = await channel.queue('', { exclusive: true });
 -   await queue.bind(exchangeName, 'high-prices');
 +   await queue.bind(exchangeName);
     await queue.subscribe(
