@@ -55,7 +55,7 @@ docker-compose up -d
 
 ```
 
-We are going to install a official recommended library which implements AMQP 0-9-1 protocol, [amqp-client](https://github.com/cloudamqp/amqp-client.js).
+We are going to install an official recommended library which implements AMQP 0-9-1 protocol, [amqp-client](https://github.com/cloudamqp/amqp-client.js).
 
 ```bash
 cd back
