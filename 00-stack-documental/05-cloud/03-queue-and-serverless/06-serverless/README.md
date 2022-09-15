@@ -17,12 +17,16 @@ npm install
 
 ```
 
-One way could be use [AWS Lambda](https://aws.amazon.com/lambda/) or whatever Cloud Provider function and write code in the platform and use it.
+As a first approach, we could use [AWS Lambda](https://aws.amazon.com/lambda/) or whatever Cloud Provider function and write code in the platform and use it.
 
 But we are going to use the [serverless framework](https://www.serverless.com/framework/docs/getting-started) which could deploy serverless function to several providers like AWS, Azure, Google, Tencent, Alibaba Cloud, etc. and keep the code in our repository.
 
+```bash
+npm install -g serverless
 
-> It has a cli to create a serverless template project.
+```
+
+> It has a [cli](https://github.com/serverless/serverless) to create a serverless template project.
 >
 > [Cloud providers](https://www.serverless.com/framework/docs/providers)
 
@@ -65,7 +69,6 @@ module.exports.handler = async (event) => {
     }),
   };
 };
-
 
 ```
 
@@ -132,7 +135,7 @@ npm run start:serverless
 
 Let's use `typescript with serverless`:
 
-> There are a [serverless plugin](https://www.serverless.com/plugins/serverless-plugin-typescript) but it has its own build outside babel.
+> There are a [serverless plugin](https://www.serverless.com/plugins/serverless-plugin-typescript) but it has its own builder outside babel.
 
 Rename file to `.ts`:
 
@@ -140,7 +143,7 @@ _./back/src/simple-api.ts_
 
 ```diff
 - module.exports.handler = async (event) => {
-+ export const handler = async (event) => {1
++ export const handler = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify({
@@ -189,22 +192,12 @@ _./back/serverless.yml_
 ```diff
 
 plugins:
-  - serverless-of
+  - serverless-offline
 
 + package:
 +   patterns:
-+   - '!src/**'
-+   - '!config/**'
-+   - '!tsconfig.json'
-+   - '!jest-mongodb-config.js'
-+   - '!global-types.d.ts'
-+   - '!create-dev-env.sh'
-+   - '!.prettierrc'
-+   - '!.env.test'
-+   - '!.env.example'
-+   - '!.env'
-+   - '!.editorconfig'
-+   - '!.babelrc'
++     - '!./**'
++     - 'dist/simple-api.js'
 
 ```
 
@@ -214,6 +207,10 @@ Run again:
 serverless package
 
 ```
+
+> With `serverless deploy` creates the package and deploy it to AWS.
+
+We could update our current app to be deployed serverless using [serverless-http](https://github.com/dougmoscrop/serverless-http) but there is an important feature with serverless, it's 
 
 # ¿Con ganas de aprender Backend?
 
