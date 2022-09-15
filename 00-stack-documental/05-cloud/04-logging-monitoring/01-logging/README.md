@@ -30,7 +30,7 @@ npm install winston
 
 Let's configure a `logger` instance:
 
-_./back/src/core/logger/logger.ts_
+_./back/src/common/logger/logger.ts_
 
 ```javascript
 import { createLogger, transports } from "winston";
@@ -40,11 +40,12 @@ const console = new transports.Console();
 export const logger = createLogger({
   transports: [console],
 });
+
 ```
 
 Add barrel file:
 
-_./back/src/core/logger/index.ts_
+_./back/src/common/logger/index.ts_
 
 ```javascript
 export * from "./logger";
@@ -57,9 +58,8 @@ _./back/src/app.ts_
 ```diff
 import express from 'express';
 import path from 'path';
++ import { logger } from 'common/logger';
 import { createRestApiServer, connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-+ import { logger } from 'core/logger';
 ...
 
 restApiServer.listen(envConstants.PORT, async () => {
@@ -100,8 +100,8 @@ _./back/src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
++ import { logger } from 'common/logger';
 import { envConstants } from 'core/constants';
-+ import { logger } from 'core/logger';
 ...
 
 securityApi
@@ -153,44 +153,24 @@ _./back/src/common/middlewares/logger.middlewares.ts_
 
 ```diff
 import { RequestHandler, ErrorRequestHandler } from 'express';
-+ import { Logger } from 'winston';
++ import { logger } from '../logger';
 
-- export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
-+ export const logRequestMiddleware = (logger: Logger): RequestHandler => async (req, res, next) => {
+export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
 - console.log(req.url);
 + logger.info(req.url);
   next();
 };
 
-- export const logErrorRequestMiddleware: ErrorRequestHandler = async (
--   error,
--   req,
--   res,
--   next
-- ) => {
-+ export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler => async (error, req, res, next) => {
+export const logErrorRequestMiddleware: ErrorRequestHandler = async (
+  error,
+  req,
+  res,
+  next
+) => {
 - console.error(error);
-+ logger.error(error.message);
++ logger.error(error.stack);
   res.sendStatus(500);
 };
-
-```
-
-_./back/src/app.ts_
-
-```diff
-...
-
-- restApiServer.use(logRequestMiddleware);
-+ restApiServer.use(logRequestMiddleware(logger));
-
-restApiServer.use('/api/security', securityApi);
-restApiServer.use('/api/books', authenticationMiddleware, booksApi);
-
-- restApiServer.use(logErrorRequestMiddleware);
-+ restApiServer.use(logErrorRequestMiddleware(logger));
-
-...
 
 ```
 
@@ -199,27 +179,16 @@ And simulate some unexpected error:
 _./back/src/pods/book/book.rest-api.ts_
 
 ```diff
-import { Router } from 'express';
-import { bookRepository } from 'dals';
-import { authorizationMiddleware } from 'pods/security';
-import {
-  mapBookListFromModelToApi,
-  mapBookFromModelToApi,
-  mapBookFromApiToModel,
-} from './book.mappers';
-import { paginateBookList } from './book.helpers';
-
-export const booksApi = Router();
-
+...
 booksApi
   .get('/', authorizationMiddleware(), async (req, res, next) => {
     try {
-+     throw new Error('Some unexpected error');
++     const book = undefined;
++     book.name;
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      res.send(mapBookListFromModelToApi(paginatedBookList));
+      const bookList = await bookRepository.getBookList(page, pageSize);
+      res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
@@ -235,9 +204,10 @@ admin@email.com
 test
 
 ```
+
 Even, we could customize the format for each transport:
 
-_./back/src/core/logger/logger.ts_
+_./back/src/common/logger/logger.ts_
 
 ```diff
 - import { createLogger, transports } from 'winston';
@@ -272,7 +242,7 @@ export const logger = createLogger({
 
 The best feature in this kind of libraries is we can save our logs in different transports at the same time. Let's move `console` transport to its own file:
 
-_./back/src/core/logger/transports/console.transport.ts_
+_./back/src/common/logger/transports/console.transport.ts_
 
 ```javascript
 import { transports, format } from 'winston';
@@ -293,7 +263,7 @@ export const console = new transports.Console({
 
 Let's add a new `File` transport, for example, we will save only `warnings` and `errors` in this file:
 
-_./back/src/core/logger/transports/file.transport.ts_
+_./back/src/common/logger/transports/file.transport.ts_
 
 ```javascript
 import { transports, format } from 'winston';
@@ -314,7 +284,7 @@ export const file = new transports.File({
 
 Add barrel file:
 
-_./back/src/core/logger/transports/index.ts_
+_./back/src/common/logger/transports/index.ts_
 
 ```javascript
 export * from './console.transport';
@@ -324,7 +294,7 @@ export * from './file.transport';
 
 Update logger:
 
-_./back/src/core/logger/logger.ts_
+_./back/src/common/logger/logger.ts_
 
 ```diff
 - import { createLogger, transports, format } from 'winston';
@@ -346,12 +316,9 @@ _./back/src/core/logger/logger.ts_
 export const logger = createLogger({
 - transports: [console],
 + transports: [console, file],
-+ exitOnError: false,
 });
 
 ```
-
-> [exitOnError](https://github.com/winstonjs/winston#to-exit-or-not-to-exit)
 
 Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/book-store.log`.
 
