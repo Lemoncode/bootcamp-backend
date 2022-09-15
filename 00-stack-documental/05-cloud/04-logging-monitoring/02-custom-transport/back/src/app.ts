@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { logger } from 'common/logger';
+import { logger } from 'core/logger';
 import { createRestApiServer, connectToDBServer } from 'core/servers';
 import { envConstants } from 'core/constants';
 import {
@@ -16,13 +16,13 @@ const restApiServer = createRestApiServer();
 const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
 restApiServer.use('/', express.static(staticFilesPath));
 
-restApiServer.use(logRequestMiddleware);
+restApiServer.use(logRequestMiddleware(logger));
 
 restApiServer.use('/api/security', securityApi);
 restApiServer.use('/api/books', authenticationMiddleware, booksApi);
 restApiServer.use('/api/users', authenticationMiddleware, userApi);
 
-restApiServer.use(logErrorRequestMiddleware);
+restApiServer.use(logErrorRequestMiddleware(logger));
 
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {

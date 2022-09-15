@@ -1,17 +1,16 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
-import { logger } from '../logger';
+import { Logger } from 'winston';
 
-export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
-  logger.info(req.url);
-  next();
-};
+export const logRequestMiddleware =
+  (logger: Logger): RequestHandler =>
+  async (req, res, next) => {
+    logger.info(req.url);
+    next();
+  };
 
-export const logErrorRequestMiddleware: ErrorRequestHandler = async (
-  error,
-  req,
-  res,
-  next
-) => {
-  logger.error(error.stack);
-  res.sendStatus(500);
-};
+export const logErrorRequestMiddleware =
+  (logger: Logger): ErrorRequestHandler =>
+  async (error, req, res, next) => {
+    logger.error(error.stack);
+    res.sendStatus(500);
+  };

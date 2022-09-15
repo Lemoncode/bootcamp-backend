@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { logger } from 'common/logger';
+import { logger } from 'core/logger';
 import { envConstants } from 'core/constants';
 import { UserSession } from 'common-app/models';
 import { userRepository } from 'dals';

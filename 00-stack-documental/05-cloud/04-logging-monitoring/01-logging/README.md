@@ -30,7 +30,7 @@ npm install winston
 
 Let's configure a `logger` instance:
 
-_./back/src/common/logger/logger.ts_
+_./back/src/core/logger/logger.ts_
 
 ```javascript
 import { createLogger, transports } from "winston";
@@ -45,7 +45,7 @@ export const logger = createLogger({
 
 Add barrel file:
 
-_./back/src/common/logger/index.ts_
+_./back/src/core/logger/index.ts_
 
 ```javascript
 export * from "./logger";
@@ -58,7 +58,7 @@ _./back/src/app.ts_
 ```diff
 import express from 'express';
 import path from 'path';
-+ import { logger } from 'common/logger';
++ import { logger } from 'core/logger';
 import { createRestApiServer, connectToDBServer } from 'core/servers';
 ...
 
@@ -100,33 +100,14 @@ _./back/src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-+ import { logger } from 'common/logger';
++ import { logger } from 'core/logger';
 import { envConstants } from 'core/constants';
 ...
 
 securityApi
   .post('/login', async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      const user = await userRepository.getUserByEmailAndPassword(
-        email,
-        password
-      );
-
-      if (user) {
-        const userSession: UserSession = {
-          id: user._id.toHexString(),
-          role: user.role,
-        };
-        const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
-          expiresIn: '1d',
-          algorithm: 'HS256',
-        });
-        // TODO: Move to constants
-        res.cookie('authorization', `Bearer ${token}`, {
-          httpOnly: true,
-          secure: envConstants.isProduction,
-        });
+...
         res.sendStatus(204);
       } else {
 +       logger.warn(`Invalid credentials for email ${email}`);
@@ -153,24 +134,47 @@ _./back/src/common/middlewares/logger.middlewares.ts_
 
 ```diff
 import { RequestHandler, ErrorRequestHandler } from 'express';
-+ import { logger } from '../logger';
++ import { Logger } from 'winston';
 
-export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
+- export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
++ export const logRequestMiddleware = (logger: Logger): RequestHandler => async (req, res, next) => {
 - console.log(req.url);
 + logger.info(req.url);
   next();
 };
 
-export const logErrorRequestMiddleware: ErrorRequestHandler = async (
-  error,
-  req,
-  res,
-  next
-) => {
+- export const logErrorRequestMiddleware: ErrorRequestHandler = async (
+-   error,
+-   req,
+-   res,
+-   next
+- ) => {
++ export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler =>
++   async (error, req, res, next) => {
 - console.error(error);
 + logger.error(error.stack);
   res.sendStatus(500);
 };
+
+```
+
+Update app:
+
+_./back/src/app.ts_
+
+```diff
+...
+
+- restApiServer.use(logRequestMiddleware);
++ restApiServer.use(logRequestMiddleware(logger));
+
+restApiServer.use('/api/security', securityApi);
+restApiServer.use('/api/books', authenticationMiddleware, booksApi);
+restApiServer.use('/api/users', authenticationMiddleware, userApi);
+
+- restApiServer.use(logErrorRequestMiddleware);
++ restApiServer.use(logErrorRequestMiddleware(logger));
+...
 
 ```
 
@@ -207,7 +211,7 @@ test
 
 Even, we could customize the format for each transport:
 
-_./back/src/common/logger/logger.ts_
+_./back/src/core/logger/logger.ts_
 
 ```diff
 - import { createLogger, transports } from 'winston';
@@ -240,9 +244,11 @@ export const logger = createLogger({
 >
 > `printf`: create custom message
 
+Run it.
+
 The best feature in this kind of libraries is we can save our logs in different transports at the same time. Let's move `console` transport to its own file:
 
-_./back/src/common/logger/transports/console.transport.ts_
+_./back/src/core/logger/transports/console.transport.ts_
 
 ```javascript
 import { transports, format } from 'winston';
@@ -263,7 +269,7 @@ export const console = new transports.Console({
 
 Let's add a new `File` transport, for example, we will save only `warnings` and `errors` in this file:
 
-_./back/src/common/logger/transports/file.transport.ts_
+_./back/src/core/logger/transports/file.transport.ts_
 
 ```javascript
 import { transports, format } from 'winston';
@@ -271,7 +277,7 @@ import { transports, format } from 'winston';
 const { combine, timestamp, prettyPrint } = format;
 
 export const file = new transports.File({
-  filename: 'book-store.log',
+  filename: 'app.log',
   format: combine(timestamp(), prettyPrint()),
   level: 'warn', // Save level lower or equal than warning
   handleExceptions: true,
@@ -280,11 +286,13 @@ export const file = new transports.File({
 ```
 
 > [Logging levels](https://github.com/winstonjs/winston#logging-levels)
+>
+> `prettyPrint`: JSON format
 
 
 Add barrel file:
 
-_./back/src/common/logger/transports/index.ts_
+_./back/src/core/logger/transports/index.ts_
 
 ```javascript
 export * from './console.transport';
@@ -294,7 +302,7 @@ export * from './file.transport';
 
 Update logger:
 
-_./back/src/common/logger/logger.ts_
+_./back/src/core/logger/logger.ts_
 
 ```diff
 - import { createLogger, transports, format } from 'winston';
@@ -320,7 +328,7 @@ export const logger = createLogger({
 
 ```
 
-Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/book-store.log`.
+Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/app.log`.
 
 # ¿Con ganas de aprender Backend?
 
