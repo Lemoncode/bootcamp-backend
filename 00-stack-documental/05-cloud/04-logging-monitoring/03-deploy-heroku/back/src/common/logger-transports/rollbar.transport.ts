@@ -21,10 +21,7 @@ export class RollbarTransport extends Transport {
     setImmediate(() => this.emit('logged', info));
     const level = info.level;
     const message = info[MESSAGE];
-
-    if (level === 'warn' || level === 'error') {
-      this.rollbar[level](message);
-    }
+    this.rollbar[level](message);
     next();
   }
 }

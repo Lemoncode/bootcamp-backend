@@ -1,6 +1,6 @@
 import React from 'react';
 import { HashRouter, Switch, Route } from 'react-router-dom';
-import { LoginScene, BookListScene, BookScene } from 'scenes';
+import { LoginScene, BookListScene, BookScene, UserScene } from 'scenes';
 import { switchRoutes } from './routes';
 
 export const RouterComponent: React.FunctionComponent = () => {
@@ -23,6 +23,7 @@ export const RouterComponent: React.FunctionComponent = () => {
           path={switchRoutes.editBook}
           component={BookScene}
         />
+        <Route exact={true} path={switchRoutes.user} component={UserScene} />
       </Switch>
     </HashRouter>
   );
