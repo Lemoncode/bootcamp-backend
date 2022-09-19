@@ -40,9 +40,24 @@ import { console, file, rollbar } from './transports';
 export const logger = createLogger({
 - transports: [console, file, rollbar],
 + transports,
-  exitOnError: false,
 });
 
+```
+
+Update Dockerfile to works with api mock, only for demo purpose:
+
+_./Dockerfile_
+
+```diff
+...
+
+ENV NODE_ENV=production
+ENV STATIC_FILES_PATH=./public
+- ENV API_MOCK=false
++ ENV API_MOCK=true
+ENV CORS_ORIGIN=false
+
+...
 ```
 
 We will create a new heroku app:
@@ -55,10 +70,10 @@ Create new repository and upload files:
 
 ```bash
 git init
-git remote add origin https://github.com/...
+git remote add origin git@github.com...
 git add .
 git commit -m "initial commit"
-git push -u origin master
+git push -u origin main
 
 ```
 
@@ -97,11 +112,19 @@ Add heroku env variables:
 
 ![08-heroku-env-variables](./readme-resources/08-heroku-env-variables.png)
 
+> Include the `AUTH_SECRET` to get valid JWT token-
+
 Open browser at `https://<app-name>.herokuapp.com/` and run `info`, `warn` and `error` logs.
 
 Check results in rollbar, remember filter by environment:
 
 ![09-rollbar-env-filter](./readme-resources/09-rollbar-env-filter.png)
+
+Checks logs in heroku:
+
+```bash
+heroku logs --tail -a <app-name>
+```
 
 # ¿Con ganas de aprender Backend?
 

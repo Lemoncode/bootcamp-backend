@@ -1,4 +1,4 @@
-FROM node:14-alpine AS base
+FROM node:16-alpine AS base
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -24,8 +24,7 @@ RUN npm ci --only=production
 
 ENV NODE_ENV=production
 ENV STATIC_FILES_PATH=./public
-# Only for demo purpose
-ENV API_MOCK=true
-ENV AUTH_SECRET=MY_AUTH_SECRET
+ENV API_MOCK=false
+ENV CORS_ORIGIN=false
 
 ENTRYPOINT ["node", "index"]
