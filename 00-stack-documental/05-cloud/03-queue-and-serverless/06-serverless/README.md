@@ -210,7 +210,7 @@ serverless package
 
 > With `serverless deploy` creates the package and deploy it to AWS.
 
-We could update our current app to be deployed serverless using [serverless-http](https://github.com/dougmoscrop/serverless-http) but there is an important feature with serverless, it's 
+There is available [serverless-http](https://github.com/dougmoscrop/serverless-http) plugin to work with express and serverless.
 
 # ¿Con ganas de aprender Backend?
 

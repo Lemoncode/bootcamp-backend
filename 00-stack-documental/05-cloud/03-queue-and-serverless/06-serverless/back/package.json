@@ -10,6 +10,7 @@
     "prestart:console-runners": "npm run prestart",
     "start:console-runners": "run-p type-check:watch console-runners",
     "console-runners": "npm run type-check && nodemon --no-stdin --exec babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
+    "start:serverless": "serverless offline",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "test": "jest -c ./config/test/jest.js",
@@ -53,6 +54,7 @@
     "nodemon": "^2.0.19",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
+    "serverless-offline": "^10.0.2",
     "supertest": "^6.2.4",
     "typescript": "^4.7.4"
   }
