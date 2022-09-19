@@ -24,17 +24,20 @@ npm install
 
 In this example, we will monitoring the Nodejs app using [New Relic](https://newrelic.com/), we could create new account in the official web:
 
-Let's add the new add-on from `Resources` tab in Heroku portal:
+Let's create new account:
 
 ![01-create-new-relic-account](./readme-resources/01-create-new-relic-account.png)
 
-Click on `See all installation options`:
+Click on `APM options` and select NodeJS:
 
-![02-click-see-all-installation-options](./readme-resources/02-click-see-all-installation-options.png)
+![02-click-apm-options](./readme-resources/02-click-apm-options.png)
 
-Select Nodejs:
+> Copy Account ID and License Key too.
 
-![03-select-nodejs](./readme-resources/03-select-nodejs.png)
+Select `Package manager`:
+
+![03-select-package-manager](./readme-resources/03-select-package-manager.png)
+
 
 Select `Node standard installation`:
 
@@ -80,12 +83,12 @@ _./back/src/pods/book/book.rest-api.ts_
 booksApi
   .get('/', authorizationMiddleware(), async (req, res, next) => {
     try {
--     throw new Error('Some unexpected error');
+-     const book = undefined;
+-     book.name;
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      res.send(mapBookListFromModelToApi(paginatedBookList));
+      const bookList = await bookRepository.getBookList(page, pageSize);
+      res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
@@ -95,9 +98,11 @@ booksApi
 
 `Download your custom configuration file` provided by New Relic to see app token, but instead of added it to the project, we will [configure it using env variables](https://docs.newrelic.com/docs/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration/#exports_config).
 
+![06-download-custom-config-file](./readme-resources/06-download-custom-config-file.png)
+
 We will create these env variables in Heroku:
 
-![06-new-relic-env-variables](./readme-resources/06-new-relic-env-variables.png)
+![07-new-relic-env-variables](./readme-resources/07-new-relic-env-variables.png)
 
 Deploy new version:
 
@@ -110,41 +115,41 @@ git push
 
 Check data in New Relic portal:
 
-![07-check-data](./readme-resources/07-check-data.png)
+![08-check-data](./readme-resources/08-check-data.png)
 
 If we play with the app, we could check all queries in `Distributed tracing` tab:
 
-![08-distributed-tracing-tab](./readme-resources/08-distributed-tracing-tab.png)
+![09-distributed-tracing-tab](./readme-resources/09-distributed-tracing-tab.png)
 
 If we check `Service map` and `Dependencies` tabs, we could see which external services we are using:
 
-![09-service-map](./readme-resources/09-service-map.png)
+![10-service-map](./readme-resources/10-service-map.png)
 
-![10-dependencies](./readme-resources/10-dependencies.png)
+![11-dependencies](./readme-resources/11-dependencies.png)
 
 We could check which query consume more clock time in `Transactions` tab:
 
-![11-transactions](./readme-resources/11-transactions.png)
+![12-transactions](./readme-resources/12-transactions.png)
 
 And server statistics in `Node VMs` tab:
 
-![12-node-vms](./readme-resources/12-node-vms.png)
+![13-node-vms](./readme-resources/13-node-vms.png)
 
 Let's deploy a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) as we did in `05-cloud > 02-deploy > 03-mongo-deploy` to see MongoDB statistics:
 
-![13-start-free-cluster](./readme-resources/13-start-free-cluster.png)
+![14-start-free-cluster](./readme-resources/14-start-free-cluster.png)
 
 We could select between three providers and different regions:
 
-![14-select-provider-and-region](./readme-resources/14-select-provider-and-region.png)
+![15-select-provider-and-region](./readme-resources/15-select-provider-and-region.png)
 
 Select the cluster tier, in this case `M0 Sandbox` which it's a free tier with No backup:
 
-![15-select-cluster-tier](./readme-resources/15-select-cluster-tier.png)
+![16-select-cluster-tier](./readme-resources/16-select-cluster-tier.png)
 
 Finally, give a name (if you want) and create the cluster:
 
-![16-create-cluster](./readme-resources/16-create-cluster.png)
+![17-create-cluster](./readme-resources/17-create-cluster.png)
 
 This is the main cluster page, where we will see:
 
@@ -153,23 +158,23 @@ This is the main cluster page, where we will see:
 - See mongo connection URI.
 - See collections and documents.
 
-![17-main-cluster-page](./readme-resources/17-main-cluster-page.png)
+![18-main-cluster-page](./readme-resources/18-main-cluster-page.png)
 
 By default, MongoDB Atlas only allows access to configured IPs, let's add a new rule to allow all IPs:
 
-![18-configure-network-access](./readme-resources/18-configure-network-access.png)
+![19-configure-network-access](./readme-resources/19-configure-network-access.png)
 
 Let's configure database access, adding new user:
 
-![19-configure-database-access](./readme-resources/19-configure-database-access.png)
+![20-configure-database-access](./readme-resources/20-configure-database-access.png)
 
 > Let's copy the autogenerated password. We will use in the MongoDB Connection URI
 
 Let's copy the `MongoDB Connection URI`:
 
-![20-click-connect-button](./readme-resources/20-click-connect-button.png)
+![21-click-connect-button](./readme-resources/21-click-connect-button.png)
 
-![21-copy-connection-uri](./readme-resources/21-copy-connection-uri.png)
+![22-copy-connection-uri](./readme-resources/22-copy-connection-uri.png)
 
 Update env variable:
 
@@ -198,15 +203,15 @@ npm run start:console-runners
 
 Update env variables in Heroku:
 
-![22-update-env-variables](./readme-resources/22-update-env-variables.png)
+![23-update-env-variables](./readme-resources/23-update-env-variables.png)
 
 Now, if we play with the app, we could see MongoDB statistics:
 
-![23-mongodb-summary](./readme-resources/23-mongodb-summary.png)
+![24-mongodb-summary](./readme-resources/24-mongodb-summary.png)
 
-![24-mongodb-service-map](./readme-resources/24-mongodb-service-map.png)
+![25-mongodb-service-map](./readme-resources/25-mongodb-service-map.png)
 
-![25-mongodb-databases](./readme-resources/25-mongodb-databases.png)
+![26-mongodb-databases](./readme-resources/26-mongodb-databases.png)
 
 # ¿Con ganas de aprender Backend?
 
