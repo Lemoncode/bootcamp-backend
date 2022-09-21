@@ -40,6 +40,7 @@ const console = new transports.Console();
 export const logger = createLogger({
   transports: [console],
 });
+
 ```
 
 Add barrel file:
@@ -57,9 +58,8 @@ _./back/src/app.ts_
 ```diff
 import express from 'express';
 import path from 'path';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
 + import { logger } from 'core/logger';
+import { createRestApiServer, connectToDBServer } from 'core/servers';
 ...
 
 restApiServer.listen(envConstants.PORT, async () => {
@@ -100,33 +100,14 @@ _./back/src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
 + import { logger } from 'core/logger';
+import { envConstants } from 'core/constants';
 ...
 
 securityApi
   .post('/login', async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      const user = await userRepository.getUserByEmailAndPassword(
-        email,
-        password
-      );
-
-      if (user) {
-        const userSession: UserSession = {
-          id: user._id.toHexString(),
-          role: user.role,
-        };
-        const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
-          expiresIn: '1d',
-          algorithm: 'HS256',
-        });
-        // TODO: Move to constants
-        res.cookie('authorization', `Bearer ${token}`, {
-          httpOnly: true,
-          secure: envConstants.isProduction,
-        });
+...
         res.sendStatus(204);
       } else {
 +       logger.warn(`Invalid credentials for email ${email}`);
@@ -168,13 +149,16 @@ import { RequestHandler, ErrorRequestHandler } from 'express';
 -   res,
 -   next
 - ) => {
-+ export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler => async (error, req, res, next) => {
++ export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler =>
++   async (error, req, res, next) => {
 - console.error(error);
-+ logger.error(error.message);
++ logger.error(error.stack);
   res.sendStatus(500);
 };
 
 ```
+
+Update app:
 
 _./back/src/app.ts_
 
@@ -186,10 +170,10 @@ _./back/src/app.ts_
 
 restApiServer.use('/api/security', securityApi);
 restApiServer.use('/api/books', authenticationMiddleware, booksApi);
+restApiServer.use('/api/users', authenticationMiddleware, userApi);
 
 - restApiServer.use(logErrorRequestMiddleware);
 + restApiServer.use(logErrorRequestMiddleware(logger));
-
 ...
 
 ```
@@ -199,27 +183,16 @@ And simulate some unexpected error:
 _./back/src/pods/book/book.rest-api.ts_
 
 ```diff
-import { Router } from 'express';
-import { bookRepository } from 'dals';
-import { authorizationMiddleware } from 'pods/security';
-import {
-  mapBookListFromModelToApi,
-  mapBookFromModelToApi,
-  mapBookFromApiToModel,
-} from './book.mappers';
-import { paginateBookList } from './book.helpers';
-
-export const booksApi = Router();
-
+...
 booksApi
   .get('/', authorizationMiddleware(), async (req, res, next) => {
     try {
-+     throw new Error('Some unexpected error');
++     const book = undefined;
++     book.name;
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      res.send(mapBookListFromModelToApi(paginatedBookList));
+      const bookList = await bookRepository.getBookList(page, pageSize);
+      res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
@@ -235,6 +208,7 @@ admin@email.com
 test
 
 ```
+
 Even, we could customize the format for each transport:
 
 _./back/src/core/logger/logger.ts_
@@ -270,6 +244,8 @@ export const logger = createLogger({
 >
 > `printf`: create custom message
 
+Run it.
+
 The best feature in this kind of libraries is we can save our logs in different transports at the same time. Let's move `console` transport to its own file:
 
 _./back/src/core/logger/transports/console.transport.ts_
@@ -301,7 +277,7 @@ import { transports, format } from 'winston';
 const { combine, timestamp, prettyPrint } = format;
 
 export const file = new transports.File({
-  filename: 'book-store.log',
+  filename: 'app.log',
   format: combine(timestamp(), prettyPrint()),
   level: 'warn', // Save level lower or equal than warning
   handleExceptions: true,
@@ -310,6 +286,8 @@ export const file = new transports.File({
 ```
 
 > [Logging levels](https://github.com/winstonjs/winston#logging-levels)
+>
+> `prettyPrint`: JSON format
 
 
 Add barrel file:
@@ -346,14 +324,11 @@ _./back/src/core/logger/logger.ts_
 export const logger = createLogger({
 - transports: [console],
 + transports: [console, file],
-+ exitOnError: false,
 });
 
 ```
 
-> [exitOnError](https://github.com/winstonjs/winston#to-exit-or-not-to-exit)
-
-Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/book-store.log`.
+Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/app.log`.
 
 # ¿Con ganas de aprender Backend?
 

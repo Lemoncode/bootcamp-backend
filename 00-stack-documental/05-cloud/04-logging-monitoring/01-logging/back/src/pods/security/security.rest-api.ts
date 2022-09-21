@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
 import { logger } from 'core/logger';
+import { envConstants } from 'core/constants';
 import { UserSession } from 'common-app/models';
 import { userRepository } from 'dals';
 import { authenticationMiddleware } from './security.middlewares';
@@ -16,7 +16,6 @@ securityApi
         email,
         password
       );
-
       if (user) {
         const userSession: UserSession = {
           id: user._id.toHexString(),

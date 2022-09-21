@@ -43,12 +43,24 @@ export const AppBarComponent: React.FunctionComponent = (props) => {
               <HomeIcon fontSize="large" />
             </IconButton>
             <Typography variant="h6" component="h1">
-              Tienda de libros
+              {location.pathname === linkRoutes.user
+                ? 'Perfil usuario'
+                : 'Tienda de libros'}
             </Typography>
           </div>
-          <IconButton color="inherit" onClick={handleClick}>
-            <LogoutIcon fontSize="large" />
-          </IconButton>
+          <div>
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                history.push(linkRoutes.user);
+              }}
+            >
+              <UserIcon fontSize="large" />
+            </IconButton>
+            <IconButton color="inherit" onClick={handleClick}>
+              <LogoutIcon fontSize="large" />
+            </IconButton>
+          </div>
         </Toolbar>
       </AppBar>
       <div style={{ height }} />

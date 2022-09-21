@@ -8,6 +8,7 @@ import {
 } from 'common/middlewares';
 import { booksApi } from 'pods/book';
 import { securityApi, authenticationMiddleware } from 'pods/security';
+import { userApi } from 'pods/user';
 
 const restApiServer = createRestApiServer();
 
@@ -18,6 +19,7 @@ restApiServer.use(logRequestMiddleware);
 
 restApiServer.use('/api/security', securityApi);
 restApiServer.use('/api/books', authenticationMiddleware, booksApi);
+restApiServer.use('/api/users', authenticationMiddleware, userApi);
 
 restApiServer.use(logErrorRequestMiddleware);
 

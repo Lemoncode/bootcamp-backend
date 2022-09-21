@@ -10,5 +10,4 @@ if (envConstants.isProduction) {
 
 export const logger = createLogger({
   transports,
-  exitOnError: false,
 });
