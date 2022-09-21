@@ -250,7 +250,7 @@ Seleccionamos la opción _Add explicit cast_ para hacer el casting de forma auto
 
 Otra acción que podemos realizar es la refactorización de código. Vamos a verlo en el ejemplo.
 
-Seleccionamos **(int)(a * Math.PI)** y esperamos unos segundo a que aparezca el destornillador. Al hacer clic sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
+Seleccionamos **(int)(a * Math.PI)** y esperamos unos segundo a que aparezca el destornillador o la bombilla. Al hacer clic sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
 
 ![Refactorización](./content/refactor.png)
 

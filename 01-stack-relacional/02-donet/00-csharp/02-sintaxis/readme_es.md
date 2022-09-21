@@ -8,9 +8,9 @@ En este apartado vamos a ver los conceptos básicos y la sintaxis de c#. Se va a
 - Bucles
 - Condicionales
 
-Antes de empezar, vamos a definir que es un _Identificador_. Usaremos los identificadores para poder hacer referencia a los elementos que vamos creando (Namespaces, clases, métodos, variables, constantes... )
+Antes de empezar, vamos a definir que es un _Identificador_. Usaremos los identificadores para poder hacer referencia a los elementos que vamos creando (Namespaces, clases, métodos, variables, constantes...)
 
-Cada tipo de elementos tendrá asociada una convención (las veremos mas adelante) pero por regla general deben cumplir estas condiciones:
+Cada tipo de elementos tendrá asociada una convención (las veremos más adelante) pero por regla general deben cumplir estas condiciones:
 
 - Sólo se pueden utilizar letras (minúsculas y mayúsculas), números y guion bajo.
 - Deben comenzar por una letra o un guion bajo.
@@ -33,15 +33,15 @@ C# es un lenguaje fuertemente tipado, por tanto, todas las variables que declare
   - Record
   - Clases
 
-Una variable no es mas que un espacio de memoria que reservamos para almacenar un dato. El tamaño de este espacio de memoria esta definido por el tipo de datos que le demos a la variable. Vamos a ver los tipos de datos mas usados y cuál son sus tamaños en bits:
+Una variable no es más que un espacio de memoria que reservamos para almacenar un dato. El tamaño de este espacio de memoria está definido por el tipo de datos que le demos a la variable. Vamos a ver los tipos de datos más usados y cuáles son sus tamaños en bits:
 
 ![Resumen de tipo de datos](./content/type_summary.png)
 
-Fijándonos en el cuadro, si definimos una variable de tipo float, estamos reservando 32 bits para almacenarla, o si definimos una variable de tipo char reservaríamos 16 bits.
+Fijándonos en el cuadro, si definimos una variable de tipo _float_, estamos reservando 32 bits para almacenarla, o si definimos una variable de tipo _char_ reservaríamos 16 bits.
 
-Pero no nos preocupemos "mucho" por el espacio que vamos reservando de memoria, porque .net se encargará de ir eliminando de la memoria las variables que no vayamos a usar mas.
+Pero no nos preocupemos "mucho" por el espacio que vamos reservando de memoria, porque .net se encargará de ir eliminando de la memoria las variables que no vayamos a usar más.
 
-Bueno, pues ahora vamos a declara nuestras primeras variables. Para ello vamos a abrir el proyecto de hola mundo que hemos creado en el apartado anterior y introducimos el siguiente código:
+Bueno, pues ahora vamos a declarar nuestras primeras variables. Para ello vamos a abrir el proyecto de *hola mundo* que hemos creado en el apartado anterior e introducimos el siguiente código:
 
 ```diff
 namespace hello_world_project
@@ -135,17 +135,17 @@ Otra cosa que deberíamos tener en cuenta es que una variable que no haya sido i
 
 ```
 
-Nos queda por comentar que a partir de la version de C# 3, las variables se se declaran en el ámbito del método pueden tener un "tipo" var implícito. En este caso, es el compilador el que determina el tipo de la variable. Por este motivo, es necesario inicializar el valor en la misma linea donde se declara la variable.
+Nos queda por comentar que a partir de la versión de C# 3, las variables que se declaran en el ámbito del método pueden tener un "tipo" *var* implícito. En este caso, es el compilador el que determina el tipo de la variable. Por este motivo, es necesario inicializar el valor en la misma línea donde se declara la variable.
 
 Lo vemos en el siguiente ejemplo:
 
-```diff 
+```diff
     internal class Program
     {
         static void Main(string[] args)
         {
 -            int a;
-+            var entero = 5; 
++            var entero = 5;
              Console.WriteLine(entero);
              Console.ReadLine();
         }
@@ -155,13 +155,13 @@ Lo vemos en el siguiente ejemplo:
 
 Si ponemos el ratón encima de la variable _entero_, vemos que lo tipa de forma automática. Cabe destacar que una variable _var_ no puede tener varios tipos diferentes. Por ejemplo este código daría error.
 
-```diff 
+```diff
     internal class Program
     {
         static void Main(string[] args)
         {
 
-            var entero = 5; 
+            var entero = 5;
 +           entero = "hola";
             Console.WriteLine(entero);
             Console.ReadLine();
@@ -170,11 +170,11 @@ Si ponemos el ratón encima de la variable _entero_, vemos que lo tipa de forma 
 }
 ```
 
-A todos los efectos la variable _entero_ es de tipo int a partir de su declaración.
+A todos los efectos la variable _entero_ es de tipo *int* a partir de su declaración.
 
 ### Referencia o Valor
 
-Cuando trabajamos con variables tenemos que diferencias si las estamos definiendo por valor o por referencia. Vamos a ver un caso practico:
+Cuando trabajamos con variables tenemos que diferenciar si las estamos definiendo por valor o por referencia. Vamos a ver un caso práctico:
 
 ```csharp
   internal class Program
@@ -197,7 +197,7 @@ Cuando trabajamos con variables tenemos que diferencias si las estamos definiend
   }
 ```
 
-Como podemos ver la variable de _inc_ no ha cambiado, porque al pasarla a la función _increment_ se pasa por valor, es decir se hace una copia. Vamos a cambiar un poco el código:
+Como podemos ver la variable de _inc_ no ha cambiado, porque al pasarla a la función _increment_ se pasa por valor, es decir se hace una copia y por consola el resultado de _value_ sería 3. Vamos a cambiar un poco el código:
 
 ```diff
   internal class Program
@@ -212,7 +212,7 @@ Como podemos ver la variable de _inc_ no ha cambiado, porque al pasarla a la fun
       {
           var inc = 3;
 -         Increment(inc);
-+         Increment(ref inc)        
++         Increment(ref inc);
 
           Console.WriteLine("Value: " + inc);
 
@@ -222,15 +222,15 @@ Como podemos ver la variable de _inc_ no ha cambiado, porque al pasarla a la fun
   }
 ```
 
-Con la palabra reservada _ref_ delante del argumento forzamos a pasar la variable por referencia, es decir ya no se hace una copia sino que se pasa directamente la variable. El resultado cambia, ahora la variable _inc_ si ha cambiado.
+Con la palabra reservada _ref_ delante del argumento forzamos a pasar la variable por referencia, es decir ya no se hace una copia sino que se pasa directamente la variable. El resultado cambia, ahora la variable _inc_ si ha cambiado y la consola nos devuelve que _value_ es igual a 4.
 
-Veremos otro ejemplo en el apartado de _class_
+Veremos otro ejemplo en el apartado de _class_ dentro de Tipos de datos personalizados que vermos en la siguiente sección.
 
 ### Tipos de datos personalizados
 
-Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referencia o por valor. Vamos a ver los tipo de datos personalizados:
+Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referencia o por valor. Vamos a ver los tipos de datos personalizados:
 
-- **Enum**: Es un tipo de valor definido por un conjuntos de constantes con un valor de tipo entero. Por ejemplo:
+- **Enum**: Es un tipo de valor definido por un conjunto de constantes con un valor de tipo entero. Por ejemplo:
 
   ```csharp
   public enum DiasSemana
@@ -257,7 +257,7 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
   }
   ```
 
-  Por último vamos a ver un ejemplo de como podemos obtener el valor o el identificador del enumerado.
+  Por último vamos a ver un ejemplo de cómo podemos obtener el valor o el identificador del enumerado.
 
   ```csharp
     internal class Program
@@ -312,10 +312,10 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
           Console.WriteLine(coords1);
           Console.ReadLine();
       }
-  } 
+  }
   ```
 
-  Una de las características principales de los _struct_ es las variables creadas son de tipo valor. Lo podemos ver en el siguiente ejemplo:
+  Una de las características principales de los _struct_ es qué las variables creadas son de tipo valor. Lo podemos ver en el siguiente ejemplo:
 
   ```diff
   internal class Program
@@ -340,10 +340,10 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
   +       Coords coords2 = coords1;
   +       coords2.X = 12;
           Console.WriteLine(coords1);
-  +       Console.WriteLine(coords2);        
+  +       Console.WriteLine(coords2);
           Console.ReadLine();
       }
-  } 
+  }
   ```
 
   El cambio que realizamos sobre la variable _coords2_ no afecta a _coords1_ porque las variables son copias diferentes.
@@ -399,23 +399,23 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
       static void Main(string[] args)
       {
           Persona persona1 = new Persona("Paco","Sanchez");
-  +       Persona persona2 = persona1;  
-  +       persona2.Nombre = "Fran";    
+  +       Persona persona2 = persona1;
+  +       persona2.Nombre = "Fran";
           Console.WriteLine(persona1);
-  +       Console.WriteLine(persona2);        
+  +       Console.WriteLine(persona2);
           Console.ReadLine();
       }
 
   }
   ```
 
-  El nombre cambia en las dos variables cuando modifico cualquiera de ellas por que ambas apuntan a un mismo espacio de memoria.
+  El nombre cambia en las dos variables cuando modifico cualquiera de ellas porque ambas apuntan a un mismo espacio de memoria.
 
-  Existen otras diferencias cómo: Los _struct_ no aceptan null, con las classes podemos usar herencia, polimorfismo, etc...
+  Existen otras diferencias cómo: Los _struct_ no aceptan *null*, con las *classes* podemos usar herencia, polimorfismo, etc...
 
-  Profundizaremos en todas la posibilidades que nos da las Clases en el siguiente apartado.
+  **Profundizaremos en todas la posibilidades que nos da las Clases en el siguiente apartado.**
 
-- **Record**: En la version 9 de C# se introduce esta palabra reservada. Un objeto declarado como record funciona de forma muy similar a como lo hace struct, pero lo hará por referencia. Es decir está entre los _struct_ y las _clases_
+- **Record**: En la version 9 de C# se introduce esta palabra reservada. Un objeto declarado como record funciona de forma muy similar a como lo hace *struct*, pero lo hará por referencia. Es decir está entre los _struct_ y las _clases_.
 
   Vamos a empezar a analizarlo. Creamos un struct:
 
@@ -425,30 +425,30 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
     public struct Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
       otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-      
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
-  Como ya hemos visto se copia la variable y cuando se modifica una no implica la modificación de la otra. Vamos a ver que pasa si comprobamos si son iguales estas variables.
+  Como ya hemos visto se copia la variable y cuando se modifica una no implica la modificación de la otra. Vamos a ver qué pasa si comprobamos si son iguales estas variables.
 
   ```diff
   internal class Program
@@ -456,33 +456,33 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
     public struct Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
       otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
   +   Console.WriteLine("Equals: " + person.Equals(otherPerson));
   +   Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
-  Lo primero que observamos es que con _struct_ no podemos usar el operador de igual porque no esta permitido (si fuera clases si nos dejaría). Vamos a comentar esa linea y vemos el resultado.  
+  Lo primero que observamos es que con _struct_ no podemos usar el operador de igual porque no esta permitido (si fuera clases si nos dejaría). Vamos a comentar esa línea y vemos el resultado.
 
   ```diff
   internal class Program
@@ -490,34 +490,34 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
     public struct Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
       otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
       Console.WriteLine("Equals: " + person.Equals(otherPerson));
   -   Console.WriteLine("Reference: " + (person == otherPerson));
   +   // Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
-  Como hemos modificado el nombre el resultado es _null_ pero ¿qué pasa si no modificamos el nombre?
+  Como hemos modificado el nombre el resultado es _false_ pero ¿qué pasa si no modificamos el nombre?
 
   ```diff
   internal class Program
@@ -525,34 +525,34 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
     public struct Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
   -   otherPerson.Name = "Peter";
   +   //  otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
       Console.WriteLine("Equals: " + person.Equals(otherPerson));
       // Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
-  Perfecto, el resultado es true porque ambas variables tienen el mismo contenido. Bueno vamos a ver que pasa si hacemos los mismo con clases (vamos a descomentar el código):
+  Perfecto, el resultado es true porque ambas variables tienen el mismo contenido. Bueno vamos a ver qué pasa si hacemos lo mismo con clases (vamos a des comentar el código):
 
   ```diff
   internal class Program
@@ -561,37 +561,37 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
   + public class Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
   -   // otherPerson.Name = "Peter";
   +   otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
       Console.WriteLine("Equals: " + person.Equals(otherPerson));
   -    // Console.WriteLine("Reference: " + (person == otherPerson));
   +   Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
   En el caso de clases siempre nos dará _true_ cuando comparemos las variables, porque ambas están apuntando a la misma referencia. Y ahora llega el momento de comprobar que pasará con record
 
-  > Ojo: Este ejemplo solo es válido si hemos selecionado la version de .Net 5.0 a la hora de crear la solución.
+  > Ojo: Este ejemplo solo es válido si hemos seleccionado a  partir de la versión .Net 5.0 a la hora de crear la solución.
 
   ```diff
   internal class Program
@@ -600,35 +600,35 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
   + public record Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
       var otherPerson = person;
       otherPerson.Name = "Peter";
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
       Console.WriteLine("Equals: " + person.Equals(otherPerson));
       Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
   El resultado es el mismo con las clases porque es una variable por referencia, es decir al hacer la asignación estamos haciendo que ambas variables tenga la misma referencia y por tanto si modificamos una se modifica las dos.
 
-  ¿Pero que pasará en el siguiente ejemplo?
+  ¿Pero qué pasará en el siguiente ejemplo?
 
   ```diff
   internal class Program
@@ -636,30 +636,30 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
     public record Person
     {
         public string Name;
-
+  
         public Person(string name) {
           Name = name;
-        } 
-
+        }
+  
         public override string ToString() => $"Mi nombre es {Name}";
     };
-
+  
     static void Main(string[] args)
     {
       var person = new Person("John");
   -   var otherPerson = person;
   -   otherPerson.Name = "Peter";
   +   var otherPerson = new Person("John");
-
+  
       Console.WriteLine(person);
       Console.WriteLine(otherPerson);
-
+  
       Console.WriteLine("Equals: " + person.Equals(otherPerson));
       Console.WriteLine("Reference: " + (person == otherPerson));
-
+  
       Console.ReadLine();
     }
-
+  
   }
   ```
 
@@ -667,7 +667,7 @@ Ahora que ya sabemos la diferencia que hay entre los tipos de datos por referenc
 
 ## Operadores
 
-C# proporciona una sere de operadores compatibles con los tipos integrados que permiten realizar operaciones básicas. Se pueden clasificar en:
+C# proporciona una serie de operadores compatibles con los tipos integrados que permiten realizar operaciones básicas. Se pueden clasificar en:
 
 - Aritméticos: operaciones aritméticas con operandos numéricos.
 - Comparación: comparan operandos numéricos.
@@ -698,7 +698,7 @@ Vamos a ver algunos ejemplos:
 }
 ```
 
-También existe dentro los operadores aritmético los operadores de incremento o decremento (++, --) que se pueden usar tanto a la derecha como a la izquiera. Vemos la diferencia con un ejemplo:
+También existe dentro los operadores aritméticos los operadores de incremento o decremento (++, --) que se pueden usar tanto a la derecha como a la izquierda. Vemos la diferencia con un ejemplo:
 
 ```c#
  public class Program
@@ -707,7 +707,7 @@ También existe dentro los operadores aritmético los operadores de incremento o
     {
         var a = 1;
         var b = 1;
-        
+
         Console.WriteLine(++a);
         Console.WriteLine(b++);
 
@@ -716,7 +716,7 @@ También existe dentro los operadores aritmético los operadores de incremento o
 }
 ```
 
-Cuando usamos el operador de incremento a la izquierda el valor se actualiza en esa misma linea por tanto en el ejemplo se muestra el valor _2_, pero si lo usamos a la derecha, el resultado no se actualiza hasta las siguiente consulta a la variable, por tanto en el ejemplo sigue teniendo el valor _1_.
+Cuando usamos el operador de incremento a la izquierda el valor se actualiza en esa misma línea, por tanto en el ejemplo se muestra el valor _2_, pero si lo usamos a la derecha, el resultado no se actualiza hasta las siguiente consulta a la variable, por tanto en el ejemplo sigue teniendo el valor _1_.
 
 Otra forma que podemos utilizar para hacer incremento o decremento de N unidades es usando el operador += + -=. Lo vemos con el ejemplo:
 
@@ -730,7 +730,7 @@ Otra forma que podemos utilizar para hacer incremento o decremento de N unidades
 
         a += 10;
         b -= 10;
-        
+
         Console.WriteLine(a);
         Console.WriteLine(b);
 
@@ -739,7 +739,7 @@ Otra forma que podemos utilizar para hacer incremento o decremento de N unidades
 }
 ```
 
-Por último, podemos utilizar el operador aritmético _+_ para concatenar cadenas, pero se suele utilizar la interpolación con el operador $. Lo vemos con el siguiente ejemplo:
+Por último, podemos utilizar el operador aritmético _+_ para concatenar cadenas de texto, pero se suele utilizar la interpolación con el operador $. Lo vemos con el siguiente ejemplo:
 
 ```c#
  public class Program
@@ -750,7 +750,7 @@ Por último, podemos utilizar el operador aritmético _+_ para concatenar cadena
         var b = "Lemoncoders";
 
         var cad = $"{a}, {b}";
-                    
+
         Console.WriteLine(cad);
 
         Console.ReadLine();
@@ -771,24 +771,24 @@ Pero es posible que en ocasiones necesitamos copiar un valor en una variable o p
 
 En C#, se pueden realizar las siguientes conversiones de tipos:
 
-- Conversion explicita (Casting). Se produce entre tipos incompatibles por lo que tenemos que especificar a que tipo se va a convertir o crearnos nuestro propio método.
-- Conversión implícita (Sin notación). Se produce entre tipos compatibles pero con diferentes alcance.
+- **Conversión explicita (Casting)**: se produce entre tipos incompatibles por lo que tenemos que especificar a qué tipo se va a convertir o crearnos nuestro propio método.
+- **Conversión implícita (Sin notación)**: se produce entre tipos compatibles pero con diferentes alcance.
 
-Un ejemplo de conversion implícita puede ser:
+Un ejemplo de conversión implícita puede ser:
 
 ```c#
 int num = 2147483647;
 long bigNum = num;
 ```
 
-Ojo que si lo hacemos al revés (de long a int) necesitaríamos una conversion explicita y si el numero no se puede representar con int nos daría un valor totalmente diferente al esperado.
+Ojo que si lo hacemos al revés (de long a int) necesitaríamos una conversión explicita y si el número no se puede representar con int nos daría un valor totalmente diferente al esperado.
 
 ```c#
 long bigNum = 2147483647;
 int num = (int)bigNum;
 ```
 
-Por otro lado, para hacer conversiones de tipos mas "potentes" tenemos a nuestra disposición Clases o Métodos para por ejemplo comprobar si es posible hacer una conversion sin lanzarnos una excepción.
+Por otro lado, para hacer conversiones de tipos más "potentes" tenemos a nuestra disposición Clases o Métodos para, por ejemplo, comprobar si es posible hacer una conversión sin lanzarnos una excepción.
 
 ```c#
 string x = "10";
@@ -816,24 +816,24 @@ Para ello podemos utilizar:
 - Operadores lógicos (|| , &&)
 - Operador de negación (!)
 
- ```csharp
- public class Program
+```csharp
+public class Program
 {
-    public static void Main(string[] args)
-    {
-        Console.WriteLine("Introduce tu edad:");
-        var edadUsuario = Console.ReadLine();
-        var edad = int.TryParse(edadUsuario);
+   public static void Main(string[] args)
+   {
+       Console.WriteLine("Introduce tu edad:");
+       var edadUsuario = Console.ReadLine();
+       var edad = int.TryParse(edadUsuario);
 
-        if(edad > 18)
-        {
-            Console.WriteLine("Eres mayor de edad");
-        }
+       if(edad > 18)
+       {
+           Console.WriteLine("Eres mayor de edad");
+       }
 
-        Console.ReadLine();
-    }
+       Console.ReadLine();
+   }
 }
- ```
+```
 
 Si sólo hay una linea de código en el bloque de la condición se puede eliminar las llaves (pero no es recomendable)
 
@@ -841,74 +841,75 @@ Si sólo hay una linea de código en el bloque de la condición se puede elimina
 
 Si queremos ejecutar un bloque de código u otro según una condición, podemos utilizar la estructura condicional _if...else_:
 
- ```csharp
+```csharp
 public class Program
 {
-    public static void Main(string[] args)
-    {
-        Console.WriteLine("Introduce tu edad:");
-        var edadUsuario = Console.ReadLine();
-        var edad = int.TryParse(edadUsuario);
-        
-        if(edad > 18)
-        {
-            Console.WriteLine("Eres mayor de edad");
-        }
-        else
-        {
-            Console.WriteLine("Eres menor de edad");
-        }
+   public static void Main(string[] args)
+   {
+       Console.WriteLine("Introduce tu edad:");
+       var edadUsuario = Console.ReadLine();
+       var edad = int.TryParse(edadUsuario);
 
-        Console.ReadLine();
-    }
+       if(edad > 18)
+       {
+           Console.WriteLine("Eres mayor de edad");
+       }
+       else
+       {
+           Console.WriteLine("Eres menor de edad");
+       }
+
+       Console.ReadLine();
+   }
 }
+```
 
 - **if-elseif**
 
-Cuando necesitamos introducir otra estructura condicional dentro de algún bloque _if_, estamos anidando anidando sentencias _if_. Esto se considera una mala practica, ya que impacta en la legibilidad de nuestro código. Para ello se puede usar la estructura condicional _if...elseif_:
+Cuando necesitamos introducir otra estructura condicional dentro de algún bloque _if_, estamos anidando sentencias _if_. Esto se considera una mala práctica, ya que impacta en la legibilidad de nuestro código. 
 
- ```csharp
+```csharp
 public class Program
 {
-    public static void Main(string[] args)
-    {
-        Console.WriteLine("Introduce tu edad:");
-        var edadUsuario = Console.ReadLine();
-        var edad = int.TryParse(edadUsuario);
+   public static void Main(string[] args)
+   {
+       Console.WriteLine("Introduce tu edad:");
+       var edadUsuario = Console.ReadLine();
+       var edad = int.TryParse(edadUsuario);
 
-        if(edad >= 18)
-        {
-            Console.WriteLine("Eres adulto");
-        }
-        else  
-        {
-            if (12 < edad && edad < 18) {
-                Console.WriteLine("Eres adolescente");
-            }
-            else {
-                Console.WriteLine("Eres un niño");
-            }
-        }
+       if(edad >= 18)
+       {
+           Console.WriteLine("Eres adulto");
+       }
+       else
+       {
+           if (12 < edad && edad < 18) {
+               Console.WriteLine("Eres adolescente");
+           }
+           else {
+               Console.WriteLine("Eres un niño");
+           }
+       }
 
-        Console.ReadLine();
-    }
+       Console.ReadLine();
+   }
 }
- ```
-
- ```diff
+````
+Para ello se puede usar la estructura condicional _if...elseif_:
+```diff
 public class Program
 {
-    public static void Main(string[] args)
-    {
-        Console.WriteLine("Introduce tu edad:");
-        var edadUsuario = Console.ReadLine();
-        var edad = int.TryParse(edadUsuario);
+   public static void Main(string[] args)
+   {
+       Console.WriteLine("Introduce tu edad:");
+       var edadUsuario = Console.ReadLine();
+       var edad = int.TryParse(edadUsuario);
 
-        if(edad >= 18)
-        {
-            Console.WriteLine("Eres adulto");
-        }
--       else  
+       if(edad >= 18)
+       {
+           Console.WriteLine("Eres adulto");
+       }
+-       else
 -       {
 -           if (12 < edad && edad < 18) {
 -               Console.WriteLine("Eres adolescente");
@@ -926,14 +927,14 @@ public class Program
 +           Console.WriteLine("Eres un niño");
 +       }
 
-        Console.ReadLine();
-    }
+       Console.ReadLine();
+   }
 }
- ```
+```
 
 - **switch**
 
-Otra estructura condicional que podemos utilizar para ejecutar diferentes bloques de código es el _Switch_. En esta caso switch necesita una expresión de control que utilizará para evaluar, en el caso de coincidir con algún caso definido ejecutará el bloque asociado. Por ejemplo:
+Otra estructura condicional que podemos utilizar para ejecutar diferentes bloques de código es el _Switch_. En este caso *switch* necesita una expresión de control que utilizará para evaluar, en el caso de coincidir con algún caso definido ejecutará el bloque asociado. Por ejemplo:
 
 ```csharp
 public class Program
@@ -964,7 +965,7 @@ public class Program
         Console.ReadLine();
     }
 }
- ```
+```
 
 Es importante destacar que necesitamos utilizar la palabra reservada _break_ para forzar la salida del _switch_ en otro caso seguiría evaluando las siguientes expresiones.
 
@@ -994,7 +995,7 @@ El operador condicional (?), también conocido como operador condicional ternari
 
 - **Operador de valor nulo (Null coalescing operator)**
 
-Con este operador podemos asegurar que un valor es diferente de nulo, y en el caso de que sea nulo le damos un valor por defecto. Es decir, el una sola linea el operador recibe dos operandos y devuelve el primero que no sea nulo.
+Con este operador podemos asegurar que un valor es diferente de nulo, y en el caso de que sea nulo le damos un valor por defecto. Es decir, en una sola línea el operador recibe dos operandos y devuelve el primero que no sea nulo.
 
 ```csharp
 public class Program
@@ -1008,9 +1009,9 @@ public class Program
         nombre = "Pepe";
 
         persona = nombre ?? "persona sin identificar";
-        
+
         Console.WriteLine(persona);
-        
+
         Console.ReadLine();
     }
 }
@@ -1078,7 +1079,6 @@ public class Program
         {
             Console.WriteLine(numero);
         }
-
         Console.ReadLine();
     }
 }
@@ -1086,7 +1086,7 @@ public class Program
 
 - **foreach**
 
-Este bucle se utiliza para recorrer colecciones de datos. (lo veremos mas adelante)
+Este bucle se utiliza para recorrer colecciones de datos. (Lo veremos más adelante)
 
 ```csharp
 public class Program
@@ -1100,12 +1100,11 @@ public class Program
             "Pepe",
             "Maria"
         };
-        
+
         foreach(var nombre in nombres)
         {
             Console.WriteLine($"El nombre es: {nombre}");
         }
-
         Console.ReadLine();
   }
 }
