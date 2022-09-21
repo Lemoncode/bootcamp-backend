@@ -8,21 +8,36 @@ En este apartado vamos a ver los conceptos básicos de cómo crear nuestra prime
 
 Vamos a descargar la última versión _Visual Studio Community_ del siguiente [enlace](https://visualstudio.microsoft.com/es/vs/community/).
 
-Podemos usar la licencia de la versión community si cumplimos las siguiente restricciones:
+Podemos usar la licencia de la versión community si cumplimos las siguientes restricciones:
 
 - Desarrolladores individuales, es decir, los que trabajan por su cuenta y no para una empresa, y los que programan por afición o gusto, pero no por trabajo.
-- Los estudiantes, y los alumnos de empresas como campusMVP, que están aprendiendo a desarrollar usando Visual Studio.
 - Los investigadores y aquellos que lo usan para ciencia de datos, crear aplicaciones que les ayuden con sus investigaciones, etc... que lo utilizan desde un entorno académico.
 - Proyectos Open Source. Si el proyecto que desarrollas es de código abierto, entonces lo puedes utilizar sin problema, aunque seáis muchos colaborando en él.
 - Organizaciones no empresariales. Si tu empresa tiene menos de 250 usuarios de PC (sean o no programadores) y factura menos de 1 millón de dólares, según Microsoft no sois "empresa" y podréis usar Visual Studio Community sin problemas hasta un máximo de 5 usuarios al mismo tiempo.
 
 ## Tipos de proyectos de Visual Studio
 
-Una vez instalado, vamos a iniciar la herramienta y creamos nuestro primer proyecto.
+Una vez instalado, vamos a iniciar la herramienta y nos aparecen diferentes instalaciones que podemos realizar. 
 
-![Crear un proyecto](./content/new_project.png)
+Vamos a seleccionar _Desarrollo de ASP.NET y web_ en _Cargas de Trabajo_:
 
-El siguiente paso que nos encontramos es el de elegir que tipo de proyecto vamos a crear. Tenemos un amplio abanico de posibilidades (dependiendo de los complementos que hayamos elegido a la hora de hacer la instalación) pero los más básicos son:
+<img src="./content/install-option1.png" style="zoom:67%;"  >
+
+
+
+En _Componentes individuales_, en _Buscar componentes_, escribimos _.NET 5.0_ seleccionamos la opción como podemos ver en la siguiente imagen e instalamos:
+
+<img src="./content/install-option2.png" style="zoom:67%;"  > 
+
+Una vez que tenemos todo instalado, vamos a arrancar Visual Studio y nos aparece la siguiente pantalla, si queremos registrarnos podemos hacerlo, o _omitirlo por el momento_, y por último seleccionamos el tema que queremos elegir e iniciamos la aplicación.
+
+<img src="./content/omit-register.png" style="zoom:67%;"  > 
+
+Vamos ya a empezar a trabajar con _Visual Studio_ y seleccionamos crear un nuevo proyecto.
+
+<img src="./content/new_project.png" style="zoom:67%;"  >
+
+El siguiente paso que nos encontramos es el de elegir qué tipo de proyecto vamos a crear. Tenemos un amplio abanico de posibilidades (dependiendo de los complementos que hayamos elegido a la hora de hacer la instalación) pero los más básicos son:
 
 - Aplicaciones de consola.
 - Aplicaciones Windows/WPF.
@@ -38,19 +53,25 @@ Vamos a seleccionar como tipo de proyecto "Aplicación de consola" (versión net
 - Ubicación.
 - Nombre de la solución.
 
-![Datos básicos del proyecto](./content/basic_data_project.png)
+<img src="./content/basic_data_project.png" style="zoom:67%;"  >
 
-> **Pregunta a los estudiantes** ¿Qué diferencia hay entre _solución_ y _proyecto_?.
+Ahora seleccionamos _*.NET 5.0*_ y aunque nos diga _Out of support_ seleccionamos la opción. Vamos a utilizar esta versión de _.NET_ porque el código es más intuitivo y fácil de entender. Para ver más información sobre esto podemos consultar el siguiente [enlace](https://learn.microsoft.com/es-es/dotnet/core/tutorials/top-level-templates). 
+
+Y ya podemos crear nuestro primer proyecto:
+
+<img src="./content/basic_data_project2.png" style="zoom:67%;"  >
+
+> **Pregunta a los estudiantes** ¿Qué diferencia hay entre _solución_ y _proyecto_?
 
 Una solución es un conjunto de proyectos. Cada proyecto de una solución dará como resultado un ensamblado.
 
 Sería conveniente dar un nombre diferente a la solución y al proyecto.
 
-El último paso es seleccionar el framework con el que vamos a crear nuestro proyecto.
+El último paso es seleccionar el *framework* con el que vamos a crear nuestro proyecto.
 
 ## Analizando la creación base de nuestra aplicación
 
-Vamos a ver cual es el resultado que obtenemos:
+Vamos a ver cuál es el resultado que obtenemos:
 
 ### A nivel de carpeta
 
@@ -80,12 +101,12 @@ Vamos a ver el código generado:
 
 Antes de meternos a explicar conceptos como clases, métodos, vamos a ver conceptos básicos que se pueden observar en este código inicial:
 
-- El lenguaje C# es case-sensitive. Cuando creamos una variable, clase, método... el identificador que asignamos diferencia entre las mayúsculas y minúsculas.
-- Para limitar bloques de código utilizamos { y }.
+- El lenguaje *C#* es *case-sensitive*. Cuando creamos una variable, clase, método... el identificador que asignamos diferencia entre las mayúsculas y minúsculas.
+- Para limitar bloques de código utilizamos *{ y }*.
 - Las instrucciones terminan con ;
 - Si necesitamos incluir comentarios en nuestro código podemos utilizar // o /* y */.
 - Con _namespace_ podemos organizar las clases que vamos a ir creando.
-- Si necesitamos una clase que no está en nuestro _namespace_ podemos acceder a ella si hacemos un _using_ de su _namespace_
+- Si necesitamos una clase que no está en nuestro _namespace_ podemos acceder a ella si hacemos un _using_ de su _namespace_.
 
 ## Compilar
 
@@ -119,9 +140,13 @@ Vale, ya podemos ejecutar nuestra aplicación. Lo podemos hacer de varias formas
 
 - Pulsando la tecla F5
 
-Pero, ojo nuestro código no funciona! En la ventana de _Output_ vemos como se ha detectado un problema en nuestro código. Hemos escrito mal el nombre del método _Readline_ por tanto la aplicación no se puede ejecutar.
+Pero, ojo nuestro código ¡no funciona! En la ventana de _Output_ vemos como se ha detectado un problema en nuestro código. Hemos escrito mal el nombre del método _Readline_ por tanto la aplicación no se puede ejecutar.
 
-Desde la ventana de _Error List_ podemos movernos de forma rápida a la linea donde se ha detectado el problema. Vamos a solucionarlo:
+Desde la ventana de _Error List_ podemos movernos de forma rápida a la línea donde se ha detectado el problema. 
+
+<img src="./content/error-readline.png" style="zoom:67%;"  >
+
+Vamos a solucionarlo:
 
 ```diff
 namespace hello_world_project
@@ -130,11 +155,11 @@ namespace hello_world_project
     {
         static void Main(string[] args)
         {
-+            var a = 1;
-+            a = a + 1;
-+            Console.WriteLine(a);
--            Console.ReaLine();
-+            Console.ReadLine();
+            var a = 1;
+            a = a + 1;
+            Console.WriteLine(a);
+-           Console.ReaLine();
++           Console.ReadLine();
         }
     }
 }
@@ -146,23 +171,23 @@ Ahora si podemos ejecutar la aplicación y ver el resultado por consola.
 
 Una herramienta muy importante que tendremos que ir usando a lo largo de todo el desarrollo de nuestra aplicación es la depuración. Visual Studio nos permite depurar (_debug_) de forma muy sencilla. Vamos a verlo en nuestro código.
 
-Tal vez nos interese ver el valor de la variable a antes de hacer el commando _WriteLine_ para ello nos colocaremos en la linea anterior y pulsamos el botón derecho del ratón. En el menu contextual que nos aparece podemos añadir el breakpoint pulsando _Breakpoint > Insert Breakpoint_
+Tal vez nos interese ver el valor de la variable a antes de hacer el commando _WriteLine_ para ello nos colocaremos en la linea anterior y pulsamos el botón derecho del ratón. En el menú contextual que nos aparece podemos añadir el breakpoint pulsando _Breakpoint > Insert Breakpoint_
 
 ![Insertar breakpoint desde el menu](./content/add_breakpoint_menu.png)
 
-Otra forma mas sencilla es simplemente haciendo click en la linea que queramos insertar nuestro breakpoint a la izquierda del numero (sobre la banda gris)
+Otra forma más sencilla es simplemente haciendo clic en la línea que queramos insertar nuestro breakpoint a la izquierda del número (sobre la banda gris)
 
 ![Insertar breakpoint](./content/add_breakpoint.png)
 
 Ahora ya podemos arrancar otra vez nuestra aplicación pulsando F5.
 
-¿Qué ha pasado? Nuestro código se ha parado en la linea donde teníamos nuestro breakpoint.
+¿Qué ha pasado? Nuestro código se ha parado en la línea donde teníamos nuestro breakpoint.
 
 ![Breakpoint activo](./content/active_breakpoint.png)
 
 En el estado de depuración disponemos de muchas herramientas. Podemos destacar dos grupos:
 
-- Herramienta de diagnostico (Diagnostic Tool): Donde podemos ver datos de uso de memoria, procesador ... etc.
+- Herramienta de diagnóstico (Diagnostic Tool): Donde podemos ver datos de uso de memoria, procesador... etc.
 
 ![Herramienta de diagnostico](./content/diagnostic_tool.png)
 
@@ -170,7 +195,7 @@ En el estado de depuración disponemos de muchas herramientas. Podemos destacar 
 
 ![Estado de variables](./content/watch_variable.png)
 
-Vamos a cambiar el valor de la variable i. Para ello hacemos un doble click sobre la columna _value_ y ponemos 10 como nuevo valor y pulsamos enter.
+Vamos a cambiar el valor de la variable i. Para ello hacemos un doble clic sobre la columna _value_ y ponemos 10 como nuevo valor y pulsamos enter.
 
 En este punto podemos hacer las siguientes acciones:
 
@@ -184,7 +209,7 @@ Por otro lado, si no necesitamos el modo depuración podemos ejecutar la aplicac
 
 ## Otras herramientas
 
-### Intelisense
+### Intellisense
 
 Visual Studio dispone de una herramienta muy interesante que nos propone sugerencias a la hora de escribir nuestro código.
 
@@ -198,7 +223,7 @@ Otras herramientas muy útiles son las acciones rápidas o refactorización de c
 - ![Bombilla](./content/lightbulb.png): indica que hay acciones disponibles que debe llevar a cabo para mejorar el código.
 - ![Bombilla con error](./content/lightbulb_error.png): indica que hay una acción disponible que corrige un error del código.
 
-Vamos a modificar nuestro código para ver como se utilizan estas herramientas:
+Vamos a modificar nuestro código para ver cómo se utilizan estas herramientas:
 
 ```diff
 namespace hello_world_project
@@ -217,15 +242,15 @@ namespace hello_world_project
 }
 ```
 
-Aparece un error porque no sabe como convertir un valor double a int (lo veremos mas adelante). Si ponemos el ratón encima del error y esperamos unos segundo aparecerá la bombilla indicando que hay un error y nos propone las soluciones disponibles.
+Aparece un error porque no sabe cómo convertir un valor _double_ a _int_ (lo veremos más adelante). Si ponemos el ratón encima del error, y si esperamos unos segundos, aparecerá la bombilla indicando que hay un error y nos va a proponer las soluciones disponibles.
 
 ![Solución de problema](./content/fix_cast_problem.png)
 
 Seleccionamos la opción _Add explicit cast_ para hacer el casting de forma automática y el problema queda solventado.
 
-Otra acción que podemos realizar es la refactorizacion de código. Vamos a verlo en el ejemplo.
+Otra acción que podemos realizar es la refactorización de código. Vamos a verlo en el ejemplo.
 
-Seleccionamos **(int)(a * Math.PI)** y esperamos unos segundo a que aparezca el destornillador. Al hacer click sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
+Seleccionamos **(int)(a * Math.PI)** y esperamos unos segundo a que aparezca el destornillador. Al hacer clic sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
 
 ![Refactorización](./content/refactor.png)
 
