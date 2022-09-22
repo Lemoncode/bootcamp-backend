@@ -821,16 +821,18 @@ public class Program
 {
    public static void Main(string[] args)
    {
-       Console.WriteLine("Introduce tu edad:");
-       var edadUsuario = Console.ReadLine();
-       var edad = int.TryParse(edadUsuario);
-
-       if(edad > 18)
        {
-           Console.WriteLine("Eres mayor de edad");
-       }
+            Console.WriteLine("Introduce tu edad:");
+            var edadUsuario = Console.ReadLine();
+            var edad = Convert.ToInt32(edadUsuario);
 
-       Console.ReadLine();
+            if (edad > 18)
+            {
+                Console.WriteLine("Eres mayor de edad");
+            }
+
+            Console.ReadLine();
+        }
    }
 }
 ```
@@ -848,7 +850,7 @@ public class Program
    {
        Console.WriteLine("Introduce tu edad:");
        var edadUsuario = Console.ReadLine();
-       var edad = int.TryParse(edadUsuario);
+       var edad = Convert.ToInt32(edadUsuario);
 
        if(edad > 18)
        {
@@ -875,7 +877,7 @@ public class Program
    {
        Console.WriteLine("Introduce tu edad:");
        var edadUsuario = Console.ReadLine();
-       var edad = int.TryParse(edadUsuario);
+       var edad = Convert.ToInt32(edadUsuario);
 
        if(edad >= 18)
        {
@@ -903,7 +905,7 @@ public class Program
    {
        Console.WriteLine("Introduce tu edad:");
        var edadUsuario = Console.ReadLine();
-       var edad = int.TryParse(edadUsuario);
+       var edad = Convert.ToInt32(edadUsuario);
 
        if(edad >= 18)
        {
@@ -983,8 +985,8 @@ El operador condicional (?), también conocido como operador condicional ternari
     public static void Main(string[] args)
     {
         Console.WriteLine("Introduce tu edad:");
-        var edad = int.TryParse(Console.ReadLine());
-
+        var edad = Convert.ToInt32(Console.ReadLine());
+        
         var resultado = edad >= 18 ? "Eres mayor de edad" : "Eres menor de edad";
 
         Console.WriteLine(resultado);
@@ -1052,23 +1054,23 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        int numero;
+         int numero;
+        
+            do
+            {
+                Console.WriteLine("Introduce un número entre 0 y 5:");
+                numero = Convert.ToInt32(Console.ReadLine());
+            } while (numero >= 5 || numero < 0);
 
-        do
-        {
-            Console.WriteLine("Introduce un número entre 0 y 5:");
-            numero = int.TryParse(Console.ReadLine());
-        } while (numero >= 5 || numero < 0);
-
-        Console.WriteLine($"El número introducido es: {numero}");
-        Console.ReadLine();
+            Console.WriteLine($"El número introducido es: {numero}");
+            Console.ReadLine();
     }
 }
 ```
 
 - **for**
 
-En este caso, además de la condición se incluye la inicialización de la variable, así como el incremento o decremento de la misma. Si no se incluye el incremento, toma el valor por defecto de 1.
+En este caso, además de la condición se incluye la inicialización de la variable, así como el incremento o decremento de la misma. 
 
 ```csharp
 public class Program

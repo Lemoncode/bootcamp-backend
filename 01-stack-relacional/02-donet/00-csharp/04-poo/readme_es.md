@@ -8,14 +8,14 @@ Un paradigma es una forma de afrontar la construcción de código software. Exis
 
 Una clase es una plantilla que creamos para abstraer un concepto, y a la que podemos definir propiedades, métodos y eventos.
 
-El objeto es la instancia de una clase a que podemos asignarles unas propiedades e invocar a sus métodos.
+El objeto es la instancia de una clase a la cuál podemos asignarles unas propiedades e invocar a sus métodos.
 
 Ejemplo: una clase podría ser el plano de un motor, y un objeto son los distintos motores que se pueden construir usando dicho plano.
 
 ¿Qué nos permite el paradigma de la programación Orientada a Objeto?:
 
 - **Encapsulación**: Agrupa datos y código en una misma clase
-- **Herencia**: se crea una nueva clase a partir de otra ya existente,de la cual se heredan todos los miembros y métodos, y puede modificarse agregando o modificando propiedades y métodos heredados. Las clases creadas a partir de otras existentes se llaman **clases derivadas**
+- **Herencia**: se crea una nueva clase a partir de otra ya existente,de la cual se heredan todos las propiedades y métodos, y puede modificarse agregando o modificando propiedades y métodos heredados. Las clases creadas a partir de otras existentes se llaman **clases derivadas**
 - **Polimorfismo** permite utilizarse diferentes clases de forma intercambiable.
 
 Vamos a analizar la definición de una clase básica
