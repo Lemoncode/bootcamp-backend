@@ -1,74 +1,92 @@
 # Api Rest
 
-## Pedir datos a servidor
+## Introducción
+
+### Pedir datos a servidor
 
 Cuando realizamos peticiones a un servidor web las hacemos utilizando el protocolo HTTP.
 
 Pasos:
 
-- Se abre conexión y realiza la petición.
-- Se manda la respuesta.
+- Se abre conexión y realiza la petición(request) al servidor.
+- Se recupera los datos que están en la memoria del servidor, o el servidor tiene que consultar los datos de la base de datos.
+- Se manda la respuesta al cliente, con datos o con un error que haya podido ocurrir en el servidor.
 - Se cierra la conexión.
 - Cada petición es independiente.
 
+### Protocolo HTTP
 
+Vamos a ver un ejemplo de Protocolo HTTP:
 
-## Protocolo HTTP
+<img src="./content/protocolo-http.png" alt="protocolo-http" style="zoom:67%;" />
 
-## <img src="./content/01.png" alt="01" style="zoom:67%;" />
+#### Request
 
-## HTTP status codes
+Vamos a ver que tenemos cuando realizamos una petición:
+
+- **_Método_**: en este caso es _GET_, pero podemos tener otros como _POST_, _PUT_, _DELETE_, _DISPATCH_.
+- **Dirección del recurso**: hacia donde queremos mandar la petición. _HTTP_.
+- **Versión del protocolo**: en este caso es la 1.1.
+- **Cabeceras**: donde podemos incluir diferentes datos, desde dirección de la página que solicitamos, tipo de navegador que realiza la petición, el idioma que estamos utilizando, entre otros muchos datos.
+- **Body**: se utiliza para enviar datos al servidor, hacer un _update_, borrar datos del servidor,...etc.
+
+#### Response
+
+El servidor me devuelve una respuesta, que tiene las siguientes partes:
+
+- **Versión del protocolo**: en este caso sería la 1.1. como en la _request_.
+- **Código del estado:** en este caso un _200_, ahora en el siguiente ejemplo veremos los diferentes códigos que tenemos y que significan cada uno de ellos.
+- **Mensaje de estado:** que va asociado al código de estado, pero que podemos personalizarlo si lo vemos conveniente.
+- **Headers**: donde irían incluidos diferentes datos, como el _content-type_ donde nos informa del formato de la respuesta, _XML_, _JSON_,... El servidor nos manda información a través de ellas y otras veces somos nosotros los que añadimos información a las cabeceras.
+- **Payload**: Es opcional, nos devuelve el contenido de la respuesta.
+
+### HTTP status codes
 
 Necesitamos informar a cliente de que ha pasado con su petición.
 
-- 1xx: Respuestas informativas
-- 2xx: Respuestas con éxito
-  - 200: Todo ha ido bien.
-  - 201: La petición  ha sido completada, creación nuevo recurso.
-  - 204:  La petición se ha completado con éxito, pero respuesta ningún contenido.
+- 1xx: Respuestas informativas.
+- 2xx: Respuestas con éxito.
 
-- 3xx: Redireccionamiento. Suele usarse cuando queremos redireccionar algo de la aplicación
+  - 200: Todo ha ido bien.
+  - 201: La petición ha sido completada, creación de un nuevo recurso.
+  - 204: La petición se ha completado con éxito, pero respuesta no tiene ningún contenido.
+
+- 3xx: Redireccionamiento. Suele usarse cuando queremos redireccionar algo de la aplicación.
+
   - 301, 308: Redirección permanente. El recurso solicitado se encuentra en otro lugar y la redirección es permanente.
   - 307: Redirección temporal.
   - 304: Temas de Caché.
 
 - 4xx: Error en la request del cliente.
+
   - 404: URL no encontrada.
-  - 401: error autentificación.
-  - 403: usuario está logrado pero no tiene permisos para ese recurso.
+  - 401: error de autenticación.
+  - 403: usuario está logado pero no tiene permisos para ese recurso.
 
 - 5xx: Error del servidor.
   - 500: internal server error.
   - 501: método no implementado.
   - 503: servicio caído y no responde.
 
-## Responses
-
-Además del status code.
-
-- **Headers**. El servidor tendría esa cabecera, otras veces nosotros mandamos esas cabeceras.
-- **Content**-Type Header: nos dice el formato de la respuesta. XML, JSon...
-- **Payload**: Es opcional, es el contenido de la respuesta.
-
 ## Soap Vs Rest
 
-Ambas caen dentro del cajón de "SOA": Service Oriented Architecture.
+Ambas caen dentro del cajón de "_SOA_": _Service Oriented Architecture_, es un tipo de arquitectura de software, la cual se basa en la integración de aplicaciones mediante servicios.
 
-Es un tipo de arquitectura de software, la cual se basa en la integración de aplicaciones mediante servicios.
+Tanto la aproximación _SOAP_ como _REST_ cumplen ambas con _SOA_.
 
 ### SOAP
 
-Simple Object Access Protocol: es un protocolo que nos permite realizar servicios web sin estado, a través de TCP (se puede montar encima HTTP, SMTP), y con un formato XML.
+_Simple Object Access Protocol_: es un protocolo que nos permite realizar servicios web sin estado, a través de _TCP_ (se puede montar encima _HTTP_, _SMTP_), y con un formato _XML_.
 
 - Este protocolo se publicó en 1998, fue muy popular en la década del 2000 y principios 2010.
-- Es un protocolo pesado, basado en XML.
-- Podías encontrarte con problemas al consumir sopa desde C# y Java.
+- Es un protocolo pesado, basado en _XML_.
+- Podías encontrarte con problemas al consumir sopa desde _C#_ y _Java_.
 - Es un protocolo muy rico, útil para casos en los que se necesite seguridad avanzada, transacciones...
 - Actualmente está en desuso, al menos para desarrollo web.
 
 ### REST API
 
-El término REST (Representational State Transfer) lo acuñó Roy Fielding ( padre de la especificación HTTP) en el año 2000. Son un conjunto de restricciones que me permiten crear api's para consumir desde HTTP.
+El término REST (_Representational State Transfer_) lo acuñó Roy Fielding ( padre de la especificación HTTP) en el año 2000. Son un conjunto de restricciones que me permiten crear api's para consumir desde HTTP.
 
 - Los datos normalmente viajan en formato JSON (fácil de consumir), nos da igual la tecnología de servidor y la de cliente.
 - Define unos verbos básicos para realizar entre otras inserciones, actualizaciones y borrados (GET, PUT, POST, DELETE...).
@@ -81,46 +99,95 @@ El estándar de API tiene ya 20 años, fue una revolución en su día, pero ya v
 
 - La estructura es rídgida y no siempre se adapta a lo que necesitas.
 - Al final acabas creando métodos en lo que haces "trampas" para acceder a queries específicas.
-- Muchas veces te hace falta mezaclar los resultados de varios endpoints, sin tener que hacer varios viajes a servidor o hacer un cherry pick de los campos a mostrar.
+- Muchas veces te hace falta mezclar los resultados de varios endpoints, sin tener que hacer varios viajes a servidor o hacer un cherry pick de los campos a mostrar.
 - GraphQL se está erigiendo como el nuevo estándar de facto para solucionar algunas limitaciones de REST API.
 
 ## .net Rest Api
 
 ### Estructura básica
 
-La estructura básica de un proyecto.
+Estructura básica de un proyecto:
 
+<img src="./content/estructura-rest.png" alt="estructura-rest" style="zoom:67%;" />
 
+### Creación de un proyecto Real
 
-![02](D:\programacion\lemoncode\bootcamp-backend\08-C#\Apuntes\04-ApiRest\images\02.PNG)
+Buscar la plantilla de ASP.NET Core Web API y creamos nuestro proyecto.
 
-## Creación de un proyecto Real
+<img src="./content/create-webapi-app.png" alt="create-webapi-app" style="zoom:67%;" />
 
-- Buscar la plantilla de ASP.NET Core Web API y creamos nuestro proyecto. Quitamos Configure por HTTPS.
+Introducimos el nombre del proyecto y le damos a siguiente:
 
-- **ApiControler**: este atributo nos ayuda a habilitar algunas características por defecto.
-  - Route: ruta de nuestro controlador va a ser siempre requerido para que todas la acciones sean accesibles. Me coge del nombre de mi clase por ejemplo WeatherForecastControler, navegaría como api/WeatherForecastControler y me monta la navegación de mi api.
-  - Las respuestas http 400 van a se automáticas. Si el módelo no es válido manda 400.
-  - También nos va a aplicar inferencias a los orígenes de datos según los parámetros que tengamos en la entrada. Cuando hagamos post o put hay que pasar por dato el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo excepto que sea string o un integer hay que indicarle que viene del body.
+<img src="./content/create-webapi-app2.png" alt="create-webapi-app2" style="zoom:67%;" />
 
-- **appsetttings.json**: diferentes settings para nuestros entornos. 
+En Información adicional elegimos _.NET 5.0_ y desactivamos _Configure for HTTPS_ para que no nos esté metiendo ruido el navegador de que nuestra dirección no es seguro y le damos a crear.
 
-  Proyecto -> Properties -> Debug-> Environment variables de finida como Develpment, se coge las settings que le tengamos definidas.
+<img src="./content/create-webapi-app3.png" alt="create-webapi-app3" style="zoom:67%;" />
 
-- **Program.cs**: llama al método CreateHostBuilder, estamos cargando la configuración del host con la variable de entorno que tengo el prefijo dotnet, lo hace automáticamente, carga la configuración de las appsettings. Agrega los proveedores registro de consola, de depuración y me indica que cargue la configuración del startup.
+Vamos a la derecha de nuestra aplicación y vemos que tiene una carpeta _Controllers_ que contiene nuestro controlador que en este caso se llama _Weather ForecastController.cs_ si lo abrimos vemos que tiene:
 
-Vamos a hacer una Api Sencilla Creamos un Json para nuestra base de datos.
+<img src="./content/controller.png" alt="controller" style="zoom:67%;" />
 
-Vamos a crear un Crud y hacer la implementación de la Interfaz.
+**ApiControler**: este atributo nos ayuda a habilitar algunas características por defecto.
 
-Quitamos el ejemplo de microsoft:
+- **Route:** ruta de nuestro controlador va a ser siempre requerido para que todas la acciones sean accesibles. Coge el nombre de la clase, por ejemplo _WeatherForecastControler_, y mi _endpoint_ sería tal como api/WeatherForecastControler.
+- Si el modelo que manda no es válido automáticamente gracias al _ApiController_ nos va a mandar un 400.
+- También nos va a aplicar inferencias a los orígenes de datos, según los parámetros que tengamos en la entrada. Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea string o un integer hay que indicarle que viene del body.
+
+Si ahora abrimos a **_appsetttings.json_**:
+
+<img src="./content/appsettings.png" alt="appsetttings" style="zoom:67%;" />
+
+Podemos crear diferentes _settings_ para diferentes entornos. Existe una variable llamada ASPNETCORE_ENVIRONMENT que la podemos encontrar dando botón derecho del ratón en nuestro proyecto y properties.
+
+<img src="./content/aspnetcore1.png" alt="aspnetcore1" style="zoom:67%;" />
+
+Luego le damos a _Debug_, _Open debug launch profiles UI_, y coge las settings que le tengamos definidas, en este caso tenemos la variable de entorno definida como Development.
+
+<img src="./content/aspnetcore2.png" alt="aspnetcore2" style="zoom:67%;" />
+
+Aquí tendremos diferentes variables y ejecutaremos la que se precisa en cada situación, por ejemplo, para entornos de integración, producción,etc.. Tendremos variables globales que utilizaremos a la largo de nuestra aplicación.
+
+Vamos a abrir ahora el archivo **_Program.cs_**
+
+<img src="./content/program-cs.png" alt="program-cs" style="zoom:67%;" />
+
+Program es nuestro punto de entrada donde tenemos al método _Main_, va a ser el primer método que se va a ejecutar en nuestra aplicación, el cuál llama al método _CreateHostBuilder_, donde estamos cargando la configuración del host con la variable de entorno que tengo el prefijo _dotnet_, lo realiza automáticamente, también carga la configuración de las _appsettings_, agrega los proveedores registro de consola, de depuración y me indica que cargue la configuración del **_Startup_**.
+
+Este fichero **_Startup.cs_**:
+
+<img src="./content/startup-cs.png" alt="startup-cs" style="zoom:67%;" />
+
+Podemos encontrar la configuración de todos los servicios, por defecto nos añade el servicio de los controladores, nos agrega Swagger y también podríamos incluir todas las inyecciones de dependencia.
+
+Si ejecutamos nuestra aplicación:
+
+<img src="./content/start-app.png" alt="start-app" style="zoom:67%;" />
+
+Vemos que se abre **_Swagger_**, qué es una serie de reglas, especificaciones y herramientas que nos ayudan a documentar nuestra Api de forma automática.
+
+<img src="./content/swagger.png" alt="start-app" style="zoom:67%;" />
+
+Vemos que aparece el nombre del controlador, los métodos que tenemos implementados, y el esquema del modelo que estamos utlizando en nuestro controlador. Si alguien quiere consumir nuestra Api aparecerá todo documentado.
+
+#### Creación de la API
+
+Vamos a hacer una Api Sencilla, vamos a empezar creándonos un JSON para nuestra base de datos.
+
+Vamos a crear un CRUD y hacer la implementación de la Interfaz.
+
+Vamos a empezar borrando el ejemplo de microsoft:
 
 - Borramos WeatherForecast.cs
-- Borramos WeatherForecastController.cs
+- Borramos WeatherForecastController.cs que está dentro de la carpeta _Controllers_.
 
-### Resources
+##### Resources
 
-Nos creamos una carpeta llamada Resources y vamos a Add -> JSON File la llamamos Actores.json.
+Nos creamos una carpeta llamada _Resources_ y añadimos un nuevo _item_, vamos a general y creamos JSON File que lo llamamos Actores.json.
+
+<img src="./content/create-json.png" alt="create-json" style="zoom:67%;" />
+
+Añadimos contenido al JSON.
 
 ./Resources/Actores.json
 
@@ -199,169 +266,186 @@ Nos creamos una carpeta llamada Resources y vamos a Add -> JSON File la llamamos
 ]
 ```
 
-### Modelos
+##### Modelos
 
-Ahora vamos a crearnos nuestros **modelos** uno para Actor y otro para las películas
+Ahora vamos a crearnos nuestros **modelos** uno para Actor y otro para las películas.
 
-- Creamos una carpeta Models
-- Añadimos una nueva clase _Pelicula.cs_ 
+Creamos una carpeta Models
 
-```c#
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+Añadimos una nueva clase **_Pelicula.cs_**
 
+<img src="./content/create-class.png" alt="create-class" style="zoom:67%;" />
+
+Agregamos el código para **_Pelicula.cs_**
+
+```diff
 namespace DemoRestApi.Models
 {
     public class Pelicula
     {
-        public int Id { get; set; }
-        public string Titulo { get; set; }
-        public int FechaPublicacion { get; set; }
++        public int Id { get; set; }
++        public string Titulo { get; set; }
++        public int FechaPublicacion { get; set; }
     }
 }
 ```
 
-- Otra clase llamada Actor.cs
+Creamos otro modelo para el actor, el cuál llamaremos **_Actor.cs_**:
 
-```c#
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+```diff
++ using System.Collections.Generic;
 
 namespace DemoRestApi.Models
 {
     public class Actor
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public List<Pelicula> Peliculas { get; set; }
++        public int Id { get; set; }
++        public string Nombre { get; set; }
++        public string Apellido { get; set; }
++        public List<Pelicula> Peliculas { get; set; }
     }
 }
 
 ```
 
-### Interfaz
+##### Interfaz
 
-Ahora creamos una carpeta para la interfaz que vamos a trabajar con este Crud, _Contracts_
+Ahora creamos una carpeta para la interfaz que vamos a trabajar con este Crud, la vamos a llamar _Contracts_.
 
-- Añadimos una **interface**  que la vamos a llamar _IActorRepository.cs_
-- Aquí introducimos los métodos que vamos a querer implementar en nuestra Api.
+Creamos una **interface** que la vamos a llamar \_IActorRepository.cs, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
 
 ./Contracts/IActorReposiroty.cs
 
-```c#
-using DemoRestApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+```diff
++ using DemoRestApi.Models;
++ using System.Collections.Generic;
 
 namespace DemoRestApi.Contracts
 {
     public interface IActorRepository
     {
-        List<Actor> GetActors();
-        Actor GetActorById(int id);
-        void AddActor(Actor actor);
-        void UpdateActor(Actor actor);
-        void DeleteActor(int id);
++        List<Actor> GetActors();
++        Actor GetActorById(int id);
++        void AddActor(Actor actor);
++        void UpdateActor(Actor actor);
++        void DeleteActor(int id);
     }
 }
 ```
 
-### Implementacion
+#### Implementacion del Contrato
 
-#### Repositorios
+##### Repositorios
 
 Vamos a hacer ahora la implementación de esta interface o contrato.
 
-- Creamos una carpeta llamada **Repositories**
-- Creamos una clase llamada _ActorRepository.cs_
-- Al poner ActorRepository : IActorRepository al utilizar el CTRL + . implemento esa interfaz en mi nueva clase y me la trae a esta nueva clase.
+Creamos una carpeta que llamaremos **Repositories**, y dentro una una clase llamada _ActorRepository.cs_
 
 ```c#
-using DemoRestApi.Contracts;
-using DemoRestApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository: IActorRepository
+    {
+    }
+}
+```
+
+Al introducir ActorRepository : IActorRepository, vemos que nos aparece este error:
+
+<img src="./content/repository-error.png" alt="repository-error" style="zoom:67%;" />
+
+Dejamos el cursor encima y primero importamos el _using_.
+
+```diff
++ using DemoRestApi.Contracts;
 
 namespace DemoRestApi.Repositories
 {
-    public class prueba : IActorRepository
+    public class ActorRepository: IActorRepository
     {
-        public void AddActor(Actor actor)
-        {
-            throw new NotImplementedException();
-        }
+    }
+}
+```
 
-        public void DeleteActor(int id)
-        {
-            throw new NotImplementedException();
-        }
+Y al utilizar el CTRL + . encima vamos a implementar esa interfaz en mi nueva clase y me la trae a esta nueva clase.
 
-        public Actor GetActorById(int id)
-        {
-            throw new NotImplementedException();
-        }
+<img src="./content/implement-interface.png" alt="implement-interface" style="zoom:67%;" />
 
-        public List<Actor> GetActors()
-        {
-            throw new NotImplementedException();
-        }
+Y este sería el resultado:
 
-        public void UpdateActor(Actor actor)
-        {
-            throw new NotImplementedException();
-        }
+```diff
+using DemoRestApi.Contracts;
++ using DemoRestApi.Models;
++ using System.Collections.Generic;
+
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
+    {
++        public void AddActor(Actor actor)
++        {
++            throw new System.NotImplementedException();
++        }
+
++        public void DeleteActor(int id)
++        {
++            throw new System.NotImplementedException();
++        }
+
++        public Actor GetActorById(int id)
++        {
++            throw new System.NotImplementedException();
++        }
+
++        public List<Actor> GetActors()
++        {
++            throw new System.NotImplementedException();
++        }
+
++        public void UpdateActor(Actor actor)
++        {
++            throw new System.NotImplementedException();
++        }
     }
 }
 ```
 
 #### Controlador
 
-Ahora volvemos al controller, boton derecho-> add Controller ->  API Controller - Empty, y lo llamamos _ActorController.cs_, aquí vamos a poner todas las rutas de la Api.
+Vamos a ir de nuevo al controlador y vamos a añadir uno nuevo, para esto vamos a darle con el botón derecho en la carpeta _Controllers_ -> add Controller -> _API Controller - Empty_, le damos a _ADD_
+
+<img src="./content/create-controller.png" alt="create-controller" style="zoom:67%;" />
+
+Lo nombramos _ActorController.cs_, y este es el lugar donde vamos a introducir todas las rutas de la Api.
+
+<img src="./content/create-controller2.png" alt="create-controller2" style="zoom:67%;" />
+
+Y nos quedaría de la siguiente forma nuestro controlador:
 
 ./Controllers/ActorController.cs
 
 ```c#
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DemoRestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class ActorController : ControllerBase
     {
     }
 }
 ```
 
-- Primero creamos el contructor, escrimos _ctor_
-- Le vamos a pasar la interface del IActorRepository dentro del ActorController.
-- En el controlador creamos una variable global que la voy a poder usar en todo el proyecto
-- Creamos un private reanonly IActorRepository _actorRespository. Con esto podemos usar los métodos de nuestra interfaz dentro del controlador.
+En nuestra clase vamos a querer utilizar la interfaz de _IActorRepository_, para eso nos lo traemos por el contructor, si escrimos _ctor_ y pulsamos _tab_ se nos creará automáticamente, le pasamos por parámetro la interfaz de _IActorRepository_ a _ActorController_.
+
+Ahora vamos a crear una variable global para poder usarla en todo nuestro proyecto, con esto ya podremos utilizar los métodos de nuestra interfaz dentro del controlador.
 
 ./Controllers/ActorController.cs
 
 ```diff
 using DemoRestApi.Contracts;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DemoRestApi.Controllers
 {
@@ -378,33 +462,21 @@ namespace DemoRestApi.Controllers
 }
 ```
 
-#### Método llamar Json
+#### Agregando métodos al controlador
 
-Vamos a empezar a implementar el primer método que es obtener el listado de todos los actores que tenemos.
+##### GetActors
 
-+ Cada vez que creamos un método dentro de nuestro controlador tenemos que poner el atributo de el tipo de la acción que vamos a hacer. En esta ocasión es un [HttpGet].
+Vamos a empezar a implementar el primer método para obtener el listado de los actores.
 
-+ A continuación, creamos el método.
-
-+ Es un public ActionResult que nos devuelva una lista de Actores y lo llamamos Get().
-
-+ Es tan fácil que nos haga un return de _actorRepository.GetActors();
-
-+ Con esto objenemos los actores, nos falta la implementación del repositorio pero ya lo tendríamos.
-
-  
+Cada vez que creamos un método dentro de nuestro controlador tenemos que poner el atributo del tipo de la acción que vamos a hacer. En esta ocasión es un [HttpGet].
 
 ./Controllers/ActorController.cs
 
 ```diff
 using DemoRestApi.Contracts;
-using DemoRestApi.Models;
-using Microsoft.AspNetCore.Http;
++ using DemoRestApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
++ using System.Collections.Generic;
 
 namespace DemoRestApi.Controllers
 {
@@ -427,30 +499,40 @@ namespace DemoRestApi.Controllers
 }
 ```
 
-Ahora vamos a crear la implementación del método, nos vamos ahora a
+Vamos ahora a implementar el método _GetActors_ en _ActorRespository_, pero primero vamos a crearnos un método para leer nuestro _JSON_ como si fuera un _string_. Nos hace falta saber el path donde se encuentra el archivo, para ello vamos a nuestra carpeta de _Resources_ y hacemos click en Actores.json y copiamos _Full Path_.
+
+<img src="./content/full-path.png" alt="full path" style="zoom:67%;" />
+
+Una vez copiado vamos a crear una variable para guardar este _path_, y para que nos lea literalmente el _string_ le pasamos _@_:
 
 ./Repositories/ActorRepository.cs
 
-- Primero creo un pequeño método para poder leer los actores, 
-- Un método privado para que solo accedan los métodos de esta clase llamado GetActorsFromFile(), que nos devuelve una string.
--  Vamos a usar un método para leer ficheros,  creamos una variable llamad json y metemos un método llamado File, me traigo la librería System.IO. Y uso el método ReadAllText() y dentro tenemos que pasarle el Path entero, eso depende de donde tengamos el Path.
-- Creo arriba una constante de tipo string llamada  JSON_PATH y le meto el path de mi fichero, me voy a Actores.json, botón derecho y copio el Full Path. Hay que ponerle delante @ para que no lee literalmente la string.
-- Y dentro de ReadAllText le introducimos el JSON_PATH
-- Y hacemos el return de ese json
-
 ```diff
-using DemoRestApi.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace DemoRestApi.Repositories
 {
     public class prueba : IActorRepository
     {
 +        const string JSON_PATH = @"<Full Path de Actores.json>";
+........
+    }
+}
+```
+
+A continuación, vamos a crear el método _GetActorsFromFile_ para leer _Actores.json_.
+
+./Repositories/ActorRepository.cs
+
+```diff
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using System.Collections.Generic;
++ using System.IO;
+
+namespace DemoRestApi.Repositories
+{
+    public class prueba : IActorRepository
+    {
+    const string JSON_PATH = @"<Full Path de Actores.json>";
 ........
 + 	private string GetActorsFromFile()
 +        {
@@ -459,19 +541,18 @@ namespace DemoRestApi.Repositories
 +        }
     }
 }
+
 ```
 
-#### GetActors
+Ahora sí vamos a GetActors y creamos la implementación.
 
-Ahora en el GetActors creamos la implementación.
+Primero vamos a instalar un _NuGet_ llamado _NewtonSoft_ para ello pulsamos botón derecho sobre nuestro proyecto y seleccionamos Manage Nuget Packages...
 
-- Creamos un try - catch para que capture alguna excepción. No hace falta nombrar ninguna excepción.
-- Creamos una variable _actoresFromFile_ y llamamos a nuestro método GetActorsFromFile();
-- Temos que instalar un nugget boton derecho sobre el proyecto -> Manage NuGet Packages... e instalamos el Nuget Newtonsoft.Json.
-- Esto lo queremos pasar a nuestro modelo de actores entonces me creo una variable actores que va a ser una lista de Actores 
-- Utilizamos Newtonsoft para que me pase al modelo que nosotros queremos. 
-- Usamos un JsonConvert y me lo deserialece con DeserializedObject 
-- Nos devuelva una lista de Actores.
+<img src="./content/install-nuget.png" alt="install nuget" style="zoom:67%;" />
+
+Buscamos el paquete Newtonsoft.Json y lo instalamos, con este paquete vamos a serializar o deserializar según nos haga falta.
+
+<img src="./content/install-nuget2.png" alt="install nuget2" style="zoom:67%;" />
 
 ```diff
 using DemoRestApi.Contracts;
@@ -480,12 +561,14 @@ using DemoRestApi.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-+ using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
 ......
  public List<Actor> GetActors()
         {
+-        throw new System.NotImplementedException();
 +            try
 +            {
 +                var actoresFromFile = GetActorsFromFile();
@@ -500,16 +583,35 @@ using System.Threading.Tasks;
 ........
 ```
 
-Es hora de ejecutar la app, y ver nuestro swagger.
+Es hora de ejecutar la aplicación, vamos a lanzar _Swagger_.
 
-![03](D:\programacion\lemoncode\bootcamp-backend\08-C#\Apuntes\04-ApiRest\images\03.PNG)
+<img src="./content/getactor-list.png" alt="getactor-list" style="zoom:67%;" />
 
-Nos da un error no se puede resolver el servicio para IActorRepository, y no nos devuelve el listardo, para solucionarlo hay que registrarlo. Nos vamos a Startup ya añadimos lo siguiente y resolvemos lo using.
+Y al ejecutar nos da un error.
 
-./Startup.cs 
+<img src="./content/swagger-error.png" alt="swagger-error" style="zoom:67%;" />
+
+Nos dice que no se puede resolver el servicio para el tipo _IActorRepository_, y no nos devuelve el listado de actores.
+
+Para solucionarlo tenemos que registrar este servicio, para ello nos vamos a Startup y vamos a añadir este servicio.
+
+./Startup.cs
 
 ```diff
- -----
++ using DemoRestApi.Contracts;
++ using DemoRestApi.Repositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+
+namespace DemoRestApi
+{
+    public class Startup
+    {
+......
  public void ConfigureServices(IServiceCollection services)
         {
 
@@ -521,18 +623,19 @@ Nos da un error no se puede resolver el servicio para IActorRepository, y no nos
 +            services.AddTransient<IActorRepository, ActorRepository>();
         }
 ....
+	}
+}
 ```
+
+Ahora estamos añadiendo la resolución de la dependencia ActorRepository, le estamos diciendo que a la interfaz _IActorRepository_ la implementa la clase _ActorRepository_.
+
+Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el listado de Actores.
+
+<img src="./content/actor-list.png" alt="actor-list" style="zoom:67%;" />
 
 #### GetActorById
 
-Para continuar vamos a seguir con el siguiente método nos vamos primero al controlador, GetActorById(id).
-
-- Usamos el HttpGet otra vez pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}".
-- ahora le ponemos que nos devuelva un public ActionResult de un Actor
-- Y el método se llama GetActor y le indicamos la ruta que le va a entrar por parámetro.
-- creamos una variable acotr y le aplicamos el método GetActorById(id)
-- Si el autor es nulo le devueves un NotFound()
-- En el otro caso me devuelve el actor con un 200.
+Para continuar vamos a seguir con el siguiente método nos vamos primero al controlador. Utilizamos HttpGet pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}", le decimos que si encuentra al actor no los devuelva y sino que nos devuelva _NotFound_().
 
 ```diff
 .....
@@ -554,81 +657,76 @@ Para continuar vamos a seguir con el siguiente método nos vamos primero al cont
 
 ```
 
-Tips:
+Vamos a configurar la implementación de _GetActorById_.
 
-- F12 vamos método de la interfaz.
-- CTRL + F12 sobre el método GetActors vamos a la implementación.
-
-Ahora vamos a configurar la implementación de GetActorById.
-
-- Introducimos un try-catch.
-- En el catch introducimos una Exception.
-- En el try creamos una variable para obtener el listado de actores.
-- usando LinQ creamos una variable actor nos traiga el primero donde coincidan las ids.
-- Devolvemos el actor.
+> Atajo teclado:
+>
+> - Si pulsamos F12 sobre el método GetActors vamos al método de la interfaz.
+> - CTRL + F12 sobre el método GetActors vamos a la implementación.
 
 ./Repositories/ActorRepository.cs
 
 ```diff
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
++ using System.Linq;
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
+    {
 .....
-+ public Actor GetActorById(int id)
-+        {
-+            try
-+            {
-+                var actores = GetActors();
-+                var actor = actores.FirstOrDefault(a => a.Id == id);
-+                return actor;
-+            }
-+            catch (Exception)
-+            {
-+                throw;
-+            }
-+        }
+
+    public Actor GetActorById(int id)
+    {
+-   	throw new System.NotImplementedException();
++       try
++       {
++           var actores = GetActors();
++           var actor = actores.FirstOrDefault(a => a.Id == id);
++           return actor;
++       }
++       catch (Exception)
++       {
++          throw;
++       }
+    }
 .....
+   }
+}
 ```
 
-Ahora lo probamos con swagger.
+Es hora de probarlo con swagger.
 
-<img src="./content/04.png" alt="04" style="zoom:67%;" />
+<img src="./content/getactor-success.png" alt="04" style="zoom:67%;" />
 
-Si le pasamos una id que no existe nos devulve un 404, Not Found.
+Si le pasamos una id que no existe nos devuelve un 404, _Not Found_.
+
+<img src="./content/404-getactors.png" alt="404-getactors" style="zoom:67%;" />
 
 #### CreateActor
 
-Volvemos a nuestro controlador
-
-- Añadimos [HttpPost]
-
-- Nos devuelva un ActionResult CreateActor.
-
-- Añadimos un try-catch
-
-- Capturamos la esception y que no devuelva el mensaje
-
-- En el try _actorResository.AddActor(actor)
-
-- que nos devuelva un Ok() que todo ha ido bien.
-
-  
+Volvemos a nuestro controlador, y en este caso vamos a añadir un _HttpPost_. Añadimos un try-catch para capturar la Exception y devolvemos el mensaje que devuelve la excepción. Añadimos un actor nuevo y si todo ha ido todo correctamente devolvemos un _Ok_.
 
 ./Controllers/ActorController.cs
 
 ```diff
-.....
- [HttpGet]
-        public ActionResult<List<Actor>> Get()
-        {
-            return _actorRepository.GetActors();
-        }
-        [HttpGet("{id}")]
-        public ActionResult<Actor> GetActor(int id)
-        {
-            var actor = _actorRepository.GetActorById(id);
-            if (actor == null)
-                return NotFound();
-            return actor;
-        }
-+[HttpPost]
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Microsoft.AspNetCore.Mvc;
++ using System;
+using System.Collections.Generic;
+
+namespace DemoRestApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ActorController : ControllerBase
+    {
++		 [HttpPost]
 +        public ActionResult CreateActor(Actor actor)
 +        {
 +            try
@@ -643,46 +741,53 @@ Volvemos a nuestro controlador
 +        }
 	}
 }
-.....
 ```
 
-Ahora nos vamos al ActorResository
-
-- Nos creamos un método privado de escritura llamado UpdateActores.
-- Para sobrescribir la lista completa de Actores.
-- Ahora totalmente contrario a lo que hicimos anteriormente, tenemos que pasar de una lista de Actores a un formato Json.
-- Añadimos un formatting para que el json nos lo indente.
+Ahora nos vamos al _ActorResository_ a implementar el método, pero primero vamos a crearnos un método privado de escritura llamado UpdateActores, en el cuál tenemos que pasar de una lista de Actores a un formato Json, es decir, tenemos ahora que serializar.
 
 ./Repositories/ActorRepository.cs
 
 ```diff
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
+    {
 ...
- private string GetActorsFromFile()
-        {
-            var json = File.ReadAllText(JSON_PATH);
-            return json;
-        }
-+        private void UpdateActores(List<Actor> actores)
-+        {
-+            var actoresJson = JsonConvert.SerializeObject(actores, Formatting.Indented);
-+            File.WriteAllText(JSON_PATH, actoresJson);
+ 		private string GetActorsFromFile()
+        	{
+            	var json = File.ReadAllText(JSON_PATH);
+            	return json;
+        	}
++       private void UpdateActores(List<Actor> actores)
++       {
++           var actoresJson = JsonConvert.SerializeObject(actores, Formatting.Indented);
++           File.WriteAllText(JSON_PATH, actoresJson);
 +        }
 	}
 }
 ```
 
-Ahora vamos a hacer el añadir el Actor
-
-- Vamos a traernos todos los autores.
-- Voy a comprobar si ese actor con ese id no existe. Utilizamos el método actores.Exists() devuelve un boolean si lo encuentra o no.
-- Si existe el actor mándame un Excepción de que existe el actor.
-- en caso contrario le decimos que añada un actor nuevo a nuestra colección
-- Sino existe lo añado a esa Lista de Autores, guardo el fichero y lo machaco con ese nuevo registro, le decimos que añada esos autores.
+Para añadir nuestro autor, primero comprobamos que no haya ningún autor con la misma id, en el caso de que existiera mandaríamos una excepción informándonos de que sí existe dicho autor, y en caso contrario añadimos el nuevo actor a nuestra colección de autores, guardamos y "machacamos" el fichero.
 
 ./Repositories/ActorRepository.cs
 
 ```diff
-.....
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 namespace DemoRestApi.Repositories
 {
     public class prueba : IActorRepository
@@ -690,6 +795,7 @@ namespace DemoRestApi.Repositories
 .....
         public void AddActor(Actor actor)
         {
+-            throw new System.NotImplementedException();
 +            var actores = GetActors();
 +            var existeActor = actores.Exists(a => a.Id == actor.Id);
 +            if (existeActor)
@@ -702,42 +808,34 @@ namespace DemoRestApi.Repositories
 .....
 ```
 
-Así introduciríamos el nuevo Autor en Swagger.
+Ejecutamos Swagger y añadimos un Actor:
 
-<img src="./content/05.png" alt="05" style="zoom:67%;" />
+<img src="./content/add-actor.png" alt="add-actor" style="zoom:67%;" />
 
-Si intentáramos añadir un nuevo Actor con esa Id nos devolvería
+Y si por el contrario intentamos añadir un nuevo Actor con una Id ya creada, nos devolvería que ya existe un actor con esa id.
 
-
-
-<img src="./content/06.png" alt="06" style="zoom:80%;" />
+<img src="./content/error-add-actor.png" alt="error-add-actor" style="zoom:67%;" />
 
 #### UpdateActor
 
-Nos vamos de nuevo al ActorController.cs, vamos a crear ahora el update
-
-- [HttpPut]
-- public Action Result UpdateActor(Actor actor)
-- try-catch, y capturamos la exception
-- _actorRepository.UpdateActor(actor).
-- Y devolvemos un Ok.
+Nos vamos de nuevo al ActorController.cs, utilizamos _HttpPut_ y creamos _UpdateActor_.
 
 ./Controllers/ActorController.cs
 
 ```diff
-[HttpPost]
-        public ActionResult CreateActor(Actor actor)
-        {
-            try
-            {
-                _actorRepository.AddActor(actor);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+
+namespace DemoRestApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ActorController : ControllerBase
+    {
+    .....
 +        [HttpPut]
 +        public ActionResult UpdateActor(Actor actor)
 +        {
@@ -757,77 +855,67 @@ Nos vamos de nuevo al ActorController.cs, vamos a crear ahora el update
 
 Y ahora nos vamos a nuestro ActorRepository.cs
 
-Hacemos los mismo de antes
-
-- Me traigo la lista de Actores
-- Busco el actor, quiero buscar el índice con el método de LinQ actores.FinIndex y nos devuelve el índice de la colección que está.
-- Si el índice es menor que cero es que no lo ha encontrado.
-- Si lo encuentra, accedemos a la lista actores con ese índice que va a ser igual a un actotr nuevo.
-- Y machacamos ese ficho con la lista de actores nueva.
+./Repositories/ActorRepository.cs
 
 ```diff
-.....
-public List<Actor> GetActors()
-        {
-            try
-            {
-                var actoresFromFile = GetActorsFromFile();
-                List<Actor> actores = JsonConvert.DeserializeObject<List<Actor>>(actoresFromFile);
-                return actores;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
+    {
+.....
         public void UpdateActor(Actor actor)
         {
+-            throw new System.NotImplementedException();
 +            var actores = GetActors();
 +            var indiceActor = actores.FindIndex(a => a.Id == actor.Id);
+
 +            if (indiceActor < 0)
 +                throw new Exception("Actor no encontrado");
+
 +            actores[indiceActor] = actor;
 +            UpdateActores(actores);
         }
 .....
+	}
+}
 ```
 
 Vamos a probarlo ahora en swagger
 
-<img src="./content/07.png" alt="07" style="zoom:67%;" />
+<img src="./content/update-actor.png" alt="update-actor" style="zoom:67%;" />
 
-Si intento actualizar una que no existe me devolvería la excepción
+Si intento actualizar un autor que no existe me devolvería la excepción:
 
-<img src="./content/08.png" alt="08" style="zoom:80%;" />
-
-
+<img src="./content/actor-not-found.png" alt="actor-not-found" style="zoom:80%;" />
 
 #### DeleteActor
 
 Nos vamos otra vez al ActorController.cs
 
-- [HttpDelete("{id}")]
-- try-catch
-- capturamos la excepcion
-- en el try _actorRepository.DeleteActor(id);
-- y devolvemos un ok.
+./Controllers/ActorController.cs
 
 ```diff
- [HttpPut]
-        public ActionResult UpdateActor(Actor actor)
-        {
-            try
-            {
-                _actorRepository.UpdateActor(actor);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
-                return BadRequest(ex.Message);
-            }
-        }
+namespace DemoRestApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ActorController : ControllerBase
+    {
+    .....
 +        [HttpDelete]
 +        public ActionResult DeleteActor(int id)
 +        {
@@ -848,9 +936,7 @@ Nos vamos otra vez al ActorController.cs
 
 Ahora nos vamos a la implementación del método al ActorRepository.cs
 
-- Cojo la lista autores.
-- Buscar el actor que quiero borrar por id.
-- Y si existe lo borro.
+./Repositories/ActorRepository.cs
 
 ```diff
 .....
@@ -870,8 +956,10 @@ Ahora nos vamos a la implementación del método al ActorRepository.cs
         {
 +            var actores = GetActors();
 +            var indiceActor = actores.FindIndex(a => a.Id == id);
+
 +           if (indiceActor < 0)
 +                throw new Exception("Actor no existente");
+
 +            actores.RemoveAt(indiceActor);
 +            UpdateActores(actores);
         }
@@ -880,194 +968,9 @@ Ahora nos vamos a la implementación del método al ActorRepository.cs
 
 Vamos a probarlo en Swagger
 
-
-
-<img src="./content/09.PNG" alt="09" style="zoom:80%;" />
-
-
-
-#### ActorController
-
-Así nos quedaría nuestro ficho de ActorController
-
-./Controllers/ActorController.cs
-
-```c#
-using DemoRestApi.Contracts;
-using DemoRestApi.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DemoRestApi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ActorController : ControllerBase
-    {
-        private readonly IActorRepository _actorRepository;
-        public ActorController(IActorRepository actorRepository)
-        {
-            _actorRepository = actorRepository;
-        }
-
-        [HttpGet]
-        public ActionResult<List<Actor>> Get()
-        {
-            return _actorRepository.GetActors();
-        }
-        [HttpGet("{id}")]
-        public ActionResult<Actor> GetActor(int id)
-        {
-            var actor = _actorRepository.GetActorById(id);
-            if (actor == null)
-                return NotFound();
-            return actor;
-        }
-        [HttpPost]
-        public ActionResult CreateActor(Actor actor)
-        {
-            try
-            {
-                _actorRepository.AddActor(actor);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPut]
-        public ActionResult UpdateActor(Actor actor)
-        {
-            try
-            {
-                _actorRepository.UpdateActor(actor);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpDelete]
-        public ActionResult DeleteActor(int id)
-        {
-            try
-            {
-                _actorRepository.DeleteActor(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
-    }
-}
-
-```
+<img src="./content/delete-actor.PNG" alt="delete-actor" style="zoom:80%;" />
 
 
 
-#### ActorRepository
-
-Así nos quedaría nuestro ActorRepository.cs
-
-```c#
-using DemoRestApi.Contracts;
-using DemoRestApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-
-namespace DemoRestApi.Repositories
-{
-    public class prueba : IActorRepository
-    {
-        const string JSON_PATH = @"<Path>";
-        public void AddActor(Actor actor)
-        {
-            var actores = GetActors();
-            var existeActor = actores.Exists(a => a.Id == actor.Id);
-            if (existeActor)
-            {
-                throw new Exception("Ya existe un autor con ese id");
-            }
-            actores.Add(actor);
-            UpdateActores(actores);
-        }
-
-        public void DeleteActor(int id)
-        {
-            var actores = GetActors();
-            var indiceActor = actores.FindIndex(a => a.Id == id);
-            if (indiceActor < 0)
-                throw new Exception("Actor no existente");
-            actores.RemoveAt(indiceActor);
-            UpdateActores(actores);
-        }
-
-        public Actor GetActorById(int id)
-        {
-            try
-            {
-                var actores = GetActors();
-                var actor = actores.FirstOrDefault(a => a.Id == id);
-                return actor;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public List<Actor> GetActors()
-        {
-            try
-            {
-                var actoresFromFile = GetActorsFromFile();
-                List<Actor> actores = JsonConvert.DeserializeObject<List<Actor>>(actoresFromFile);
-                return actores;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public void UpdateActor(Actor actor)
-        {
-            var actores = GetActors();
-            var indiceActor = actores.FindIndex(a => a.Id == actor.Id);
-            if (indiceActor < 0)
-                throw new Exception("Actor no encontrado");
-            actores[indiceActor] = actor;
-            UpdateActores(actores);
-        }
-
-        private string GetActorsFromFile()
-        {
-            var json = File.ReadAllText(JSON_PATH);
-            return json;
-        }
-        private void UpdateActores(List<Actor> actores)
-        {
-            var actoresJson = JsonConvert.SerializeObject(actores, Formatting.Indented);
-            File.WriteAllText(JSON_PATH, actoresJson);
-        }
-    }
-}
-
-```
-
-
+// TODO HACER LO MISMO PERO CON POSTMAN
 
