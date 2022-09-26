@@ -631,7 +631,7 @@ Ahora estamos añadiendo la resolución de la dependencia ActorRepository, le es
 
 Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el listado de Actores.
 
-<img src="./content/actor-list.png" alt="actor-list" style="zoom:67%;" />
+<img src="./content/actor-list.PNG" alt="actor-list" style="zoom:67%;" />
 
 #### GetActorById
 
@@ -890,7 +890,7 @@ namespace DemoRestApi.Repositories
 
 Vamos a probarlo ahora en swagger
 
-<img src="./content/update-actor.png" alt="update-actor" style="zoom:67%;" />
+<img src="./content/update-actor.PNG" alt="update-actor" style="zoom:67%;" />
 
 Si intento actualizar un autor que no existe me devolvería la excepción:
 
@@ -968,7 +968,7 @@ Ahora nos vamos a la implementación del método al ActorRepository.cs
 
 Vamos a probarlo en Swagger
 
-<img src="./content/delete-actor.PNG" alt="delete-actor" style="zoom:80%;" />
+<img src="./content/delete-actor.png" alt="delete-actor" style="zoom:80%;" />
 
 
 
