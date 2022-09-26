@@ -98,9 +98,9 @@ El término REST (_Representational State Transfer_) lo acuñó Roy Fielding ( p
 El estándar de API tiene ya 20 años, fue una revolución en su día, pero ya va pidiendo un reemplazo.
 
 - La estructura es rídgida y no siempre se adapta a lo que necesitas.
-- Al final acabas creando métodos en lo que haces "trampas" para acceder a queries específicas.
-- Muchas veces te hace falta mezclar los resultados de varios endpoints, sin tener que hacer varios viajes a servidor o hacer un cherry pick de los campos a mostrar.
-- GraphQL se está erigiendo como el nuevo estándar de facto para solucionar algunas limitaciones de REST API.
+- Al final acabas creando métodos en lo que haces "trampas" para acceder a _queries_ específicas.
+- Muchas veces te hace falta mezclar los resultados de varios _endpoints_, sin tener que hacer varios viajes a servidor o hacer un _cherry pick_ de los campos a mostrar.
+- _GraphQL_ se está erigiendo como el nuevo estándar de facto para solucionar algunas limitaciones de _REST API_.
 
 ## .net Rest Api
 
@@ -120,7 +120,7 @@ Introducimos el nombre del proyecto y le damos a siguiente:
 
 <img src="./content/create-webapi-app2.png" alt="create-webapi-app2" style="zoom:67%;" />
 
-En Información adicional elegimos _.NET 5.0_ y desactivamos _Configure for HTTPS_ para que no nos esté metiendo ruido el navegador de que nuestra dirección no es seguro y le damos a crear.
+En Información adicional elegimos _.NET 5.0_ y desactivamos _Configure for HTTPS_ para que el navegador no nos muestre que esta dirección no es segura y le damos a crear.
 
 <img src="./content/create-webapi-app3.png" alt="create-webapi-app3" style="zoom:67%;" />
 
@@ -131,8 +131,8 @@ Vamos a la derecha de nuestra aplicación y vemos que tiene una carpeta _Control
 **ApiControler**: este atributo nos ayuda a habilitar algunas características por defecto.
 
 - **Route:** ruta de nuestro controlador va a ser siempre requerido para que todas la acciones sean accesibles. Coge el nombre de la clase, por ejemplo _WeatherForecastControler_, y mi _endpoint_ sería tal como api/WeatherForecastControler.
-- Si el modelo que manda no es válido automáticamente gracias al _ApiController_ nos va a mandar un 400.
-- También nos va a aplicar inferencias a los orígenes de datos, según los parámetros que tengamos en la entrada. Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea string o un integer hay que indicarle que viene del body.
+- Si el modelo que manda no es válido automáticamente, gracias al _ApiController_, nos va a mandar un 400.
+- También nos va a aplicar inferencias a los orígenes de datos, según los parámetros que tengamos en la entrada. Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea _string_ o un _integer_, el cuál hay que indicarle que procede del body.
 
 Si ahora abrimos a **_appsetttings.json_**:
 
@@ -142,7 +142,7 @@ Podemos crear diferentes _settings_ para diferentes entornos. Existe una variabl
 
 <img src="./content/aspnetcore1.png" alt="aspnetcore1" style="zoom:67%;" />
 
-Luego le damos a _Debug_, _Open debug launch profiles UI_, y coge las settings que le tengamos definidas, en este caso tenemos la variable de entorno definida como Development.
+Luego le damos a _Debug_, _Open debug launch profiles UI_, y utiliza las _settings_ que tengamos definidas, en este caso tenemos una variable de entorno definida como Development.
 
 <img src="./content/aspnetcore2.png" alt="aspnetcore2" style="zoom:67%;" />
 
@@ -268,7 +268,7 @@ Añadimos contenido al JSON.
 
 ##### Modelos
 
-Ahora vamos a crearnos nuestros **modelos** uno para Actor y otro para las películas.
+Ahora vamos a crear nuestros **modelos** uno para Actor y otro para las películas.
 
 Creamos una carpeta Models
 
@@ -312,7 +312,7 @@ namespace DemoRestApi.Models
 
 Ahora creamos una carpeta para la interfaz que vamos a trabajar con este Crud, la vamos a llamar _Contracts_.
 
-Creamos una **interface** que la vamos a llamar \_IActorRepository.cs, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
+Creamos una **_interface_** que la vamos a llamar \_IActorRepository.cs, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
 
 ./Contracts/IActorReposiroty.cs
 
@@ -337,9 +337,9 @@ namespace DemoRestApi.Contracts
 
 ##### Repositorios
 
-Vamos a hacer ahora la implementación de esta interface o contrato.
+Vamos a hacer ahora la implementación de esta _interface_ o contrato.
 
-Creamos una carpeta que llamaremos **Repositories**, y dentro una una clase llamada _ActorRepository.cs_
+Creamos una carpeta que llamaremos **_Repositories_**, y dentro una una clase llamada _ActorRepository.cs_
 
 ```c#
 namespace DemoRestApi.Repositories
@@ -468,7 +468,7 @@ namespace DemoRestApi.Controllers
 
 Vamos a empezar a implementar el primer método para obtener el listado de los actores.
 
-Cada vez que creamos un método dentro de nuestro controlador tenemos que poner el atributo del tipo de la acción que vamos a hacer. En esta ocasión es un [HttpGet].
+Cada vez que creamos un método dentro de nuestro controlador tenemos que poner el atributo del tipo de la acción que vamos a hacer. En esta ocasión es un _HttpGet_.
 
 ./Controllers/ActorController.cs
 
@@ -593,7 +593,7 @@ Y al ejecutar nos da un error.
 
 Nos dice que no se puede resolver el servicio para el tipo _IActorRepository_, y no nos devuelve el listado de actores.
 
-Para solucionarlo tenemos que registrar este servicio, para ello nos vamos a Startup y vamos a añadir este servicio.
+Para solucionarlo tenemos que registrar este servicio, y para ello nos vamos a Startup y vamos a añadir este servicio.
 
 ./Startup.cs
 
@@ -627,7 +627,7 @@ namespace DemoRestApi
 }
 ```
 
-Ahora estamos añadiendo la resolución de la dependencia ActorRepository, le estamos diciendo que a la interfaz _IActorRepository_ la implementa la clase _ActorRepository_.
+Ahora estamos añadiendo la resolución de la dependencia _ActorRepository_, le estamos diciendo que a la interfaz _IActorRepository_ la implementa la clase _ActorRepository_.
 
 Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el listado de Actores.
 
@@ -635,7 +635,7 @@ Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el lis
 
 #### GetActorById
 
-Para continuar vamos a seguir con el siguiente método nos vamos primero al controlador. Utilizamos HttpGet pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}", le decimos que si encuentra al actor no los devuelva y sino que nos devuelva _NotFound_().
+Para continuar, vamos a seguir con el siguiente método, nos vamos primero al controlador. Utilizamos HttpGet pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}", le decimos que si encuentra al actor no los devuelva y sino que nos devuelva _NotFound_().
 
 ```diff
 .....
@@ -709,7 +709,7 @@ Si le pasamos una id que no existe nos devuelve un 404, _Not Found_.
 
 #### CreateActor
 
-Volvemos a nuestro controlador, y en este caso vamos a añadir un _HttpPost_. Añadimos un try-catch para capturar la Exception y devolvemos el mensaje que devuelve la excepción. Añadimos un actor nuevo y si todo ha ido todo correctamente devolvemos un _Ok_.
+Volvemos a nuestro controlador, y en este caso vamos a añadir un _HttpPost_. Añadimos un try-catch para capturar la Exception y devolvemos el mensaje que devuelve la excepción. Añadimos un actor nuevo y si todo ha ido correctamente devolvemos un _Ok_.
 
 ./Controllers/ActorController.cs
 
@@ -743,7 +743,7 @@ namespace DemoRestApi.Controllers
 }
 ```
 
-Ahora nos vamos al _ActorResository_ a implementar el método, pero primero vamos a crearnos un método privado de escritura llamado UpdateActores, en el cuál tenemos que pasar de una lista de Actores a un formato Json, es decir, tenemos ahora que serializar.
+Ahora nos vamos al _ActorResository_ a implementar el método, pero primero vamos a crearnos un método privado de escritura llamado _UpdateActores_, en el cuál tenemos que pasar de una lista de Actores a un formato Json, es decir, tenemos ahora que serializar.
 
 ./Repositories/ActorRepository.cs
 
@@ -775,7 +775,7 @@ namespace DemoRestApi.Repositories
 }
 ```
 
-Para añadir nuestro autor, primero comprobamos que no haya ningún autor con la misma id, en el caso de que existiera mandaríamos una excepción informándonos de que sí existe dicho autor, y en caso contrario añadimos el nuevo actor a nuestra colección de autores, guardamos y "machacamos" el fichero.
+Para añadir nuestro autor, primero comprobamos que no haya ningún autor con la misma _id_, en el caso de que existiera mandaríamos una excepción informándonos de que sí existe dicho autor, y en caso contrario añadimos el nuevo actor a nuestra colección de autores, guardamos y "_machacamos_" el fichero.
 
 ./Repositories/ActorRepository.cs
 
@@ -818,7 +818,7 @@ Y si por el contrario intentamos añadir un nuevo Actor con una Id ya creada, no
 
 #### UpdateActor
 
-Nos vamos de nuevo al ActorController.cs, utilizamos _HttpPut_ y creamos _UpdateActor_.
+Nos vamos de nuevo al _ActorController.cs_, utilizamos _HttpPut_ y creamos _UpdateActor_.
 
 ./Controllers/ActorController.cs
 
@@ -853,7 +853,7 @@ namespace DemoRestApi.Controllers
 }
 ```
 
-Y ahora nos vamos a nuestro ActorRepository.cs
+Y ahora nos vamos a nuestro _ActorRepository.cs_
 
 ./Repositories/ActorRepository.cs
 
@@ -898,7 +898,7 @@ Si intento actualizar un autor que no existe me devolvería la excepción:
 
 #### DeleteActor
 
-Nos vamos otra vez al ActorController.cs
+Nos vamos otra vez al _ActorController.cs_
 
 ./Controllers/ActorController.cs
 
@@ -916,7 +916,7 @@ namespace DemoRestApi.Controllers
     public class ActorController : ControllerBase
     {
     .....
-+        [HttpDelete]
++        [HttpDelete("{id}")]
 +        public ActionResult DeleteActor(int id)
 +        {
 +            try
@@ -934,7 +934,7 @@ namespace DemoRestApi.Controllers
 
 ```
 
-Ahora nos vamos a la implementación del método al ActorRepository.cs
+Ahora nos vamos a la implementación del método al _ActorRepository.cs_
 
 ./Repositories/ActorRepository.cs
 
@@ -968,9 +968,47 @@ Ahora nos vamos a la implementación del método al ActorRepository.cs
 
 Vamos a probarlo en Swagger
 
-<img src="./content/delete-actor.png" alt="delete-actor" style="zoom:80%;" />
+<img src="./content/delete-actor.png" alt="delete-actor" style="zoom:67%;" />
 
+#### Postman
 
+Postman es una aplicación que nos va a permitir probar nuestra API. Para ello vamos a [instalar Postman](https://www.postman.com/downloads/).
 
-// TODO HACER LO MISMO PERO CON POSTMAN
+Una vez vez instalado vamos a abrirlo y crear una nueva colección, para ello pulsamos en
+
+<img src="./content/new-collection-postman.png" alt="new-collection-postman" style="zoom:67%;" />
+
+Elegimos la opción _HTTP Request_:
+
+<img src="./content/http-request-postman.png" alt="http-request-postman" style="zoom:67%;" />
+
+##### Obtener Lista de Actores
+
+Vamos a empezar a realizar peticiones a nuestra API, primero vamos a consultar el listado de actores, para esto utilizaremos el método _GET_, el **puerto** será diferente para cada dispositivo, es decir, el puerto que vamos a utilizar en el ejemplo no va a coincidir con el que utilicéis en vuestro ejemplo.
+
+<img src="./content/get-postman.png" alt="get-postman" style="zoom:67%;" />
+
+##### Obtener Actor
+
+Para obtener un Actor para a añadir el _id_ del actor que queremos hacer la consulta.
+
+<img src="./content/actorbyid-postman.png" alt="actorbyid-postman" style="zoom:67%;" />
+
+##### Crear un actor
+
+Vamos a añadir un actor utilizando _Postman_, es importante que cambiemos el método y usemos **_POST_** en vez de **_GET_** como hemos usado en los dos ejemplos anteriores. Para esto debemos seleccionar en _raw_, y en vez de _Text_ seleccionamos _JSON_.
+
+<img src="./content/create-actor-postman.png" alt="create-actor-postman" style="zoom:67%;" />
+
+##### Actualizar un actor
+
+Para actualizar un actor tenemos que usar el método ***PUT*** y añadimos el *id* del actor que queremos modificar.
+
+<img src="./content/update-actor-postman.png" alt="update-actor-postman" style="zoom:67%;" />
+
+##### Borrar un actor
+
+Para borrar un actor seleccionamos el método **DELETE** y añadimos el *id* del actor que queremos eliminar.
+
+<img src="./content/delete-actor-postman.png" alt="del-actor-postman" style="zoom:67%;" />
 
