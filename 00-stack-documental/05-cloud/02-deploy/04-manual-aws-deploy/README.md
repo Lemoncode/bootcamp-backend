@@ -73,7 +73,6 @@ Result:
 |- dals/
 |- pods/
 |- public/
-|- .gitignore
 |- app.js
 |- index.js
 |- package.json
