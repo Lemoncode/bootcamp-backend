@@ -210,15 +210,15 @@ using System.Linq;
 Aunque en los ejemplos anteriores hemos visto el uso directo de los métodos de extensión, otra de las grandes ventajas que tiene LINQ es que permite crear expresiones directamente en el código, de manera similar a si escribiésemos SQL directamente en C#. Por ejemplo:
 
 ```csharp
-    var students = from student in students
-                    where student.Average >= 5
-                    orderby student.Average
-                    select student.Name;
+    var estudiantesAprobados = from student in students
+                           where student.Average >= 5
+                           orderby student.Average
+                           select student.Name;
 
-    foreach (var name in students)
-        Console.WriteLine($"{name}");
+            foreach (var name in estudiantesAprobados)
+                Console.WriteLine($"{name}");
 
-    Console.ReadLine();
+            Console.ReadLine();
 ```
 
 Esta consulta nos devolverá la lista de alumnos que tienen una nota superior a o igual a 5, ordenados por nota ascendentemente.
