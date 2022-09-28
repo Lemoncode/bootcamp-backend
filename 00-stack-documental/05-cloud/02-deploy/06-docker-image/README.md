@@ -113,7 +113,7 @@ Let's run this image to check how it's going on:
 ```bash
 docker images
 
-docker run --name book-store-app -it book-store-app:1 sh
+docker run --name book-container -it book-store-app:1 sh
 ```
 
 > Tag is optionally.
@@ -137,7 +137,7 @@ RUN npm run build
 + ENV API_MOCK=true
 + ENV AUTH_SECRET=MY_AUTH_SECRET
 
-+ ENTRYPOINT ["node", "dist/index"]
++ CMD node dist/index
 
 ```
 
@@ -151,6 +151,9 @@ Build image again:
 docker build -t book-store-app:1 .
 docker images
 
+docker container rm book-container
+docker image prune
+
 ```
 > It creates a <none> image due to replace same tag.
 > We can remove it with `docker image prune`
@@ -159,19 +162,18 @@ Run new container:
 
 ```bash
 docker ps -a
-docker container rm book-store-app
-docker run --name book-store-app book-store-app:1
-docker exec -it book-store-app sh
+docker run --name book-container book-store-app:1
+docker exec -it book-container sh
 ```
 
-Open browser in `http://localhost:3000` and `http://localhost:300/api/books`. Why can't we access to these URLs? Because this process is executing itself inside container, we need to expose to our machine:
+Open browser in `http://localhost:3000` and `http://localhost:3000/api/books`. Why can't we access to these URLs? Because this process is executing itself inside container, we need to expose to our machine:
 
 ```bash
 docker ps
-docker stop book-store-app
-docker container rm book-store-app
+docker stop book-container
+docker container rm book-container
 
-docker run --name book-store-app --rm -d -p 3001:3000 book-store-app:1
+docker run --name book-container --rm -d -p 3001:3000 book-store-app:1
 
 docker ps
 ```
@@ -242,22 +244,22 @@ ENV STATIC_FILES_PATH=./public
 ENV API_MOCK=true
 ENV AUTH_SECRET=MY_AUTH_SECRET
 
-- ENTRYPOINT ["node", "dist/index"]
-+ ENTRYPOINT ["node", "index"]
+- CMD node dist/index
++ CMD node index
 
 ```
 
 Run it:
 
 ```bash
-docker stop book-store-app
+docker stop book-container
 
 docker build -t book-store-app:2 .
 docker images
 
-docker run --name book-store-app --rm -d -p 3001:3000 book-store-app:2
+docker run --name book-container --rm -d -p 3001:3000 book-store-app:2
 
-docker exec -it book-store-app sh
+docker exec -it book-container sh
 
 ```
 

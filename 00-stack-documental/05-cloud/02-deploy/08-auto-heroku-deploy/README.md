@@ -39,7 +39,7 @@ Create new repository and upload files:
 
 ```bash
 git init
-git remote add origin https://github.com/...
+git remote add origin git@github.com...
 git add .
 git commit -m "initial commit"
 git push -u origin main

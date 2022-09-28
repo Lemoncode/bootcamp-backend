@@ -118,7 +118,7 @@ docker images
 And create a container from Dockerhub's image:
 
 ```bash
-docker run --name book-store-app --rm -d -p 3001:3001 <user-name>/<app-name>:3
+docker run --name book-container --rm -d -p 3001:3001 <user-name>/<app-name>:3
 ```
 
 # ¿Con ganas de aprender Backend?
