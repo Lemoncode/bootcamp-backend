@@ -184,7 +184,7 @@ restApiServer.listen(envConstants.PORT, async () => {
 
 ```
 
-Let's create a `dummy publisher` to check if it's working:L
+Let's create a `dummy publisher` to check if it's working:
 
 _./back/src/app.ts_
 

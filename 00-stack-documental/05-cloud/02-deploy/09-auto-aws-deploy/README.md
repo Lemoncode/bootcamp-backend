@@ -194,7 +194,7 @@ on:
       - main
 
 + env:
-+   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_RUN_ID}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}
++   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}
 
 jobs:
   cd:
