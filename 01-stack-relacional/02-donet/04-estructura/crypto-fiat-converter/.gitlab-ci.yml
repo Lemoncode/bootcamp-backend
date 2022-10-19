@@ -1,0 +1,58 @@
+variables:
+  PACKAGE_OUTPUT_DIR: nuget
+
+image: mcr.microsoft.com/dotnet/sdk:5.0
+
+stages:
+  - build
+  - test
+  - package
+  - delivery
+
+build:
+  stage: build
+  script:
+    - dotnet restore --no-cache --force
+    - dotnet build --configuration Release --no-restore
+  artifacts:
+    paths:
+    - test
+    expire_in: 8 hour
+
+test:
+  stage: test
+  script: dotnet test --blame --configuration Release
+  rules:
+    - exists:
+      - test/**/*Tests.csproj
+
+package_beta:
+  stage: package
+  variables:
+    PACKAGE_UNSTABLE_SUFFIX: beta
+  script:
+    - dotnet pack *.sln --configuration Release --output $PACKAGE_OUTPUT_DIR --version-suffix $PACKAGE_UNSTABLE_SUFFIX --include-source --include-symbols
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+  artifacts:
+    paths:
+    - $PACKAGE_OUTPUT_DIR/
+    expire_in: 8 hour
+    
+package_stable:
+  stage: package
+  script:
+    - dotnet pack *.sln --configuration Release --output $PACKAGE_OUTPUT_DIR --include-symbols
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  artifacts:
+    paths:
+      - $PACKAGE_OUTPUT_DIR/
+    expire_in: 8 hour
+
+package_registry:
+  stage: delivery
+  script:
+    - dotnet nuget remove source gitlab || true
+    - dotnet nuget add source "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+    - dotnet nuget push $PACKAGE_OUTPUT_DIR/**/*.nupkg --source gitlab --skip-duplicate

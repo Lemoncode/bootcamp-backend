@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net5.0</TargetFramework>
+	  <IsPackable>true</IsPackable>
+	  <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
+	<PropertyGroup Label="Package information">
+		<Authors>Diego Martin</Authors>
+		<Company>Lemoncode</Company>
+		<PackageTags>bootcamp</PackageTags>
+		<Website>https://lemoncode.net/</Website>
+		<PackageWebsite>https://lemoncode.net</PackageWebsite>
+		<NeutralLanguage>en</NeutralLanguage>
+		<Title>$(AssemblyName)</Title>
+		<VersionPrefix>1.1.0</VersionPrefix>
+	</PropertyGroup>
+
+	<ItemGroup>
+    <ProjectReference Include="..\Lemoncode.CryptoFiatConverter.Abstractions\Lemoncode.CryptoFiatConverter.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

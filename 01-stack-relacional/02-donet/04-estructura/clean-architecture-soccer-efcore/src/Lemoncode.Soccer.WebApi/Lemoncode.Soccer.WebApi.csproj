@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+	    <IsPackable>false</IsPackable>
+	    <IsPublishable>true</IsPublishable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+	    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
+		    <PrivateAssets>all</PrivateAssets>
+		    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	    </PackageReference>
+	    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lemoncode.Soccer.Application\Lemoncode.Soccer.Application.csproj" />
+      <ProjectReference Include="..\Lemoncode.Soccer.Infra.Repository.EfCore\Lemoncode.Soccer.Infra.Repository.EfCore.csproj" />
+      <ProjectReference Include="..\Lemoncode.Soccer.Infra.Repository.InMemory\Lemoncode.Soccer.Infra.Repository.InMemory.csproj" />
+    </ItemGroup>
+
+</Project>

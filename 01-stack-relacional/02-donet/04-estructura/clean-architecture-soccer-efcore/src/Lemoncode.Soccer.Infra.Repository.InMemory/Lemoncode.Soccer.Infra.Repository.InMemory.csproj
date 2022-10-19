@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+        <IsPublishable>true</IsPublishable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lemoncode.Soccer.Application\Lemoncode.Soccer.Application.csproj" />
+    </ItemGroup>
+
+</Project>
