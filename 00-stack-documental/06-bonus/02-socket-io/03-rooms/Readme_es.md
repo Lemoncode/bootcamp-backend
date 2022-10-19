@@ -1,4 +1,4 @@
-# connection-params
+# Salas
 
 Vamos a trabajar con un concepto muy interesante, las "salas"
 
@@ -61,16 +61,16 @@ _./src/app.tsx_
 +    const socketConnection = createSocket(nickname, room);
 ```
 
-_./src/api.ts_
+_./src/api.tsx_
 
 ```diff
 export const createSocket = (
   nickname: string,
 + room : string
-): Socket => {
+): globalThis.SocketIOClient.Socket => {
   const url = baseSocketUrl;
 
-  const options: Partial<ManagerOptions & SocketOptions> = {
+  const options: SocketIOClient.ConnectOpts = {
 -    query: { nickname },
 +    query: { nickname, room },
     timeout: 60000,
@@ -83,15 +83,19 @@ _./back/src/app.ts_
 ```diff
 io.on('connection', function (socket: Socket) {
   console.log('** connection recieved');
--  addUserSession(socket.conn.id, socket.handshake.query['nickname']);
-+  addUserSession(socket.conn.id, socket.handshake.query['nickname'] as string, socket.handshake.query['room'] as string);
+  const config: ConnectionConfig = {
+    nickname: socket.handshake.query['nickname'] as string,
++    room: socket.handshake.query['room'] as string
+  }
+  addUserSession(socket.conn.id, config);
++  socket.join(socket.handshake.query['room']);
 ```
 
 Bueno hacemos un _addUserSession_ para almacenarlo en nuestra _base de datos_ (memoria) pero... tenemos que decirle a _socket.io_
 que ese usuario se registra en la habitación que indica, esto lo hacemos de la siguiente manera:
 
 ```diff
-   addUserSession(socket.conn.id, socket.handshake.query['nickname'] as string, socket.handshake.query['room'] as string);
+  addUserSession(socket.conn.id, config);
 +  socket.join(socket.handshake.query['room']);
 ```
 
@@ -106,12 +110,15 @@ interface UserSession {
 + room : string;
 }
 
+interface ConnectionConfig {
+  nickname: string;
++ room: string;
+}
+
 let userSession = [];
 
-- export const addUserSession = (connectionId: string, nickname) => {
-+ export const addUserSession = (connectionId: string, nickname  :string, room : string) => {
--  userSession = [...userSession, { connectionId, nickname}];
-+  userSession = [...userSession, { connectionId, nickname, room }];
+export const addUserSession = (connectionId: string, config: ConnectionConfig) => {
+  userSession = [...userSession, { connectionId, config}];
 };
 ```
 
@@ -120,6 +127,8 @@ Y el getter...
 _./back/src/store.ts_
 
 ```diff
+
+
 - export const getNickname = (connectionId: string) => {
 + export const getUserInfo = (connectionId: string) : UserSession => {
   const session = userSession.find(
@@ -127,11 +136,17 @@ _./back/src/store.ts_
   );
 
 -  return session ? session : 'ANONYMOUS :-@';
-+  return session ? session : {id: -1, nickname: 'ANONYMOUS :-@', room: 'devops' }
++    return session
++    ? {
++        connectionId: session.connectionId,
++        nickname: session.config.nickname,
++        room: session.config.room,
++      }
++    : { connectionId: -1, nickname: 'ANONYMOUS :-@', room: 'devops' };
 };
 ```
 
-- Y vamos a recogerla a la hora de enviar el mensaje que solo se envíe a los que estén en esa habitación:
+- Y Vamos a recogerla a la hora de enviar el mensaje que solo se envíe a los que estén en esa habitación:
 
 _./backend/src/app.ts_
 
@@ -143,7 +158,7 @@ _./backend/src/app.ts_
 
   socket.on('message', function (body: any) {
     console.log(body);
-+   const userInfo = getUserInfo(socket.conn.id);
++   const userInfo = getUserInfo(socket.id);
 -    socket.broadcast.emit('message', {
 +    io.to(userInfo.room).emit('message',{
       ...body,

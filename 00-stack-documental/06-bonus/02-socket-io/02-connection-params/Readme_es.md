@@ -22,7 +22,7 @@ npm install
 
 - En el Front vamos a probar a informar de un parametro harcodeado en la conexión:
 
-_./front/src/api.ts_
+_./frontend/src/api.ts_
 
 ```diff
 export const createSocket = (): globalThis.SocketIOClient.Socket => {
@@ -39,7 +39,7 @@ export const createSocket = (): globalThis.SocketIOClient.Socket => {
 
 - En el backend vamos a probar a recoger este valor y mostrarlo por consola.
 
-_./back/src/app.ts_
+_./backend/src/app.ts_
 
 ```diff
 io.on('connection', function (socket: Socket) {
@@ -56,7 +56,7 @@ _En front y back_
 npm start
 ```
 
-- Seguimos ahora queremos que el usuario introduzca el nombre que quiera y le de a conectar:
+- Seguimos ahora queremos que el usuario introduzca el nombre que quiera y el de a conectar:
 
 - ¡Genial! ya nos llega a servidor el valor, ¿Qué vamos a hacer ahora? Vamos a asociar el nickname
   al connectionId del websocket de cliente asociado
@@ -72,10 +72,17 @@ interface UserSession {
   nickname: string;
 }
 
+export interface ConnectionConfig {
+  nickname: string;
+}
+
 let userSession = [];
 
-export const addUserSession = (connectionId: string, nickname) => {
-  userSession = [...userSession, { connectionId, nickname }];
+export const addUserSession = (
+  connectionId: string,
+  config: ConnectionConfig
+) => {
+  userSession = [...userSession, { connectionId, config }];
 };
 
 export const getNickname = (connectionId: string) => {
@@ -83,13 +90,13 @@ export const getNickname = (connectionId: string) => {
     (session) => session.connectionId === connectionId
   );
 
-  return session ? session.nickname : "ANONYMOUS :-@";
+  return session ? session.config.nickname : "ANONYMOUS :-@";
 };
 ```
 
 - Ahora lo guardamos.
 
-_./back/src/app.ts_
+_./backend/src/app.ts_
 
 ```diff
 import { createApp } from './express.server';
@@ -100,16 +107,17 @@ import path from 'path';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import cors from 'cors';
-+ import { addUserSession, getNickname } from './store';
++ import { addUserSession, getNickname, ConnectionConfig } from './store';
 ```
 
-_./back/src/app.ts_
+_./backend/src/app.ts_
 
 ```diff
 io.on('connection', function (socket: Socket) {
   console.log('** connection recieved');
 -  console.log(socket.handshake.query['nickname']);
-+  addUserSession(socket.conn.id, socket.handshake.query['nickname']);
++  const config: ConnectionConfig = { nickname: socket.handshake.query['nickname'] as string };
++  addUserSession(socket.id, config);
 ```
 
 - Y cuando enviamos un mensaje ampliamos e indicamos el nick name de quien lo envió.
@@ -122,7 +130,7 @@ io.on('connection', function (socket: Socket) {
 +      ...body,
 +      payload: {
 +        ...body.payload,
-+        nickname: getNickname(socket.conn.id),
++        nickname: getNickname(socket.id),
 +      },
 +    });
   });
@@ -130,7 +138,7 @@ io.on('connection', function (socket: Socket) {
 
 - En el Front ya lo podemos mostrar
 
-_./front/src/app.ts_
+_./src/front/app.ts_
 
 ```diff
     case "CHAT_MESSAGE":
