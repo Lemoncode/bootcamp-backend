@@ -266,3 +266,60 @@ Para que la operación aritmética o de conversión produzca una `OverflowExcept
         }
     }
 ```
+
+También se pueden crear excepciones personalizadas. Para ello sólo hay que crear una clase que herede de la clase `Exception` y añadir un constructor. Ejemplo:
+
+```csharp
+public class DniInvalidoException: Exception {
+    public DniInvalidoException(string message): base(message)
+    {
+        Console.WriteLine(message);
+    }
+}
+```
+
+Para utilizar esta excepción que hemos creado hay que instanciarla manualmente:
+
+```csharp
+public class Program
+    {
+        public static void Main(string[] args)
+        {
+            try
+            {
+                Console.WriteLine("Añada DNI:");
+                var dni = Console.ReadLine();
+                if (!string.IsNullOrEmpty(dni) && ValidateDNI(dni))
+                {
+                    Console.WriteLine($"DNI: {dni} es válido");
+                }
+                else
+                {
+                    throw new DniInvalidoException($"Error!! DNI: {dni} no es válido");
+                }
+
+            }
+            catch (DniInvalidoException ex)
+            {
+                Console.ReadLine();
+
+            }
+        }
+
+        private static bool ValidateDNI(string dni)
+        {
+            string pattern = @"^((\d{8})|(\d{8}([A-Z]|[a-z])))$";
+
+            Regex r = new Regex(pattern);
+
+            if ((r.IsMatch(dni)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+```
