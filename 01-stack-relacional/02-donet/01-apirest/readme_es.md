@@ -2,13 +2,15 @@
 
 ## Introducción
 
+Un servidor web se define como un software que hace uso del HTTP (Hypertext Transfer Protocol) para almacenar los archivos que forman los sitios web y mostrarlos a los usuarios cuando estos lo solicitan.
+
 ### Pedir datos a servidor
 
-Cuando realizamos peticiones a un servidor web las hacemos utilizando el protocolo HTTP.
+Cuando realizamos peticiones a un servidor web las podemos hacer utilizando el protocolo HTTP.
 
 Pasos:
 
-- Se abre conexión y realiza la petición(request) al servidor.
+- Se abre conexión y realiza la petición (request) al servidor.
 - Se recupera los datos que están en la memoria del servidor, o el servidor tiene que consultar los datos de la base de datos.
 - Se manda la respuesta al cliente, con datos o con un error que haya podido ocurrir en el servidor.
 - Se cierra la conexión.
@@ -16,7 +18,7 @@ Pasos:
 
 ### Protocolo HTTP
 
-Vamos a ver un ejemplo de Protocolo HTTP:
+Vamos a ver un ejemplo de una comunicación usando el protocolo HTTP:
 
 <img src="./content/protocolo-http.png" alt="protocolo-http" style="zoom:67%;" />
 
@@ -24,7 +26,7 @@ Vamos a ver un ejemplo de Protocolo HTTP:
 
 Vamos a ver que tenemos cuando realizamos una petición:
 
-- **_Método_**: en este caso es _GET_, pero podemos tener otros como _POST_, _PUT_, _DELETE_, _DISPATCH_.
+- **_Método_**: en este caso es _GET_, pero hay muchos [Métodos](https://developer.mozilla.org/es/docs/Web/HTTP/Methods) más...
 - **Dirección del recurso**: hacia donde queremos mandar la petición. _HTTP_.
 - **Versión del protocolo**: en este caso es la 1.1.
 - **Cabeceras**: donde podemos incluir diferentes datos, desde dirección de la página que solicitamos, tipo de navegador que realiza la petición, el idioma que estamos utilizando, entre otros muchos datos.
@@ -35,48 +37,19 @@ Vamos a ver que tenemos cuando realizamos una petición:
 El servidor me devuelve una respuesta, que tiene las siguientes partes:
 
 - **Versión del protocolo**: en este caso sería la 1.1. como en la _request_.
-- **Código del estado:** en este caso un _200_, ahora en el siguiente ejemplo veremos los diferentes códigos que tenemos y que significan cada uno de ellos.
+- **Código del estado:** en este caso un 200, ahora en el siguiente apartado veremos algunos de los diferentes códigos que tenemos y que significan cada uno de ellos.
+https://www.lucushost.com/blog/codigos-http-mas-comunes/
 - **Mensaje de estado:** que va asociado al código de estado, pero que podemos personalizarlo si lo vemos conveniente.
 - **Headers**: donde irían incluidos diferentes datos, como el _content-type_ donde nos informa del formato de la respuesta, _XML_, _JSON_,... El servidor nos manda información a través de ellas y otras veces somos nosotros los que añadimos información a las cabeceras.
 - **Payload**: Es opcional, nos devuelve el contenido de la respuesta.
 
-### HTTP status codes
-
-Necesitamos informar a cliente de que ha pasado con su petición.
-
-- 1xx: Respuestas informativas.
-- 2xx: Respuestas con éxito.
-
-  - 200: Todo ha ido bien.
-  - 201: La petición ha sido completada, creación de un nuevo recurso.
-  - 204: La petición se ha completado con éxito, pero respuesta no tiene ningún contenido.
-
-- 3xx: Redireccionamiento. Suele usarse cuando queremos redireccionar algo de la aplicación.
-
-  - 301, 308: Redirección permanente. El recurso solicitado se encuentra en otro lugar y la redirección es permanente.
-  - 307: Redirección temporal.
-  - 304: Temas de Caché.
-
-- 4xx: Error en la request del cliente.
-
-  - 404: URL no encontrada.
-  - 401: error de autenticación.
-  - 403: usuario está logado pero no tiene permisos para ese recurso.
-
-- 5xx: Error del servidor.
-  - 500: internal server error.
-  - 501: método no implementado.
-  - 503: servicio caído y no responde.
-
 ## Soap Vs Rest
 
-Ambas caen dentro del cajón de "_SOA_": _Service Oriented Architecture_, es un tipo de arquitectura de software, la cual se basa en la integración de aplicaciones mediante servicios.
-
-Tanto la aproximación _SOAP_ como _REST_ cumplen ambas con _SOA_.
+Ambos son protocolos que se encuentran englobados en el cajón de "*SOA*" (*Service Oriented Architecture*). *SOA* es un tipo de arquitectura de software que se basa en la integración de aplicaciones mediante servicios.
 
 ### SOAP
 
-_Simple Object Access Protocol_: es un protocolo que nos permite realizar servicios web sin estado, a través de _TCP_ (se puede montar encima _HTTP_, _SMTP_), y con un formato _XML_.
+_Simple Object Access Protocol_: es un protocolo estándar que define cómo podemos intercambiar objetos por medio de datos XML.
 
 - Este protocolo se publicó en 1998, fue muy popular en la década del 2000 y principios 2010.
 - Es un protocolo pesado, basado en _XML_.
@@ -86,7 +59,7 @@ _Simple Object Access Protocol_: es un protocolo que nos permite realizar servic
 
 ### REST API
 
-El término REST (_Representational State Transfer_) lo acuñó Roy Fielding ( padre de la especificación HTTP) en el año 2000. Son un conjunto de restricciones que me permiten crear api's para consumir desde HTTP.
+El término REST (_Representational State Transfer_) lo acuñó Roy Fielding (padre de la especificación HTTP) en el año 2000, es un conjunto de reglas que permite que diferentes programas se comuniquen entre sí.
 
 - Los datos normalmente viajan en formato JSON (fácil de consumir), nos da igual la tecnología de servidor y la de cliente.
 - Define unos verbos básicos para realizar entre otras inserciones, actualizaciones y borrados (GET, PUT, POST, DELETE...).
@@ -97,9 +70,9 @@ El término REST (_Representational State Transfer_) lo acuñó Roy Fielding ( p
 
 El estándar de API tiene ya 20 años, fue una revolución en su día, pero ya va pidiendo un reemplazo.
 
-- La estructura es rídgida y no siempre se adapta a lo que necesitas.
-- Al final acabas creando métodos en lo que haces "trampas" para acceder a _queries_ específicas.
-- Muchas veces te hace falta mezclar los resultados de varios _endpoints_, sin tener que hacer varios viajes a servidor o hacer un _cherry pick_ de los campos a mostrar.
+- La estructura es rígida y no siempre se adapta a lo que necesitas.
+- Al final acabas creando métodos en los que haces "*trampas*" para acceder a _queries_ específicas.
+- Muchas veces te hace falta mezclar los resultados de varios _endpoints_, teniendo que hacer varios viajes a servidor o hacer un _cherry pick_ de los campos a mostrar.
 - _GraphQL_ se está erigiendo como el nuevo estándar de facto para solucionar algunas limitaciones de _REST API_.
 
 ## .net Rest Api
@@ -130,9 +103,9 @@ Vamos a la derecha de nuestra aplicación y vemos que tiene una carpeta _Control
 
 **ApiControler**: este atributo nos ayuda a habilitar algunas características por defecto.
 
-- **Route:** ruta de nuestro controlador va a ser siempre requerido para que todas la acciones sean accesibles. Coge el nombre de la clase, por ejemplo _WeatherForecastControler_, y mi _endpoint_ sería tal como api/WeatherForecastControler.
-- Si el modelo que manda no es válido automáticamente, gracias al _ApiController_, nos va a mandar un 400.
-- También nos va a aplicar inferencias a los orígenes de datos, según los parámetros que tengamos en la entrada. Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea _string_ o un _integer_, el cuál hay que indicarle que procede del body.
+- **Route:** es la ruta de acceso al controlador que estamos creando. Coge el nombre de la clase, por ejemplo _WeatherForecast_, y mi _endpoint_ sería tal como *api/WeatherForecast*.
+- Si el modelo que manda no es válido automáticamente, gracias al _ApiController_, nos va a mandar un 400 o qué no ha encontrado al método, etc...
+- Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea _string_ o un _integer_, el cual hay que indicarle que procede del body.
 
 Si ahora abrimos a **_appsetttings.json_**:
 
@@ -146,19 +119,27 @@ Luego le damos a _Debug_, _Open debug launch profiles UI_, y utiliza las _settin
 
 <img src="./content/aspnetcore2.png" alt="aspnetcore2" style="zoom:67%;" />
 
-Aquí tendremos diferentes variables y ejecutaremos la que se precisa en cada situación, por ejemplo, para entornos de integración, producción,etc.. Tendremos variables globales que utilizaremos a la largo de nuestra aplicación.
+Aquí tendremos diferentes variables y ejecutaremos la que se precisa en cada situación, por ejemplo, para entornos de integración, producción, etc... Tendremos variables globales que utilizaremos a la largo de nuestra aplicación.
+
+También podemos acceder a ella desde:
+
+<img src="./content/debug-properties.png" alt="debug-properties" style="zoom:67%;" />
 
 Vamos a abrir ahora el archivo **_Program.cs_**
 
 <img src="./content/program-cs.png" alt="program-cs" style="zoom:67%;" />
 
-Program es nuestro punto de entrada donde tenemos al método _Main_, va a ser el primer método que se va a ejecutar en nuestra aplicación, el cuál llama al método _CreateHostBuilder_, donde estamos cargando la configuración del host con la variable de entorno que tengo el prefijo _dotnet_, lo realiza automáticamente, también carga la configuración de las _appsettings_, agrega los proveedores registro de consola, de depuración y me indica que cargue la configuración del **_Startup_**.
+Program es nuestro punto de entrada donde tenemos al método _Main_.
+
+Va a ser el primer método que se va a ejecutar en nuestra aplicación, el cuál llama al método _CreateHostBuilder_, donde estamos cargando la configuración del host con la variable de entorno que tengo el prefijo _dotnet_.
+
+Esto lo realiza automáticamente, y también carga la configuración de las _appsettings_, agregan los proveedores registro de consola, de depuración y me indica que cargue la configuración del **_Startup_**.
 
 Este fichero **_Startup.cs_**:
 
 <img src="./content/startup-cs.png" alt="startup-cs" style="zoom:67%;" />
 
-Podemos encontrar la configuración de todos los servicios, por defecto nos añade el servicio de los controladores, nos agrega Swagger y también podríamos incluir todas las inyecciones de dependencia.
+Podemos encontrar la configuración de todos los servicios que tenemos activos en nuestro servidor web, por defecto nos añade el servicio de los controladores, nos agrega *Swagger* y también podríamos incluir todas las inyecciones de dependencia.
 
 Si ejecutamos nuestra aplicación:
 
@@ -310,9 +291,9 @@ namespace DemoRestApi.Models
 
 ##### Interfaz
 
-Ahora creamos una carpeta para la interfaz que vamos a trabajar con este Crud, la vamos a llamar _Contracts_.
+Ahora creamos una carpeta para la interfaz con la que vamos a trabajar con las típicas operaciones CRUD (*Create Read Update Delete*), la vamos a llamar *Contracts*.
 
-Creamos una **_interface_** que la vamos a llamar \_IActorRepository.cs, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
+Creamos una **_interface_** que la vamos a llamar *IActorRepository.cs*, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
 
 ./Contracts/IActorReposiroty.cs
 
@@ -367,7 +348,7 @@ namespace DemoRestApi.Repositories
 }
 ```
 
-Y al utilizar el CTRL + . encima vamos a implementar esa interfaz en mi nueva clase y me la trae a esta nueva clase.
+Y al utilizar *CTRL + .* encima vamos a implementar esa interfaz en mi nueva clase.
 
 <img src="./content/implement-interface.png" alt="implement-interface" style="zoom:67%;" />
 
@@ -437,7 +418,7 @@ namespace DemoRestApi.Controllers
 }
 ```
 
-En nuestra clase vamos a querer utilizar la interfaz de _IActorRepository_, para eso nos lo traemos por el contructor, si escrimos _ctor_ y pulsamos _tab_ se nos creará automáticamente, le pasamos por parámetro la interfaz de _IActorRepository_ a _ActorController_.
+En nuestra clase vamos a querer utilizar la interfaz de _IActorRepository_, para eso nos lo traemos por el contructor, si escribimos _ctor_ y pulsamos _tab_ se nos creará automáticamente, le pasamos por parámetro la interfaz de _IActorRepository_ a _ActorController_.
 
 Ahora vamos a crear una variable global para poder usarla en todo nuestro proyecto, con esto ya podremos utilizar los métodos de nuestra interfaz dentro del controlador.
 
@@ -503,7 +484,7 @@ Vamos ahora a implementar el método _GetActors_ en _ActorRespository_, pero pri
 
 <img src="./content/full-path.png" alt="full path" style="zoom:67%;" />
 
-Una vez copiado vamos a crear una variable para guardar este _path_, y para que nos lea literalmente el _string_ le pasamos _@_:
+Una vez copiado vamos a crear una variable para guardar este _path_, y para leer literalmente y no tener problemas con el carácter de '' \ le pasamos _@_:
 
 ./Repositories/ActorRepository.cs
 
@@ -593,7 +574,13 @@ Y al ejecutar nos da un error.
 
 Nos dice que no se puede resolver el servicio para el tipo _IActorRepository_, y no nos devuelve el listado de actores.
 
-Para solucionarlo tenemos que registrar este servicio, y para ello nos vamos a Startup y vamos a añadir este servicio.
+Para entender esto vamos a introducir un nuevo concepto, la inyección de dependencia, pero ¿qué es esto de inyección de dependencia? 
+
+Consiste de manera resumida en evitar el acoplamiento entre clases utilizando interfaces. 
+
+Gracias esto, conseguimos que cada clase tenga una función única, facilitando así el mantenimiento y el soporte de nuestro código.
+
+Volviendo al error que obtuvimos anteriormente, para solucionarlo, tenemos que registrar este servicio e inyectar la dependencia en todos los controladores, y para ello nos vamos a Startup y vamos a añadir este servicio.
 
 ./Startup.cs
 
@@ -635,7 +622,7 @@ Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el lis
 
 #### GetActorById
 
-Para continuar, vamos a seguir con el siguiente método, nos vamos primero al controlador. Utilizamos HttpGet pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}", le decimos que si encuentra al actor no los devuelva y sino que nos devuelva _NotFound_().
+Para continuar, vamos a seguir con el siguiente método, nos vamos primero al controlador. Utilizamos HttpGet pero dentro le ponemos el parámetro que va a llevar la ruta en este caso "{id}", le decimos que si encuentra al actor nos lo devuelva y sino que nos devuelva _NotFound_().
 
 ```diff
 .....
@@ -1002,13 +989,12 @@ Vamos a añadir un actor utilizando _Postman_, es importante que cambiemos el m�
 
 ##### Actualizar un actor
 
-Para actualizar un actor tenemos que usar el método ***PUT*** y añadimos el *id* del actor que queremos modificar.
+Para actualizar un actor tenemos que usar el método **_PUT_** y añadimos el _id_ del actor que queremos modificar.
 
 <img src="./content/update-actor-postman.png" alt="update-actor-postman" style="zoom:67%;" />
 
 ##### Borrar un actor
 
-Para borrar un actor seleccionamos el método **DELETE** y añadimos el *id* del actor que queremos eliminar.
+Para borrar un actor seleccionamos el método **DELETE** y añadimos el _id_ del actor que queremos eliminar.
 
 <img src="./content/delete-actor-postman.png" alt="del-actor-postman" style="zoom:67%;" />
-
