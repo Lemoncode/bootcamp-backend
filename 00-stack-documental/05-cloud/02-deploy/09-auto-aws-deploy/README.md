@@ -54,15 +54,10 @@ Create app:
 
 ![08-create-app](./readme-resources/08-create-app.png)
 
-Why did we get an error when deploy it? It's because the `Docker Platform` from `Elastic Beanstalk` has [NOT support multi-stage on Docker builds](https://github.com/aws/elastic-beanstalk-roadmap/issues/60).
+> Now AWS supports Docker multi-stage builds [since Feb 2022](https://docs.aws.amazon.com/elasticbeanstalk/latest/relnotes/release-2022-02-03-linux.html)
+> As second approach using [`docker-compose` to be executed by Amazon](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/single-container-docker-configuration.html)
 
-We could take more info in logs:
-
-![09-check-logs](./readme-resources/09-check-logs.png)
-
-> Check file `./var/log/eb-engine.log`
-
-As another approach, we could create a [`docker-compose` to be executed by Amazon](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/single-container-docker-configuration.html) when deploy a new version:
+> `Not include docker-compose`, only for info purpose
 
 _./docker-compose.yml_
 
@@ -77,8 +72,15 @@ services:
     env_file:
       - .env
 ```
+>
 
-> [Read env variables from .env](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.env-variables)
+Why did we get an error when deploy it? We could take more info in logs:
+
+![09-check-logs](./readme-resources/09-check-logs.png)
+
+> Check file `./var/log/eb-engine.log`
+>
+> [ERROR] An error occurred during execution of command [app-deploy] - [Run Docker Container]. Stop running the command. Error: no EXPOSE directive found in Dockerfile, abort deployment 
 
 Update `Dockerfile` to use `PORT=80` like it's declared in `EC2 > Security Groups > Inbound rules`:
 
@@ -111,16 +113,16 @@ name: Continuos Deployment Workflow
 on:
   push:
     branches:
-      - master
+      - main
 
 - env:
 -   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 -   IMAGE_NAME: registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
 jobs:
-- cd:
--   runs-on: ubuntu-latest
--   steps:
+ cd:
+  runs-on: ubuntu-latest
+  steps:
 -     - name: Checkout repository
 -       uses: actions/checkout@v2
 -     - name: Login heroku app Docker registry
@@ -141,7 +143,7 @@ git init
 git remote add origin https://github.com/...
 git add .
 git commit -m "initial commit"
-git push -u origin master
+git push -u origin main
 
 ```
 
@@ -189,17 +191,17 @@ name: Continuos Deployment Workflow
 on:
   push:
     branches:
-      - master
+      - main
 
 + env:
-+   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_RUN_ID}-${GITHUB_SHA}
++   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}
 
 jobs:
-+ cd:
-+   runs-on: ubuntu-latest
-+   steps:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
 +     - name: Checkout repository
-+       uses: actions/checkout@v2
++       uses: actions/checkout@v3
 +     - name: AWS login
 +       uses: aws-actions/configure-aws-credentials@v1
 +       with:
@@ -212,7 +214,12 @@ jobs:
 +         aws s3 cp ${{ env.APP_VERSION_LABEL }}.zip s3://${{ secrets.AWS_DEPLOY_S3_BUCKET }}/${{ env.APP_VERSION_LABEL }}.zip
 
 ```
-
+> Needs `*` to include all files
+>
+> Needs `.dockerignore` to include hidden files like `.dockerignore`
+>
+> Or `.*` to include all hidden files
+>
 > [Default Github Env](https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables)
 >
 > [aws-actions/configure-aws-credentials@v1](https://github.com/aws-actions/configure-aws-credentials)

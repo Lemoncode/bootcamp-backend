@@ -1,6 +1,4 @@
-import mongoose, { Schema, SchemaDefinition } from 'mongoose';
+import { db } from 'core/servers';
 import { Movie } from './movie.model';
 
-const movieSchema = new Schema({} as SchemaDefinition<Movie>);
-
-export const movieContext = mongoose.model<Movie>('Movie', movieSchema);
+export const getMovieContext = () => db?.collection<Movie>('movies');

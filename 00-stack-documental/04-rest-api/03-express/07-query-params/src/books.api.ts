@@ -30,6 +30,7 @@ booksApi
     const { id } = req.params;
     const bookId = Number(id);
     const book = await getBook(bookId);
+    res.setHeader('Authorization', 'Basic my-user:my-password');
     res.send(book);
   })
   .post('/', async (req, res) => {

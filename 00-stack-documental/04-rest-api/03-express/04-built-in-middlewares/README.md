@@ -88,6 +88,19 @@ app.listen(3000, () => {
 
 ```
 
+Update request:
+
+```
+URL: http://localhost:3000/api/books/1
+
+BODY:
+{
+    "title": "Choque de reyes Actualizado",
+    "releaseDate": "21/07/2022",
+    "author": "Otro autor"
+}
+```
+
 And "Delete a discontinued book":
 
 _./src/index.ts_

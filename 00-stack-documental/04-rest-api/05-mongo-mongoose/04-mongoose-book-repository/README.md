@@ -17,8 +17,10 @@ Let's install [mongoose](https://github.com/Automattic/mongoose):
 
 ```bash
 npm install mongoose --save
-npm install @types/mongoose --save-dev
+
 ```
+
+> It includes the typings file.
 
 Let's refactor the db server's connection:
 
@@ -33,38 +35,32 @@ _./src/core/servers/db.server.ts_
 export const connectToDBServer = async (connectionURI: string) => {
 - const client = new MongoClient(connectionURI);
 - await client.connect();
-- dbInstance = client.db();
 
-+ await connect(connectionURI, {
-+   useNewUrlParser: true, // https://mongoosejs.com/docs/deprecations.html#the-usenewurlparser-option
-+   useUnifiedTopology: true, // https://mongoosejs.com/docs/deprecations.html#useunifiedtopology
-+   useFindAndModify: false, // https://mongoosejs.com/docs/deprecations.html#findandmodify
-+ });
+- db = client.db();
+
++ await connect(connectionURI);
 };
-
-- export const getDBInstance = (): Db => dbInstance;
 
 ```
 
-> useNewUrlParser - False by default. -> True by default in Mongo driver.
-> useUnifiedTopology - False by default. -> True by default in Mongo driver.
-> useFindAndModify - True by default. -> Set to false to avoid use deprecated FindAndModify
-
-Create `book context` with mongoose schema:
+Update `book context` with mongoose schema:
 
 _./src/dals/book/book.context.ts_
 
-```typescript
-import mongoose, { Schema, SchemaDefinition } from "mongoose";
-import { Book } from "./book.model";
+```diff
+- import { db } from 'core/servers';
++ import { model, Schema } from 'mongoose';
+import { Book } from './book.model';
 
-const bookSchema = new Schema({
-  title: { type: Schema.Types.String, required: true },
-  releaseDate: { type: Schema.Types.Date, required: true },
-  author: { type: Schema.Types.String, required: true },
-} as SchemaDefinition<Book>);
++ const bookSchema = new Schema<Book>({
++   title: { type: Schema.Types.String, required: true },
++   releaseDate: { type: Schema.Types.Date, required: true },
++   author: { type: Schema.Types.String, required: true },
++ });
 
-export const bookContext = mongoose.model<Book>("Book", bookSchema);
+
+- export const getBookContext = () => db?.collection<Book>('books');
++ export const bookContext = model<Book>('Book', bookSchema);
 
 ```
 
@@ -77,26 +73,27 @@ Now, we could update the `db repository`:
 _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
-import { ObjectId } from "mongodb";
-- import { getDBInstance } from "core/servers";
-+ import { bookContext } from "../book.context";
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
+import { ObjectId } from 'mongodb';
+import { BookRepository } from './book.repository';
+import { Book } from '../book.model';
+- import { getBookContext } from '../book.context';
++ import { bookContext } from '../book.context';
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => {
--   const db = getDBInstance();
--   return await db.collection<Book>("books").find().toArray();
-+   return await bookContext.find();
+  getBookList: async (page?: number, pageSize?: number) => {
+    const skip = Boolean(page) ? (page - 1) * pageSize : 0;
+    const limit = pageSize ?? 0;
+-   return await getBookContext().find().skip(skip).limit(limit).toArray();
++   return await bookContext.find().skip(skip).limit(limit);
   },
 ...
 };
 
 ```
 
-> Set breakpoints to check the errors
+> Set breakpoints to check returned array
 
-Why it fails? Due to [Mongoose models](https://mongoosejs.com/docs/queries.html) provide several static helper functions, each of these functions returns mongoose query objects. Getting a better performance, we should use `lean` method:
+Due to [Mongoose models](https://mongoosejs.com/docs/queries.html) provide several static helper functions, each of these functions returns mongoose query objects. Getting a better performance, we should use `lean` method:
 
 _./src/dals/book/respositories/book.db-repository.ts_
 
@@ -104,10 +101,12 @@ _./src/dals/book/respositories/book.db-repository.ts_
 ...
 
 export const dbRepository: BookRepository = {
-- getBookList: async () => {
--   return await bookContext.find();
-- },
-+ getBookList: async () => await bookContext.find().lean(),
+  getBookList: async (page?: number, pageSize?: number) => {
+    const skip = Boolean(page) ? (page - 1) * pageSize : 0;
+    const limit = pageSize ?? 0;
+-   return await bookContext.find().skip(skip).limit(limit);
++   return await bookContext.find().skip(skip).limit(limit).lean();
+  },
 ...
 
 ```
@@ -118,17 +117,19 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
 ...
-- getBook: async (id: string) => {
-+ getBook: async (id: string) =>
--   const db = getDBInstance();
--   return await db.collection<Book>("books").findOne({
--     _id: new ObjectId(id),
+  getBook: async (id: string) => {
+-   return await getBookContext().findOne({
++   return await bookContext.findOne({
+      _id: new ObjectId(id),
 -   });
-- },
-+   await bookContext.findOne({ _id: new ObjectId(id) }).lean(),
++   })
++   .lean();
+  },
 ...
 
 ```
+
+> Try `_id: id,` on query. It works here but it doesn't on aggregations.
 
 Update `save book`:
 
@@ -136,23 +137,34 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
 ...
-- saveBook: async (book: Book) => {
-+ saveBook: async (book: Book) =>
--   const db = getDBInstance();
--   const { value } = await db.collection<Book>("books").findOneAndUpdate(
-+   await bookContext.findOneAndUpdate(
-      {
-        _id: book._id,
-      },
-      { $set: book },
--     { upsert: true, returnDocument: "after" }
-+     { upsert: true, new: true }
+  saveBook: async (book: Book) => {
+-   const { value } = await getBookContext().findOneAndUpdate(
++   return await bookContext
++     .findOneAndUpdate(
+        {
+          _id: book._id,
+        },
+        {
+          $set: book,
+        },
+        { upsert: true, returnDocument: 'after' }
 -   );
 -   return value;
-- },
-+   ).lean(),
++     )
++     .lean();
+  },
 ...
 
+```
+
+> Body
+
+```
+{
+    "title": "El señor de los anillos",
+    "releaseDate": "1954-07-29T00:00:00.000Z",
+    "author": "J. R. R. Tolkien"
+}
 ```
 
 Update `delete book`:
@@ -161,35 +173,19 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
 ...
+
   deleteBook: async (id: string) => {
--   const db = getDBInstance();
--   const { deletedCount } = await db.collection<Book>("books").deleteOne({
+-   const { deletedCount } = await getBookContext().deleteOne({
 +   const { deletedCount } = await bookContext.deleteOne({
       _id: new ObjectId(id),
-    });
+-   });
++   })
++   .lean();
     return deletedCount === 1;
   },
 };
 
 ```
-
-Finally, if we want to log each query that `mongoose` request to mongo, we could use the `debug` mode:
-
-_./src/core/servers/db.server.ts_
-
-```diff
-- import { connect } from "mongoose";
-+ import { connect, set } from 'mongoose';
-+ import { envConstants } from "core/constants";
-
-+ set("debug", !envConstants.isProduction);
-
-export const connectToDBServer = async (connectionURI: string) => {
-...
-
-```
-
-> [Reference](https://mongoosejs.com/docs/api.html#mongoose_Mongoose-set)
 
 # ¿Con ganas de aprender Backend?
 

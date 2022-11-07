@@ -1,6 +1,6 @@
 import React from "react";
-import { createSocket } from "./api";
 import { Socket } from "socket.io-client";
+import { createSocket } from "./api";
 
 export const App = () => {
   const [message, setMessage] = React.useState("");
@@ -53,7 +53,6 @@ export const App = () => {
       <button onClick={handleConnect} disabled={isConnected}>
         Join
       </button>
-
       {isConnected && (
         <div style={{ marginTop: "40px" }}>
           <label>Message:</label>
@@ -68,6 +67,7 @@ export const App = () => {
             <textarea
               style={{ height: "400px" }}
               value={chatlog}
+              onChange={(e) => setChatlog(e.target.value)}
               readOnly
             ></textarea>
           </div>

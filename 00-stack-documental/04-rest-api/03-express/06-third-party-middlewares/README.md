@@ -13,6 +13,8 @@ npm install
 
 ```
 
+Remove `node_modules`and move all files to back folder.
+
 Middlewares allow us to extend express functionality as a unique global point of app's configuration and we could install existing third party middlewares for concepts like enable CORS, JWT tokens, Cookie parser, etc.
 
 We will start creating a simple front-end application that it will fetch a book detail. Create `front` folder and init a new package.json:
@@ -40,7 +42,6 @@ _./front/index.html_
     <script src="./app.js"></script>
   </body>
 </html>
-
 ```
 
 Add js file:
@@ -48,16 +49,15 @@ Add js file:
 _./front/app.js_
 
 ```javascript
-console.log("Running front app");
+console.log('Running front app');
 
-fetch("http://localhost:3000/api/books/2")
+fetch('http://localhost:3000/api/books/2')
   .then((response) => {
     return response.json();
   })
   .then((book) => {
     console.log({ book });
   });
-
 ```
 
 We could create another express app to serve this files in another process, but to be simple we will install [lite-server](https://github.com/johnpapa/lite-server) to serve this front app.
@@ -74,7 +74,6 @@ _./front/lite-server.config.json_
 {
   "port": 8080
 }
-
 ```
 
 Finally, create the start command:
@@ -89,7 +88,7 @@ _./front/package.json_
   },
 ```
 
-Let's runs both servers:
+Let's runs both servers (run back in `debug` mode):
 
 ```bash
 cd back/
@@ -99,6 +98,8 @@ cd front/
 npm start
 
 ```
+
+> Notice that the backend doesn't block the request. The browser blocks it
 
 This kind of request is a cross-origin request and we need enable [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (Cross-Origin Resource Sharing) in backend side to allow sharing resources between different domains.
 
@@ -149,6 +150,23 @@ npm start
 
 If we need for example send some headers or cookies with authorization token, we need to enable `credentials` mode:
 
+_./back/src/index.ts_
+
+```diff
+...
+  .get('/:id', async (req, res) => {
+    const { id } = req.params;
+    const bookId = Number(id);
+    const book = await getBook(bookId);
++   res.setHeader('Authorization', 'Basic my-user:my-password');
+    res.send(book);
+  })
+...
+```
+
+> Check Reponse Headers in Chrome
+> [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+
 _./front/app.js_
 
 ```diff
@@ -166,6 +184,8 @@ console.log("Running front app");
   });
 
 ```
+
+> [Official docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials)
 
 Let's runs both servers:
 

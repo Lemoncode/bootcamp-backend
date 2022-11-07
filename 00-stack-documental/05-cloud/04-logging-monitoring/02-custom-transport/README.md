@@ -43,6 +43,7 @@ Since there isn't any official winston rollbar transport, we will create a custo
 
 ```bash
 npm install winston-transport triple-beam --save
+
 ```
 
 > [Adding custom transports](https://github.com/winstonjs/winston#adding-custom-transports)
@@ -75,10 +76,7 @@ export class RollbarTransport extends Transport {
     setImmediate(() => this.emit('logged', info));
     const level = info.level;
     const message = info[MESSAGE];
-
-    if (level === 'warn' || level === 'error') {
-      this.rollbar[level](message);
-    }
+    this.rollbar[level](message);
     next();
   }
 }
@@ -113,10 +111,11 @@ const { combine, timestamp, prettyPrint } = format;
 
 export const rollbar = new RollbarTransport({
   accessToken: envConstants.ROLLBAR_ACCESS_TOKEN,
-  environment: envConstants.NODE_ENV,
+  environment: envConstants.ROLLBAR_ENV,
   captureUncaught: envConstants.isProduction,
   captureUnhandledRejections: envConstants.isProduction,
   format: combine(timestamp(), prettyPrint()),
+  level: 'warn',
 });
 
 ```
@@ -139,26 +138,17 @@ Add `env variables`:
 _./back/.env.example_
 
 ```diff
-NODE_ENV=development
-PORT=3000
-STATIC_FILES_PATH=../public
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
-AUTH_SECRET=MY_AUTH_SECRET
+...
 + ROLLBAR_ACCESS_TOKEN=value
++ ROLLBAR_ENV=development
 
 ```
 
 _./back/.env_
 
 ```diff
-NODE_ENV=development
-PORT=3000
-STATIC_FILES_PATH=../public
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
-AUTH_SECRET=MY_AUTH_SECRET
 + ROLLBAR_ACCESS_TOKEN=<value-provided-by-rollbar>
++ ROLLBAR_ENV=development
 
 ```
 
@@ -166,14 +156,9 @@ _./back/src/core/constants/env.constants.ts_
 
 ```diff
 export const envConstants = {
-+ NODE_ENV: process.env.NODE_ENV,
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
-  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
-  isApiMock: process.env.API_MOCK === 'true',
-  MONGODB_URI: process.env.MONGODB_URI,
-  AUTH_SECRET: process.env.AUTH_SECRET,
+  ...
 + ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
++ ROLLBAR_ENV: process.env.ROLLBAR_ENV,
 };
 
 ```

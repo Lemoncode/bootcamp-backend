@@ -33,15 +33,27 @@ _./index.js_
 
 ```diff
 ...
-const handleRequest = (req, res) => {
-  const { url, method } = req;
-+ req.on("error", (error) => {
-+   res.statusCode = 400;
-+   res.end();
-+ });
+} else if (method === "POST") {
+      let data = [];
+      req.on("data", (chunk) => {
+        console.log({ chunk });
+        data += chunk;
+      });
 
-  if (url === "/api/books") {
-    if (method === "GET") {
++     req.on("error", (error) => {
++       res.statusCode = 400;
++       res.end();
++     });
+
+      req.on("end", () => {
+        const book = JSON.parse(data.toString("utf8"));
+        const newBook = insertBook(book);
+        res.setHeader("Content-Type", "application/json");
+        res.statusCode = 201;
+        res.write(JSON.stringify(newBook));
+        res.end();
+      });
+    }
 ...
 
 ```

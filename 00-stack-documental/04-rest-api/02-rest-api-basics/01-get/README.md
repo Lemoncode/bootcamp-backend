@@ -6,7 +6,7 @@ We will start from `00-boilerplate`.
 
 # Steps to build it
 
-We have a book's store and we need that users have access to next resources:
+We have a bookstore and want to give users access to the following resources:
 
 - [1] Get available book list.
 - [2] Get book details.
@@ -61,8 +61,8 @@ const http = require("http");
 const handleRequest = (req, res) => {
 + const { url, method } = req;
 + if (url === "/api/books" && method === "GET") {
-+   res.statusCode = 200;
 +   res.write(getBookList());
++   res.statusCode = 200;
 +   res.end();
 + } else {
     res.write("My awesome books portal");
@@ -73,7 +73,7 @@ const handleRequest = (req, res) => {
 
 ```
 
-Why it fails? The payloads are always send it like [`string` or `Buffer`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_write_chunk_encoding_callback). How could a frontend application parse to the desired format if we always send it by `string`?
+Why it fails? The payloads are always send it like [`string` or `Buffer`](https://nodejs.org/dist/latest/docs/api/http.html#responsewritechunk-encoding-callback). How could a frontend application parse to the desired format if we always send it by `string`?
 
 _./index.js_
 
@@ -83,9 +83,9 @@ const handleRequest = (req, res) => {
   const { url, method } = req;
   if (url === "/api/books" && method === "GET") {
 +   res.setHeader("Content-Type", "application/json");
-    res.statusCode = 200;
 -   res.write(getBookList());
 +   res.write(JSON.stringify(getBookList()));
+    res.statusCode = 200;
     res.end();
   } else {
     res.write("My awesome books portal");

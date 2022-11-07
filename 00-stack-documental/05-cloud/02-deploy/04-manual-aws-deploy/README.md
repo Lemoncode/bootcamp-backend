@@ -58,15 +58,7 @@ _./package.json_
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.18.0",
-    "@aws-sdk/s3-request-presigner": "^3.18.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.6.9",
-    "mongoose": "^5.12.12"
+    ...
   }
 }
 
@@ -81,7 +73,6 @@ Result:
 |- dals/
 |- pods/
 |- public/
-|- .gitignore
 |- app.js
 |- index.js
 |- package.json

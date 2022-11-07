@@ -24,7 +24,6 @@ describe('pods/security/security.middlewares specs', () => {
 
       // Act
       await authenticationMiddleware(req, res, next);
-
       // Assert
       expect(res.sendStatus).toHaveBeenCalled();
       expect(res.sendStatus).toHaveBeenCalledWith(401);

@@ -126,43 +126,10 @@ _./package.json_
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.18.0",
-    "@aws-sdk/s3-request-presigner": "^3.18.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.6.9",
-    "mongoose": "^5.12.12"
+    ...
   },
 - "devDependencies": {
--   "@babel/cli": "^7.13.16",
--   "@babel/core": "^7.14.0",
--   "@babel/node": "^7.13.13",
--   "@babel/plugin-proposal-optional-chaining": "^7.13.12",
--   "@babel/preset-env": "^7.14.1",
--   "@babel/preset-typescript": "^7.13.0",
--   "@shelf/jest-mongodb": "^1.2.5",
--   "@types/cookie-parser": "^1.4.2",
--   "@types/cors": "^2.8.10",
--   "@types/express": "^4.17.11",
--   "@types/inquirer": "^7.3.1",
--   "@types/jest": "^26.0.23",
--   "@types/jsonwebtoken": "^8.5.1",
--   "@types/mongodb": "^3.6.17",
--   "@types/mongoose": "^5.10.5",
--   "@types/supertest": "^2.0.11",
--   "babel-plugin-module-resolver": "^4.1.0",
--   "cross-env": "^7.0.3",
--   "inquirer": "^8.1.0",
--   "jest": "^27.0.4",
--   "nodemon": "^2.0.7",
--   "npm-run-all": "^4.1.5",
--   "rimraf": "^3.0.2",
--   "supertest": "^6.1.3",
--   "ts-jest": "^27.0.3",
--   "typescript": "^4.2.4"
+...
 - }
 }
 

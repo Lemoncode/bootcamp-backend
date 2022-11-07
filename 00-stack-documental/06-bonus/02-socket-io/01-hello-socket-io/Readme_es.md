@@ -111,7 +111,7 @@ io.on("connection", function (socket: Socket) {
 
 - Ahora vamos a implementar nuestra aplicación de chat básica, nos quedamos
   esperando a que un usuario envíe un mensaje de chat, cuando recibamos dicho mensaje
-  lo reenviamos a todos los usuarios
+  lo reenviamos a todos los usarios
 
 ```diff
 // whenever a user connects on port 3000 via
@@ -128,9 +128,9 @@ socket.emit("message", { type: "CONNECTION_SUCCEEDED" });
 ```
 
 > Aquí podríamos enviar el mensaje a todo el mundo menos al que envío el mensaje,
-> ¿ Cómo podríamos hacer para enviarselo a todo el mundo? ¿Lo pruebas?
+> ¿ Cómo podrámos hacer para enviarselo a todo el mundo? ¿Lo pruebas?
 
-Vamos a probar con esta tool (importante contact, y pestaña emit y message, despude payload y como json)
+Vamos a probar con esta tool (importante contact, y pestaña emit y message, despues payload y como json)
 
 ```
 https://amritb.github.io/socketio-client-tool/
@@ -142,13 +142,16 @@ Y el proyecto:
 https://github.com/amritb/socketio-client-tool/tree/master/react-client-tool
 ```
 
+Conectamos en dos pestañas del navegador
+
 ![choose url /port and settings](./readme-pics/init.png)
 
 Podemos ver como nos hemos conectado y recibido el mensaje _CONNECTION_SUCCEEDED_
 
 Podemos enviar un mensaje (tab emit):
 
-- tecleamos _message_ y le damos al botón de _add_.
+- tecleamos _message_ y le damos al botón de _add_ (IMPORTANTE
+darle al botón de add para que envie MESSAGE y no socket io client).
 - Miramos que este deshabilitado _json data_
 - Añadimos el siguiente body del mensaje
 
@@ -292,6 +295,7 @@ Y vamos a dar un punto de entrada para enviar mensajes:
 +            <textarea
 +              style={{ height: "400px" }}
 +              value={chatlog}
++              onChange={(e) => setChatlog(e.target.value)}
 +              readOnly
 +            ></textarea>
 +          </div>

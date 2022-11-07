@@ -1,9 +1,13 @@
-version: "3.8"
+version: '3.8'
 services:
   mflix-db:
     container_name: mflix-db
-    image: mongo:4.4.6
+    image: mongo:5.0.9
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
-      - "./mongo-data:/data/db"
+      - type: bind
+        source: ./mongo-data
+        target: /data/db
+volumes:
+  mongo-data:

@@ -5,7 +5,7 @@ import * as apiModel from './book.api-model';
 export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
   id: book._id.toHexString(),
   title: book.title,
-  releaseDate: book.releaseDate.toISOString(),
+  releaseDate: book.releaseDate?.toISOString(),
   author: book.author,
 });
 
@@ -23,6 +23,4 @@ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
 export const mapBookListFromApiToModel = (
   bookList: apiModel.Book[]
 ): model.Book[] =>
-  Array.isArray(bookList)
-    ? bookList.map(mapBookFromApiToModel)
-    : [];
+  Array.isArray(bookList) ? bookList.map(mapBookFromApiToModel) : [];

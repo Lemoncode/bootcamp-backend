@@ -99,7 +99,7 @@ describe("Calculator tests", () => {
       // Arrange
       const a = 2;
       const b = 2;
-+     const isLowerThanFive = jest.fn();
++     const isLowerThanFive = () => {};
 
       // Act
 -     const result = calculator.add(a, b);
@@ -182,7 +182,7 @@ describe('Calculator tests', () => {
       // Arrange
       const a = 2;
       const b = 2;
--     const isLowerThanFive = jest.fn();
+-     const isLowerThanFive = () => {};
 
       // Act
 -     const result = calculator.add(a, b, isLowerThanFive);
@@ -300,7 +300,7 @@ _./config/test/jest.js_
 ```diff
 module.exports = {
   rootDir: '../../',
-  preset: 'ts-jest',
+  verbose: true,
 + restoreMocks: true,
 };
 

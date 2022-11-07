@@ -9,7 +9,7 @@ Las convenciones en el código nos ayudan a:
 
 ## CONVENCIONES DE NOMENCLATURA
 
-En .Net como en cualquier otro lenguaje existen unas normas básicas para el uso de mayúsculas y minúsculas.
+En *.Net* como en cualquier otro lenguaje existen unas normas básicas para el uso de mayúsculas y minúsculas.
 
 Dependiendo del identificador podemos distinguir dos nomenclaturas:
 
@@ -36,7 +36,7 @@ Dependiendo del identificador podemos distinguir dos nomenclaturas:
     }
     ```
 
-2. **camelCasing**: se utiliza para variables y parámetros
+2. **camel Case**: se utiliza para variables y parámetros
 
     ```csharp
     public class Coche {
@@ -52,7 +52,7 @@ Dependiendo del identificador podemos distinguir dos nomenclaturas:
 1. Los nombres de los identificadores han de ser fáciles de leer
 `NumeroRuedas` es más legible que `RuedasNumero`
 
-2. No utilizar abreviaturas para mejorar la legilibidad. Por ejemplo, el método `ObtenerNumeroRuedas` es más legible que si se llamara simplemente `Ruedas`
+2. No utilizar abreviaturas para mejorar la legibilidad. Por ejemplo, el método `ObtenerNumeroRuedas` es más legible que si se llamara simplemente `Ruedas`
 
 3. Evitar el uso de acrónimos
 

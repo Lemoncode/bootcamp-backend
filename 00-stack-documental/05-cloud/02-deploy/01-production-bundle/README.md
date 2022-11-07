@@ -51,6 +51,20 @@ npm run build:prod
 
 Copy `front/dist` files into `back/public`.
 
+Update `gitignore`
+
+_back/.gitignore_
+
+```diff
+node_modules
+.env
+mongo-data
+globalConfig.json
++ public
++ dist
+
+```
+
 Run only `back` app:
 
 _back terminal_
@@ -96,7 +110,7 @@ npm run build
 
 A nice improvement is ignore not necessary files for production:
 
-_./back/.bablerc_
+_./back/.babelrc_
 
 ```diff
 ...

@@ -22,7 +22,7 @@ restApiServer.use(logErrorRequestMiddleware);
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
     await connectToDBServer(envConstants.MONGODB_URI);
-    console.log('Connected to DB');
+    console.log("Connected to DB");
   } else {
     console.log('Running API mock');
   }
