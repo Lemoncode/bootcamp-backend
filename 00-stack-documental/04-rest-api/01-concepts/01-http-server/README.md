@@ -8,14 +8,14 @@ We will start from `00-boilerplate`.
 
 Let's create our first http server with nodejs`:
 
-_./index.js_
+_./index.mjs_
 
 ```javascript
-const http = require("http");
+import http from "http";
 
 const server = http.createServer((req, res) => {
   console.log(req.url);
-  res.write('Hello from nodejs');
+  res.write("Hello from nodejs");
   res.end();
 });
 
@@ -25,7 +25,7 @@ server.listen(3000);
 Run app:
 
 ```bash
-node index
+node index.mjs
 
 ```
 
@@ -50,14 +50,13 @@ _./index.html_
     <img src="logo.png" />
   </body>
 </html>
-
 ```
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-+ const fs = require("fs");
+import http from "http";
++ import fs from "fs";
 
 - const server = http.createServer((req, res) => {
 -   console.log(req.url);
@@ -79,11 +78,11 @@ server.listen(3000);
 
 Finally, we need to resolve the image query:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-const fs = require("fs");
+import http from "http";
+import fs from "fs";
 
 const handleRequest = (req, res) => {
   if (req.url === "/") {
