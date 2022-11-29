@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  book-store-db:
+    container_name: book-store-db
+    image: mongo:5.0.9
+    ports:
+      - '27017:27017'
+    volumes:
+      - type: bind
+        source: ./mongo-data
+        target: /data/db
+volumes:
+  mongo-data:

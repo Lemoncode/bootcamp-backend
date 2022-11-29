@@ -1,0 +1,30 @@
+name: Continuos Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_RUN_ID}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout repository
+       uses: actions/checkout@v3
+     - name: AWS login
+       uses: aws-actions/configure-aws-credentials@v1
+       with:
+         aws-access-key-id: ${{ secrets.AWS_DEPLOY_ACCESS_KEY_ID }}
+         aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET_ACCESS_KEY }}
+         aws-region: ${{ secrets.AWS_REGION }}
+     - name: Upload files to S3
+       run: |
+         zip -r ${{ env.APP_VERSION_LABEL }}.zip * .dockerignore
+         aws s3 cp ${{ env.APP_VERSION_LABEL }}.zip s3://${{ secrets.AWS_DEPLOY_S3_BUCKET }}/${{ env.APP_VERSION_LABEL }}.zip
+     - name: Create EB App version
+       run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_EB_APP_NAME }} --version-label ${{ env.APP_VERSION_LABEL }} --source-bundle S3Bucket=${{ secrets.AWS_DEPLOY_S3_BUCKET }},S3Key=${{ env.APP_VERSION_LABEL }}.zip --no-auto-create-application
+     - name: Update environment
+       run: aws elasticbeanstalk update-environment --environment-name ${{ secrets.AWS_EB_ENV_NAME }} --version-label ${{ env.APP_VERSION_LABEL }}
