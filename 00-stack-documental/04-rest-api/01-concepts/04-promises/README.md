@@ -8,10 +8,10 @@ We will start from `03-callback`.
 
 Let's update previous example to work with promises. We can try to create our custom promise like:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const fs = require("fs");
+import fs from "fs";
 
 - fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
 -   if (error) {
@@ -47,17 +47,17 @@ console.log("Start program");
 Run app:
 
 ```bash
-node index
+node index.mjs
 
 ```
 
 We can create the promisified the readFile method using `util` library from Nodejs:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const fs = require("fs");
-+ const { promisify } = require("util");
+import fs from "fs";
++ import { promisify } from "util";
 
 - const readFile = (fileName) =>
 -   new Promise((resolve, reject) => {
@@ -87,7 +87,7 @@ console.log("Start program");
 
 With promises, we could `chain` it several ones:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 ...
