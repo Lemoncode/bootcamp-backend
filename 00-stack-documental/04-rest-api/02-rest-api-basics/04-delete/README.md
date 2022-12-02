@@ -11,14 +11,14 @@ Finally, we could implement the method to delete a discontinued book:
 _./index.js_
 
 ```diff
-const http = require("http");
-const {
+import http from "http";
+import {
   getBookList,
   getBook,
   insertBook,
   updateBook,
 + deleteBook,
-} = require("./mock-db");
+} from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
 ...
@@ -36,6 +36,13 @@ const handleRequest = (req, res) => {
   }
 };
 ...
+```
+
+The request:
+
+```
+URL: http://localhost:3000/api/books/1
+METHOD: DELETE
 ```
 
 # ¿Con ganas de aprender Backend?
