@@ -8,7 +8,7 @@ We will start from `03-put`.
 
 Finally, we could implement the method to delete a discontinued book:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 import http from "http";
