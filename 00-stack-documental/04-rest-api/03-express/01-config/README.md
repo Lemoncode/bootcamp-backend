@@ -22,6 +22,8 @@ npm install express --save
 
 Let's add the main file to start the project:
 
+> NOTE: we are using here CommonJS, the old-fashioned Nodejs import modules.
+
 _./src/index.js_
 
 ```javascript
@@ -74,39 +76,69 @@ So far so good, this feature is nice for quick demos but not to be used in real 
 - We would like to use ES6 and beyond features like ES6 imports, optional chaining, etc.
 - We would like to use Typescript for avoid typos and detect early errors.
 
-Let's install necessary dev libraries for that:
+Let's use new NodeJS >= 18 features:
 
-- [babel](https://github.com/babel/babel): is a tool that helps you write code in the latest versions of Javascript. We need install some plugins and presets even the typescript one.
+Instead of rename all files to `mjs` we will use the new [type](https://nodejs.org/api/packages.html#packagejson-and-file-extensions) prop in the package.json:
 
-- [typescript](https://github.com/microsoft/TypeScript): adds optional types to Javascript that helps you detects early errors.
+_./package.json_
 
-- [nodemon](https://github.com/remy/nodemon): is a tool that helps automatically restarting the node application when file changes
+```diff
+{
+  ...
++ "type": "module",
+  "scripts": {
+    "start": "node src/index"
+  },
 
-- [npm-run-all](https://github.com/mysticatea/npm-run-all): is a tool that helps you run multiple npm scripts commands in parallel
+...
+```
 
-```bash
-npm install @babel/cli @babel/core @babel/node @babel/preset-env @babel/preset-typescript typescript nodemon npm-run-all --save-dev
+Using ES module imports:
+
+_./src/index.js_
+
+```diff
+- const express = require("express");
++ import express from "express";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("My awesome books portal");
+});
+
+app.listen(3000, () => {
+  console.log("Server ready at port 3000");
+});
 
 ```
 
-Add babel config file:
+Previously, we were using some tools like [nodemon](https://github.com/remy/nodemon) to restart the server each time, now we can use the new [watch](https://nodejs.org/dist/latest-v18.x/docs/api/all.html#all_cli_--watch) flag (it's still in Experimental status):
 
-_./.babelrc_
+_./package.json_
 
-```json
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "16"
-        }
-      }
-    ],
-    "@babel/preset-typescript"
-  ]
-}
+```diff
+...
+  "scripts": {
+-   "start": "node src/index"
++   "start": "node --watch src/index"
+  },
+...
+```
+
+Now, `Nodejs >= 18` provides a lot of ES "new" features (even [import alias](https://nodejs.org/api/packages.html#imports)), that's why, we will not install [babel](https://github.com/babel/babel) this time.
+
+Let's install necessary dev libraries:
+
+- [typescript](https://github.com/microsoft/TypeScript): adds optional types to Javascript that helps you detects early errors.
+
+- [npm-run-all](https://github.com/mysticatea/npm-run-all): is a tool that helps you run multiple npm scripts commands in parallel
+
+- [rimraf](https://github.com/isaacs/rimraf): OS agnostic tool for deleting files and folders.
+
+```bash
+npm install typescript npm-run-all rimraf --save-dev
+
 ```
 
 Add typescript config file:
@@ -116,9 +148,9 @@ _./tsconfig.json_
 ```json
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "declaration": false,
     "noImplicitAny": false,
     "sourceMap": true,
@@ -130,7 +162,12 @@ _./tsconfig.json_
   },
   "include": ["src/**/*"]
 }
+
 ```
+
+> [ES Modules with TypeScript and NodeJS](https://www.typescriptlang.org/docs/handbook/esm-node.html)
+>
+> [Compiler Options](https://www.typescriptlang.org/tsconfig)
 
 Let's create npm commands:
 
@@ -139,13 +176,25 @@ _./package.json_
 ```diff
 ...
   "scripts": {
--   "start": "node src/index"
-+   "start": "run-p -l type-check:watch start:dev",
-+   "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-+   "type-check": "tsc --noEmit",
-+   "type-check:watch": "npm run type-check -- --watch"
+-   "start": "node --watch src/index"
++   "prestart": "npm run clean && npm run build:dev",
++   "start": "run-p -l build:watch start:dev",
++   "start:dev": "node --watch dist/index",
++   "clean": "rimraf dist",
++   "build:dev": "tsc --outDir dist",
++   "build:watch": "npm run build:dev -- --watch --preserveWatchOutput"
   },
+
 ```
+
+> `clean`: Remove dist folder
+>
+> `build:dev`: Build the TypeScript code and put the result in the `dist` folder
+>
+> `prestart`: We will need build the TypeScript code before run `node dist/index`
+>
+> `build:watch`: Re-build the TypeScript code after some change.
+>
 
 Finally, rename the index file to `.ts` extension.
 
@@ -156,19 +205,6 @@ npm start
 
 ```
 
-We can try ES6 modules:
-
-_./src/index.ts_
-
-```diff
-- const express = require("express");
-+ import express from "express";
-
-const app = express();
-
-...
-```
-
 Let's install typings for express:
 
 ```bash
@@ -177,6 +213,16 @@ npm install @types/express --save-dev
 ```
 
 > Let's try some changes
+
+We should `ignore` the `node_modules` and `dist` folders to avoid upload it to our git repository:
+
+_./.gitignore_
+
+```
+node_modules
+dist
+
+```
 
 # ¿Con ganas de aprender Backend?
 
