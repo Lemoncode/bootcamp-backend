@@ -106,7 +106,7 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-+ import { getBookList } from "./mock-db";
++ import { getBookList } from "./mock-db.js";
 
 const app = express();
 
@@ -125,6 +125,8 @@ app.listen(3000, () => {
 
 ```
 
+> NOTE: [Mandatory file extensions](https://nodejs.org/api/esm.html#mandatory-file-extensions). We have to use `.js` even for TypeScript
+>
 > Note: express are setting content-type header for us.
 
 How we could define the route for "Get book detail"?
@@ -133,8 +135,8 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-- import { getBookList } from "./mock-db";
-+ import { getBookList, getBook } from "./mock-db";
+- import { getBookList } from "./mock-db.js";
++ import { getBookList, getBook } from "./mock-db.js";
 
 const app = express();
 
