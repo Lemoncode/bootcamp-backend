@@ -79,6 +79,8 @@ booksApi
   })
 ```
 
+> NOTE: It looks like it's working but it DOES NOT. We are receiving an HTML with the error instead of a 500 without a body response
+
 Why the app is not working? It's because it's important the middleware order when we use it, that is:
 
 _./src/index.ts_
