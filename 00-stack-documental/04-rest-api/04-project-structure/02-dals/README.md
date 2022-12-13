@@ -32,7 +32,7 @@ Add barrel file:
 _./dals/book/index.ts_
 
 ```typescript
-export * from "./book.model";
+export * from "./book.model.js";
 
 ```
 
@@ -41,7 +41,7 @@ Let's create the `mock-data` file that it will be represent the database in memo
 _./dals/mock-data.ts_
 
 ```typescript
-import { Book } from "./book";
+import { Book } from "./book/indes.js";
 
 export interface DB {
   books: Book[];
@@ -101,7 +101,7 @@ Let's create `repositories`, they are interfaces to getting entities as well as 
 _./dals/book/repositories/book.repository.ts_
 
 ```typescript
-import { Book } from "../book.model";
+import { Book } from "../book.model.js";
 
 export interface BookRepository {
   getBookList: () => Promise<Book[]>;
@@ -117,9 +117,9 @@ Let's implement `mock-repository`:
 _./dals/book/repositories/book.mock-repository.ts_
 
 ```typescript
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { db } from "../../mock-data";
+import { BookRepository } from "./book.repository.js";
+import { Book } from "../book.model.js";
+import { db } from "../../mock-data.js";
 
 const insertBook = (book: Book) => {
   const id = (db.books.length + 1).toString();
@@ -155,8 +155,8 @@ We could create the empty `db repository` pending to implement:
 _./dals/book/repositories/book.db-repository.ts_
 
 ```typescript
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
+import { BookRepository } from "./book.repository.js";
+import { Book } from "../book.model.js";
 
 export const dbRepository: BookRepository = {
   getBookList: async () => {
@@ -180,8 +180,8 @@ Add barrel file:
 _./dals/book/repositories/index.ts_
 
 ```typescript
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
+import { mockRepository } from "./book.mock-repository.js";
+import { dbRepository } from "./book.db-repository.js";
 
 // TODO: Create env variable
 const isApiMock = true;
@@ -195,8 +195,8 @@ Update barrel file:
 _./dals/book/index.ts_
 
 ```diff
-export * from "./book.model";
-+ export * from "./repositories";
+export * from "./book.model.js";
++ export * from "./repositories/index.js";
 
 ```
 
@@ -247,9 +247,9 @@ Update barrel file:
 _./dals/book/repositories/index.ts_
 
 ```diff
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
-+ import { envConstants } from "../../../core/constants";
+import { mockRepository } from "./book.mock-repository.js";
+import { dbRepository } from "./book.db-repository.js";
++ import { envConstants } from "../../../core/constants/index.js";
 
 - // TODO: Create env variable
 - const isApiMock = true;
@@ -264,7 +264,7 @@ Let's try using the repository:
 _./src/dals/index.ts_
 
 ```typescript
-export * from "./book";
+export * from "./book/index.js";
 
 ```
 
@@ -272,14 +272,14 @@ _./src/books.api.ts_
 
 ```diff
 import { Router } from "express";
-+ import { bookRepository } from "./dals";
++ import { bookRepository } from "./dals/index.js";
 import {
 - getBookList,
   getBook,
   insertBook,
   updateBook,
   deleteBook,
-} from "./mock-db";
+} from "./mock-db.js";
 
 export const booksApi = Router();
 
@@ -296,54 +296,32 @@ booksApi
 
 > NOTE: Try to change env variable API_MOCK=false
 
-As a great improvement, we will configure our project to allow import aliases installing [babel-plugin-module-resolver](https://github.com/tleunen/babel-plugin-module-resolver):
+As a great improvement, we will configure our project to allow import aliases, NodeJS >= 18 has it owns system the [subpath.imports](https://nodejs.org/api/packages.html#subpath-imports):
 
-```bash
-npm install babel-plugin-module-resolver --save-dev
-```
+> Previous to NodeJS 18, we were using [babel-plugin-module-resolver](https://github.com/tleunen/babel-plugin-module-resolver) for babel.
 
-> NOTE: It's not an official plugin.
+Let's add main aliases:
 
-Let's add main folders aliases:
-
-_./.babelrc_
+_./pacakge.json_
 
 ```diff
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "16"
-        }
-      }
-    ],
-    "@babel/preset-typescript"
-  ],
-+ "plugins": [
-+   [
-+     "module-resolver",
-+     {
-+       "root": ["."],
-+       "alias": {
-+         "common": "./src/common",
-+         "common-app": "./src/common-app",
-+         "core": "./src/core",
-+         "dals": "./src/dals",
-+         "pods": "./src/pods"
-+       }
-+     }
-+   ]
-+ ],
-  "env": {
-    "development": {
-      "sourceMaps": "inline"
-    }
-  }
+  ...
+  "scripts": {
+  },
++ "imports": {
++   "#common/*.js": "./dist/common/*.js",
++   "#common-app/*.js": "./dist/common-app/*.js",
++   "#core/*.js": "./dist/core/*.js",
++   "#dals/*.js": "./dist/dals/*.js",
++   "#pods/*.js": "./dist/pods/*.js"
++ },
+  ...
 }
 
 ```
+
+> NOTE: Entries in the "imports" field must always start with # to ensure they are disambiguated from external package specifiers.
 
 Configure typescript:
 
@@ -351,9 +329,9 @@ _./tsconfig.json_
 
 ```diff{
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "declaration": false,
     "noImplicitAny": false,
     "sourceMap": true,
@@ -362,7 +340,14 @@ _./tsconfig.json_
     "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-+   "baseUrl": "./src"
++   "baseUrl": "./src",
++   "paths": {
++     "#common/*": ["./common/*"],
++     "#common-app/*": ["./common-app/*"],
++     "#core/*": ["./core/*"],
++     "#dals/*": ["./dals/*"],
++     "#pods/*": ["./pods/*"]
++   }
   },
   "include": ["src/**/*"]
 }
@@ -371,16 +356,18 @@ _./tsconfig.json_
 
 Update imports with aliases:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
+import "./core/load-env.js";
 import express from "express";
 import path from "path";
-- import { createRestApiServer } from "./core/servers";
-+ import { createRestApiServer } from "core/servers";
-- import { envConstants } from "./core/constants";
-+ import { envConstants } from "core/constants";
-import { booksApi } from "./books.api";
+import url from "url";
+- import { createRestApiServer } from "./core/servers/index.js";
++ import { createRestApiServer } from "#core/servers/index.js";
+- import { envConstants } from "./core/constants/index.js";
++ import { envConstants } from "#core/constants/index.js";
+import { booksApi } from "./books.api.js";
 ...
 
 ```
@@ -388,10 +375,10 @@ import { booksApi } from "./books.api";
 _./src/dals/book/repositories/index.ts_
 
 ```diff
-import { mockRepository } from "./book.mock-repository";
-import { dbRepository } from "./book.db-repository";
-- import { envConstants } from "../../../core/constants";
-+ import { envConstants } from "core/constants";
+import { mockRepository } from "./book.mock-repository.js";
+import { dbRepository } from "./book.db-repository.js";
+- import { envConstants } from "../../../core/constants/index.js";
++ import { envConstants } from "#core/constants/index.js";
 
 ...
 
@@ -401,9 +388,14 @@ _./src/books.api.ts_
 
 ```diff
 import { Router } from "express";
-- import { bookRepository } from "./dals";
-+ import { bookRepository } from "dals";
-import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
+- import { bookRepository } from "./dals/index.js";
++ import { bookRepository } from "#dals/index.js";
+import {
+  getBook,
+  insertBook,
+  updateBook,
+  deleteBook,
+} from "./mock-db.js";
 
 ...
 
