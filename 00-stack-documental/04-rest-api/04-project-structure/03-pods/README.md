@@ -105,7 +105,7 @@ export * from "./books.rest-api.js";
 
 ```
 
-Update app:
+Update index:
 
 _./src/index.ts_
 
