@@ -37,8 +37,8 @@ So, we need to implement `mappers` to transform:
 _./src/pods/book/book.mappers.ts_
 
 ```typescript
-import * as model from "dals";
-import * as apiModel from "./book.api-model";
+import * as model from "#dals/index.js";
+import * as apiModel from "./book.api-model.js";
 
 const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
   id: book.id,
@@ -61,10 +61,15 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-import { bookRepository } from "dals";
-+ import { mapBookListFromModelToApi } from "./book.mappers";
-- import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
-+ import { getBook, insertBook, updateBook, deleteBook } from "../../mock-db";
+import { bookRepository } from "#dals/index.js";
++ import { mapBookListFromModelToApi } from "./book.mappers.js";
+import {
+  getBook,
+  insertBook,
+  updateBook,
+  deleteBook,
+- } from "./mock-db.js";
++ } from "../../mock-db.js";
 
 export const booksApi = Router();
 
@@ -96,21 +101,23 @@ Add barrel file:
 _./src/pods/book/index.ts_
 
 ```typescript
-export * from "./book.rest-api";
+export * from "./books.rest-api.js";
 
 ```
 
 Update app:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
+import "./core/load-env.js";
 import express from "express";
 import path from "path";
-import { createRestApiServer } from "core/servers";
-import { envConstants } from "core/constants";
-- import { booksApi } from "./books.api";
-+ import { booksApi } from "pods/book";
+import url from "url";
+import { createRestApiServer } from "#core/servers/index.js";
+import { envConstants } from "#core/constants/index.js";
+- import { booksApi } from "./books.api.js";
++ import { booksApi } from "#pods/book/index.js";
 
 ...
 
@@ -121,8 +128,7 @@ Let's export single entity mapper:
 _./src/pods/book/book.mappers.ts_
 
 ```diff
-import * as model from "dals";
-import * as apiModel from "./book.api-model";
+...
 
 - const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
 + export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
@@ -138,11 +144,13 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-import { bookRepository } from "dals";
-- import { mapBookListFromModelToApi } from "./book.mappers";
-+ import { mapBookListFromModelToApi, mapBookFromModelToApi } from "./book.mappers";
-- import { getBook, insertBook, updateBook, deleteBook } from "./mock-db";
-+ import { insertBook, updateBook, deleteBook } from "../../mock-db";
+import { bookRepository } from "#dals/index.js";
+import {
+  mapBookListFromModelToApi,
++ mapBookFromModelToApi,
+} from "./book.mappers.js";
+- import { getBook, insertBook, updateBook, deleteBook } from "../../mock-db.js";
++ import { insertBook, updateBook, deleteBook } from "../../mock-db.js";
 
 ...
 - .get("/:id", async (req, res) => {
@@ -189,18 +197,18 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-import { bookRepository } from "dals";
+import { bookRepository } from "#dals/index.js";
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
 + mapBookFromApiToModel,
-} from "./book.mappers";
-- import { insertBook, updateBook, deleteBook } from "../../mock-db";
-+ import { updateBook, deleteBook } from "../../mock-db";
+} from "./book.mappers.js";
+- import { insertBook, updateBook, deleteBook } from "../../mock-db.js";
++ import { updateBook, deleteBook } from "../../mock-db.js";
 
 ...
-- .post("/", async (req, res, next) => {
-+ .post("/", async (req, res) => {
+- .post("/", async (req, res) => {
++ .post("/", async (req, res, next) => {
 +   try {
 -     const book = req.body;
 +     const book = mapBookFromApiToModel(req.body);
@@ -218,6 +226,9 @@ import {
 Running post method:
 
 ```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
 {
     "title": "El señor de los anillos",
     "releaseDate": "1954-07-29T00:00:00.000Z",
@@ -231,14 +242,14 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-import { bookRepository } from "dals";
+import { bookRepository } from "#dals/index.js";
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from "./book.mappers";
-- import { updateBook, deleteBook } from "../../mock-db";
-+ import { deleteBook } from "../../mock-db";
+} from "./book.mappers.js";
+- import { updateBook, deleteBook } from "../../mock-db.js";
++ import { deleteBook } from "../../mock-db.js";
 
 ...
 - .put("/:id", async (req, res) => {
@@ -262,7 +273,7 @@ Running put method:
 
 ```
 URL: http://localhost:3000/api/books/1
-
+METHOD: PUT
 BODY:
 {
     "title": "Choque de reyes Actualizado",
@@ -277,13 +288,13 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from "express";
-import { bookRepository } from "dals";
+import { bookRepository } from "#dals/index.js";
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from "./book.mappers";
-- import { deleteBook } from "../../mock-db";
+} from "./book.mappers.js";
+- import { deleteBook } from "../../mock-db.js";
 
 ...
 - .delete("/:id", async (req, res) => {
@@ -299,6 +310,13 @@ import {
 +   }
   });
 
+```
+
+Running delete method:
+
+```
+URL: http://localhost:3000/api/books/1
+METHOD: DELETE
 ```
 
 Now, we could delete `./src/mock-db.ts` file.
@@ -349,7 +367,7 @@ Update contract:
 _./src/dals/book/repositories/book.repository.ts_
 
 ```diff
-import { Book } from '../book.model';
+import { Book } from "../book.model.js";
 
 export interface BookRepository {
 - getBookList: () => Promise<Book[]>;
@@ -366,8 +384,7 @@ Update db repository:
 _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
+...
 
 export const dbRepository: BookRepository = {
 - getBookList: async () => {
