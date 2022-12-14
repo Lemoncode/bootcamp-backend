@@ -133,7 +133,8 @@ Add barrel file:
 _./src/common/helpers/index.ts_
 
 ```typescript
-export * from './hash-password.helpers';
+export * from './hash-password.helpers.js';
+
 ```
 
 Finally, we need to create the `db context`:
@@ -141,10 +142,11 @@ Finally, we need to create the `db context`:
 _./src/dals/user/user.context.ts_
 
 ```typescript
-import { db } from 'core/servers';
-import { User } from './user.model';
+import { db } from '#core/servers/index.js';
+import { User } from './user.model.js';
 
 export const getUserContext = () => db?.collection<User>('users');
+
 ```
 
 Let's insert some users from `console-runners`:
@@ -152,12 +154,15 @@ Let's insert some users from `console-runners`:
 _./src/console-runners/seed-data.runner.ts_
 
 ```diff
-+ import { generateSalt, hashPassword } from 'common/helpers';
-import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-import { getBookContext } from 'dals/book/book.context';
-+ import { getUserContext } from 'dals/user/user.context';
-import { db } from 'dals/mock-data';
++ import { generateSalt, hashPassword } from '#common/helpers/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { getBookContext } from '#dals/book/book.context.js';
++ import { getUserContext } from '#dals/user/user.context.js';
+import { db } from '#dals/mock-data.js';
 
 export const run = async () => {
   await connectToDBServer(envConstants.MONGODB_URI);
@@ -193,10 +198,10 @@ Let's implement the `user db repository`:
 _./src/dals/user/repositories/user.db-repository.ts_
 
 ```diff
-+ import { hashPassword } from 'common/helpers';
-+ import { getUserContext } from '../user.context';
-+ import { User } from '../user.model';
-import { UserRepository } from './user.repository';
++ import { hashPassword } from '#common/helpers/index.js';
++ import { getUserContext } from '../user.context.js';
++ import { User } from '../user.model.js';
+import { UserRepository } from './user.repository.js';
 
 export const dbRepository: UserRepository = {
 - getUserByEmailAndPassword: async (email: string, password: string) => null,
@@ -228,16 +233,17 @@ npm start
 > Run in Javascript Debug Terminal
 
 ```md
-POST http://localhost:3000/api/security/login
+URL: http://localhost:3000/api/security/login
+METHOD: POST
 
-### Body
-
+BODY:
 {
-"email": "admin@email.com",
-"password": "test"
+  "email": "admin@email.com",
+  "password": "test"
 }
 
-GET http://localhost:3000/api/books
+URL: http://localhost:3000/api/books
+METHOD: GET
 ```
 
 ## Appendix
