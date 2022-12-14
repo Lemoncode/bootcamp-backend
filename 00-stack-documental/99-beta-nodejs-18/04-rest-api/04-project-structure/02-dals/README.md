@@ -359,7 +359,8 @@ Update imports with aliases:
 _./src/index.ts_
 
 ```diff
-import "./core/load-env.js";
+- import "./core/load-env.js";
++ import "#core/load-env.js";
 import express from "express";
 import path from "path";
 import url from "url";

@@ -1,4 +1,4 @@
-import "./core/load-env.js";
+import "#core/load-env.js";
 import express from "express";
 import path from "path";
 import url from "url";

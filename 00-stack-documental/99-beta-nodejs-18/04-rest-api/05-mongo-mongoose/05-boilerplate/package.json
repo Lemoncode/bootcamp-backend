@@ -9,7 +9,7 @@
     "start": "run-p -l build:watch start:dev start:local-db",
     "start:dev": "node --watch dist/index",
     "prestart:console-runners": "npm run prestart",
-    "start:console-runners": "run-p -l build:watch console-runners",
+    "start:console-runners": "run-p -l build:watch start:local-db console-runners",
     "console-runners": "node --watch dist/console-runners/index",
     "start:local-db": "docker-compose up -d",
     "clean": "rimraf dist",

@@ -53,9 +53,12 @@ We could run same queries that we did in mongo console:
 _./src/console-runners/queries.runner.ts_
 
 ```diff
-import { envConstants } from 'core/constants';
-import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
-+ import { getMovieContext } from 'dals/movie/movie.context';
+import { envConstants } from '#core/constants/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
++ import { getMovieContext } from '#dals/movie/movie.context.js';
 
 const runQueries = async () => {
 + const result = await getMovieContext()
@@ -63,6 +66,7 @@ const runQueries = async () => {
 +     runtime: { $lte: 15 },
 +   })
 +   .toArray();
++ console.log({ result });
 };
 ...
 
@@ -113,7 +117,7 @@ _./src/console-runners/queries.runner.ts_
 
 ```diff
 + import { ObjectId } from 'mongodb';
-import { envConstants } from 'core/constants';
+import { envConstants } from '#core/constants/index.js';
 ...
 
 const runQueries = async () => {
@@ -200,7 +204,7 @@ const runQueries = async () => {
 
 > Update array in Mongo Compass like ['Short', 'Drama', 'Drama'].
 
-To update all values that match with some condition, we have to use `$[<identifier>]` + `arrayFIlters`:
+To update all values that match with some condition, we have to use `$[<identifier>]` + `arrayFilters`:
 
 _./src/console-runners/queries.runner.ts_
 
@@ -276,6 +280,8 @@ const runQueries = async () => {
 > [Reference $pull](https://docs.mongodb.com/manual/reference/operator/update/pull/#mongodb-update-up.-pull)
 >
 > $pull vs [$pullAll](https://www.mongodb.com/docs/manual/reference/operator/update/pullAll/#mongodb-update-up.-pullAll): $pull remove all elements that match condition or value, $pullAll remove all elements that match the listed values.
+>
+> `{ $pullAll: { genres: [ 'Fantasy', 'Drama' ] } }`
 
 Try same example with `{ _id: new ObjectId(), name: 'Drama' }`:
 
@@ -304,7 +310,9 @@ Try same example with `{ _id: new ObjectId(), name: 'Drama' }`:
     arrayFilters: [{ 'genre.name': 'Drama' }],
     ...
   }
+```
 
+```diff
 // Delete
 
   {
@@ -314,7 +322,10 @@ Try same example with `{ _id: new ObjectId(), name: 'Drama' }`:
       },
     },
   },
-```
+  {
+-   arrayFilters: [{ 'genre.name': 'Drama' }],
+    ...
+  }
 
 > [Reference query array of documents](https://docs.mongodb.com/manual/tutorial/query-array-of-documents/)
 >
@@ -413,22 +424,12 @@ const runQueries = async () => {
 > [Reference $set](https://docs.mongodb.com/manual/reference/operator/update/set/)
 > Update full object it's the same code
 
-This code works but the typescript is failing. Usually we can find code like:
+Update only one field inside subdocument:
 
 ```diff
 ...
-import { getMovieContext } from 'dals/movie/movie.context';
-+ import { Movie } from 'dals/movie/movie.model';
 
 const runQueries = async () => {
-+ // NOTE: usually in mappers flow, we can have fields with undefined values like `title: undefined`
-+ const movie = {
-+   imdb: {
-+     rating: 6.2,
-+     votes: 1189,
-+     id: 5,
-+   },
-+ } as Movie;
   const result = await getMovieContext().findOneAndUpdate(
     {
       _id: new ObjectId('573a1390f29313caabcd4135'),
@@ -440,50 +441,10 @@ const runQueries = async () => {
 -         votes: 1189,
 -         id: 5,
 -       },
-+       ...movie,
-      },
-    },
-    {
-+     ignoreUndefined: true,
-      returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
-```
-
-Update only one field inside subdocument:
-
-```diff
-...
-- import { Movie } from 'dals/movie/movie.model';
-
-const runQueries = async () => {
-- const movie = {
--   imdb: {
--     rating: 6.2,
--     votes: 1189,
--     id: 5,
--   },
-- } as Movie;
-  const result = await getMovieContext().findOneAndUpdate(
-    {
-      _id: new ObjectId('573a1390f29313caabcd4135'),
-    },
-    {
-      $set: {
--       ...movie,
 +       'imdb.rating': 8.2,
       },
     },
     {
--     ignoreUndefined: true,
       returnDocument: 'after',
       projection: {
         _id: 1,
@@ -510,10 +471,13 @@ _./src/console-runners/queries.runner.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-import { envConstants } from 'core/constants';
-import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
-- import { getMovieContext } from 'dals/movie/movie.context';
-+ import { getCommentContext } from 'dals/comment/comment.context';
+import { envConstants } from '#core/constants/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
+- import { getMovieContext } from '#dals/movie/movie.context.js';
++ import { getCommentContext } from '#dals/comment/comment.context.js';
 
 const runQueries = async () => {
 - const result = await getMovieContext().findOneAndUpdate(
@@ -549,7 +513,7 @@ const runQueries = async () => {
 
 ```
 
-> [Mongoose populate](https://mongoosejs.com/docs/api.html#query_Query-populate): it's not recommended becuase it could impact in performance.
+> [Mongoose populate](https://mongoosejs.com/docs/api.html#query_Query-populate): it's not recommended because it could impact in performance.
 
 We will use `aggregations` for include necessary fields:
 

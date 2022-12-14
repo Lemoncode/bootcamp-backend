@@ -1,3 +1,4 @@
+import '#core/load-env.js';
 import inquier from 'inquirer';
 
 let exit = false;
