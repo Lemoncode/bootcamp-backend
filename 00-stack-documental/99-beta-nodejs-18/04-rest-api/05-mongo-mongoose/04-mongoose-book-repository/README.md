@@ -48,9 +48,9 @@ Update `book context` with mongoose schema:
 _./src/dals/book/book.context.ts_
 
 ```diff
-- import { db } from 'core/servers';
+- import { db } from '#core/servers/index.js';
 + import { model, Schema } from 'mongoose';
-import { Book } from './book.model';
+import { Book } from './book.model.js';
 
 + const bookSchema = new Schema<Book>({
 +   title: { type: Schema.Types.String, required: true },
@@ -74,10 +74,10 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-- import { getBookContext } from '../book.context';
-+ import { bookContext } from '../book.context';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+- import { getBookContext } from '../book.context.js';
++ import { bookContext } from '../book.context.js';
 
 export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
@@ -92,6 +92,15 @@ export const dbRepository: BookRepository = {
 ```
 
 > Set breakpoints to check returned array
+>
+> Comment build errors.
+
+Try url:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
+```
 
 Due to [Mongoose models](https://mongoosejs.com/docs/queries.html) provide several static helper functions, each of these functions returns mongoose query objects. Getting a better performance, we should use `lean` method:
 
