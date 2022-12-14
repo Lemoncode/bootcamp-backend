@@ -1,5 +1,8 @@
-import { envConstants } from 'core/constants';
-import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
+import { envConstants } from '#core/constants/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
 
 const runQueries = async () => {};
 

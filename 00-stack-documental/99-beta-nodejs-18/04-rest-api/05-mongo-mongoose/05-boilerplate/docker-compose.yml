@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  mflix-db:
-    container_name: mflix-db
-    image: mongo:5.0.9
+  book-store-db:
+    container_name: book-store-db
+    image: mongo:6
     ports:
       - '27017:27017'
     volumes:
