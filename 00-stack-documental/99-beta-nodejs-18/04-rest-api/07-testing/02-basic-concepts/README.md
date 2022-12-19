@@ -23,6 +23,7 @@ _./src/calculator.ts_
 
 ```javascript
 export const add = (a, b) => a + b;
+
 ```
 
 Rename `dummy.spec.ts` to `calculator.spec.ts`:
@@ -30,7 +31,7 @@ Rename `dummy.spec.ts` to `calculator.spec.ts`:
 _./src/calculator.spec.ts_
 
 ```diff
-+ import * as calculator from "./calculator";
++ import * as calculator from "./calculator.js";
 
 - describe('dummy specs', () => {
 + describe("Calculator tests", () => {
@@ -62,8 +63,65 @@ _./src/calculator.spec.ts_
 
 ```
 
-> Differences between `toEqual` vs `toBe` vs `toStrictEqual`:
->
+> [Jest is not ready to support native ESM](https://jestjs.io/docs/ecmascript-modules) yet
+
+The best way to enable native ESM is using [ts-jest with ESM Support](https://kulshekhar.github.io/ts-jest/docs/guides/esm-support/):
+
+```bash
+npm install ts-jest --save-dev
+```
+
+Update jest.js config:
+
+_./config/test/jest.js_
+
+```diff
+export default {
+  rootDir: '../../',
+  verbose: true,
++ transform: {
++   '^.+\\.tsx?$': [
++     'ts-jest',
++     {
++       useESM: true,
++     },
++   ],
++ },
++ extensionsToTreatAsEsm: ['.ts'],
++ moduleNameMapper: {
++   '^(\\.{1,2}/.*)\\.js$': '$1',
++ },
+};
+
+```
+
+Let's check differences between `toEqual` vs `toBe` vs `toStrictEqual`:
+
+_./src/calculator.spec.ts_
+
+```diff
+import * as calculator from './calculator.js';
+
+describe('Calculator tests', () => {
+  describe('add', () => {
+    it('should return 4 when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+      expect(result).toEqual(4);
++     expect({ id: 1 }).toBe({ id: 1 });
++     expect({ id: 1 }).toStrictEqual({ id: 1, name: undefined });
+    });
+  });
+});
+
+```
+
 > `toBe` fails if `expect({ id: 1 }).toBe({ id: 1 });`: it's not the same object. We should use `toEqual` if we only want the value not the reference
 >
 > `toStrictEqual` pass if `expect({ id: 1 }).toStrictEqual({ id: 1 });` but it fails if `expect({ id: 1 }).toStrictEqual({ id: 1, name: undefined });`: it should have same fields, even undefined values. We should use `toEqual` if we don't care about it.
@@ -91,7 +149,7 @@ How we could test it? Using a `spy`:
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from "./calculator";
+import * as calculator from "./calculator.js";
 
 describe("Calculator tests", () => {
   describe("add", () => {
@@ -137,6 +195,7 @@ _./src/business/calculator.business.ts_
 export const isLowerThanFive = value => {
   console.log(`The value: ${value} is lower than 5`);
 };
+
 ```
 
 - Add barrel file:
@@ -144,7 +203,7 @@ export const isLowerThanFive = value => {
 _./src/business/index.ts_
 
 ```javascript
-export * from './calculator.business';
+export * from './calculator.business.js';
 
 ```
 
@@ -153,7 +212,7 @@ Use it:
 _./src/calculator.ts_
 
 ```diff
-+ import { isLowerThanFive } from './business';
++ import { isLowerThanFive } from './business/index.js';
 
 - export const add = (a, b, isLowerThanFive) => {
 + export const add = (a, b) => {
@@ -173,8 +232,8 @@ Same as before, we only want to test that function was called and with which arg
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from './calculator';
-+ import * as business from './business';
+import * as calculator from './calculator.js';
++ import * as business from './business/index.js';
 
 describe('Calculator tests', () => {
   describe('add', () => {
@@ -217,9 +276,9 @@ Why the second spec is failing? `TypeError: Cannot redefine property: isLowerTha
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from './calculator';
-- import * as business from './business';
-+ import * as business from './business/calculator.business';
+import * as calculator from './calculator.js';
+- import * as business from './business/index.js';
++ import * as business from './business/calculator.business.js';
 
 ...
 
@@ -302,6 +361,7 @@ module.exports = {
   rootDir: '../../',
   verbose: true,
 + restoreMocks: true,
+  ...
 };
 
 ```
@@ -344,8 +404,8 @@ Use it:
 _./src/calculator.ts_
 
 ```diff
-- import { isLowerThanFive } from './business'
-+ import { isLowerThan, max } from './business'
+- import { isLowerThanFive } from './business/index.js';
++ import { isLowerThan, max } from './business/index.js';
 
 export const add = (a, b) => {
   const result = a + b;
@@ -366,8 +426,8 @@ In this case, we need to mock the whole module:
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from './calculator';
-import * as business from './business/calculator.business';
+import * as calculator from './calculator.js';
+import * as business from './business/calculator.business.js';
 
 + jest.mock('./business/calculator.business', () => ({
 +   isLowerThan: jest.fn().mockImplementation(() => {
