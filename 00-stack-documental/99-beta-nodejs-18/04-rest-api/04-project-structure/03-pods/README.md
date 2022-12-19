@@ -101,7 +101,7 @@ Add barrel file:
 _./src/pods/book/index.ts_
 
 ```typescript
-export * from "./books.rest-api.js";
+export * from "./book.rest-api.js";
 
 ```
 

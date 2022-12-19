@@ -45,16 +45,19 @@ config({
 
 ```
 
+> NOTE: Jest is still running in CommonJS
+
 Update jest config:
 
 _./config/test/jest.js_
 
 ```diff
-module.exports = {
+export default {
   rootDir: '../../',
-  preset: 'ts-jest',
+  verbose: true,
   restoreMocks: true,
 + setupFiles: ['<rootDir>/config/test/env.config.js'],
+  ...
 };
 
 ```
@@ -82,8 +85,8 @@ _./src/pods/book/book.rest-api.spec.ts_
 
 ```diff
 + import supertest from 'supertest';
-+ import { createRestApiServer } from 'core/servers';
-+ import { booksApi } from './book.rest-api';
++ import { createRestApiServer } from '#core/servers/index.js';
++ import { booksApi } from './book.rest-api.js';
 
 + const app = createRestApiServer();
 + app.use(booksApi);
@@ -127,7 +130,7 @@ _./jest-mongodb-config.js_
 module.exports = {
   mongodbMemoryServerOptions: {
     binary: {
-      version: '5.3.2',
+      version: '6',
       skipMD5: true,
     },
     instance: {
@@ -147,13 +150,14 @@ Update jest config:
 _./config/test/jest.js_
 
 ```diff
-module.exports = {
+export default {
   rootDir: '../../',
   verbose: true,
   restoreMocks: true,
   setupFiles: ['<rootDir>/config/test/env.config.js'],
 + preset: '@shelf/jest-mongodb',
 + watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
+  ...
 };
 
 ```
@@ -166,6 +170,7 @@ _./.gitignore_
 
 ```diff
 node_modules
+dist
 .env
 mongo-data
 + globalConfig.json
@@ -201,10 +206,10 @@ import {
   createRestApiServer,
 + connectToDBServer,
 + disconnectFromDBServer,
-} from 'core/servers';
-+ import { envConstants } from 'core/constants';
-+ import { getBookContext } from 'dals/book/book.context';
-import { booksApi } from './book.rest-api';
+} from '#core/servers/index.js';
++ import { envConstants } from '#core/constants/index.js';
++ import { getBookContext } from '#dals/book/book.context.js';
+import { booksApi } from './book.rest-api.js';
 
 const app = createRestApiServer();
 app.use(booksApi);
@@ -258,11 +263,11 @@ import {
   createRestApiServer,
   connectToDBServer,
   disconnectFromDBServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
-import { getBookContext } from 'dals/book/book.context';
-+ import { Book } from './book.api-model';
-import { booksApi } from './book.rest-api';
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { getBookContext } from '#dals/book/book.context.js';
++ import { Book } from './book.api-model.js';
+import { booksApi } from './book.rest-api.js';
 
 const app = createRestApiServer();
 + app.use((req, res, next) => {
