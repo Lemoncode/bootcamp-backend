@@ -271,7 +271,7 @@ describe('Calculator tests', () => {
 
 ```
 
-Why the second spec is failing? `TypeError: Cannot redefine property: isLowerThanFive`. We could find [many related issues](https://github.com/facebook/jest/issues/880) like this one. We should update the code:
+Why the second spec is failing? `TypeError: Cannot redefine property: isLowerThanFive`. We could find [many related issues](https://github.com/facebook/jest/issues/880) or [using Object.defineProperty](https://github.com/facebook/jest/issues/6914) like this one. We should update the code:
 
 _./src/calculator.spec.ts_
 
@@ -357,7 +357,7 @@ Instead of use `restoreAllMocks` on each spec file, we could configure it global
 _./config/test/jest.js_
 
 ```diff
-module.exports = {
+export default {
   rootDir: '../../',
   verbose: true,
 + restoreMocks: true,
