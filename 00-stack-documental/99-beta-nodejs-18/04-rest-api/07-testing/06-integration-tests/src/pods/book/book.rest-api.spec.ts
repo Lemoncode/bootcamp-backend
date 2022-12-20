@@ -22,7 +22,8 @@ app.use(booksApi);
 
 describe('pods/book/book.rest-api specs', () => {
   beforeAll(async () => {
-    await connectToDBServer(envConstants.MONGODB_URI);
+    const connectionString = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
+    await connectToDBServer(connectionString);
   });
   beforeEach(async () => {
     await getBookContext().insertOne({

@@ -119,23 +119,22 @@ npm run test:watch book.rest-api
 As we see, we are running the app in `mock` mode. If we like to test our repository implementation with a MongoDB memory database, we need to install [jest-mongodb](https://github.com/shelfio/jest-mongodb) preset:
 
 ```bash
-npm install @shelf/jest-mongodb --save-dev
+npm install @shelf/jest-mongodb cross-env --save-dev
 ```
 
 Add config file:
 
-_./jest-mongodb-config.js_
+_./jest-mongodb-config.cjs_
 
 ```javascript
 module.exports = {
   mongodbMemoryServerOptions: {
     binary: {
-      version: '6',
+      version: '6.0.3',
       skipMD5: true,
     },
     instance: {
       dbName: 'test-book-store',
-      port: 27017,
     },
     autoStart: false,
   },
@@ -190,9 +189,21 @@ CORS_METHODS=GET,POST,PUT,DELETE
 - API_MOCK=true
 + API_MOCK=false
 - MONGODB_URI=mongodb://localhost:27017/book-store
-+ MONGODB_URI=mongodb://localhost:27017/test-book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
+```
+
+Update `package.json`:
+
+```diff
+...
+  "scripts": {
+    ...
+-   "test": "jest -c ./config/test/jest.js",
++   "test": "cross-env MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs jest -c ./config/test/jest.js",
+    "test:watch": "npm run test -- --watchAll -i"
+  }
+...
 ```
 
 Update spec to init MongoDB connection:
@@ -216,7 +227,8 @@ app.use(booksApi);
 
 describe('pods/book/book.rest-api specs', () => {
 + beforeAll(async () => {
-+   await connectToDBServer(envConstants.MONGODB_URI);
++   const connectionString = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
++   await connectToDBServer(connectionString);
 + });
 + beforeEach(async () => {
 +   await getBookContext().insertOne({
@@ -250,6 +262,14 @@ describe('pods/book/book.rest-api specs', () => {
   });
 });
 
+```
+
+> [More info](https://jestjs.io/docs/mongodb)
+
+Run specs:
+
+```bash
+npm run test:watch book.rest-api
 ```
 
 If we want insert new book:

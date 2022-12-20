@@ -4,11 +4,11 @@ import {
   createRestApiServer,
   connectToDBServer,
   disconnectFromDBServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
-import { getBookContext } from 'dals/book/book.context';
-import { Book } from './book.api-model';
-import { booksApi } from './book.rest-api';
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { getBookContext } from '#dals/book/book.context.js';
+import { Book } from './book.api-model.js';
+import { booksApi } from './book.rest-api.js';
 
 const app = createRestApiServer();
 app.use((req, res, next) => {
@@ -22,7 +22,8 @@ app.use(booksApi);
 
 describe('pods/book/book.rest-api specs', () => {
   beforeAll(async () => {
-    await connectToDBServer(envConstants.MONGODB_URI);
+    const connectionString = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
+    await connectToDBServer(connectionString);
   });
   beforeEach(async () => {
     await getBookContext().insertOne({
