@@ -1,0 +1,24 @@
+service: my-back-app
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: eu-west-3
+  runtime: nodejs16.x
+  memorySize: 128
+
+functions:
+  simple-api:
+    handler: ./dist/simple-api.handler
+    events:
+      - httpApi:
+          path: /
+          method: get
+
+plugins:
+  - serverless-offline
+
+package:
+  patterns:
+    - '!./**'
+    - 'dist/simple-api.js'
