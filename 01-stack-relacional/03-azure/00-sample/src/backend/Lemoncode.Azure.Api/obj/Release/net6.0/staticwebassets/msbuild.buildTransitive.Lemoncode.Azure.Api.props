@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\Lemoncode.Azure.Api.props" />
+</Project>

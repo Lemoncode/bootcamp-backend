@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Api\obj\Release\net6.0\PubTmp\Out\" />
+</sitemanifest>
