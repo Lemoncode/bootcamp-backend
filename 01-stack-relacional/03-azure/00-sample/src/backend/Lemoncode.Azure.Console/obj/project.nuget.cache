@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "Mf6grSf4Kfkpsj8gjcKmxXh8tir1gIFUOdA19wqiRx/MwIitV3T6nlM22PM0RCyOWei9OgBHsPYOnFhpFY+HHQ==",
+  "success": true,
+  "projectFilePath": "C:\\Dev\\Samples\\Lemoncode.Azure\\src\\backend\\Lemoncode.Azure.Console\\Lemoncode.Azure.Console.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\santy\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\azure.storage.blobs\\12.14.1\\azure.storage.blobs.12.14.1.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\azure.storage.common\\12.13.0\\azure.storage.common.12.13.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\azure.storage.queues\\12.12.0\\azure.storage.queues.12.12.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.6.0\\system.diagnostics.diagnosticsource.4.6.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.io.hashing\\6.0.0\\system.io.hashing.6.0.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.text.encodings.web\\4.7.2\\system.text.encodings.web.4.7.2.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512",
+    "C:\\Users\\santy\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+  ],
+  "logs": []
+}
