@@ -1,0 +1,123 @@
+[
+  {
+    "name": "QueueFunctions",
+    "scriptFile": "Lemoncode.Azure.Fx.dll",
+    "entryPoint": "Lemoncode.Azure.Fx.QueueFunctions.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "myQueueItem",
+        "type": "queueTrigger",
+        "direction": "In",
+        "dataType": "String",
+        "queueName": "testqueue",
+        "connection": "AzureWebJobsStorage"
+      }
+    ]
+  },
+  {
+    "name": "MoveFile",
+    "scriptFile": "Lemoncode.Azure.Fx.dll",
+    "entryPoint": "Lemoncode.Azure.Fx.StorageFunctions.MoveFiles",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "myTriggerBlob",
+        "type": "blobTrigger",
+        "direction": "In",
+        "dataType": "String",
+        "blobPath": "fxin/{name}.txt",
+        "connection": "AzureWebJobsStorage"
+      },
+      {
+        "name": "$return",
+        "type": "blob",
+        "direction": "Out",
+        "blobPath": "fxout/{name}.txt"
+      }
+    ]
+  },
+  {
+    "name": "SaveQueueMessage",
+    "scriptFile": "Lemoncode.Azure.Fx.dll",
+    "entryPoint": "Lemoncode.Azure.Fx.StorageFunctions.SaveQueueMessage",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "myTriggerBlob",
+        "type": "blobTrigger",
+        "direction": "In",
+        "dataType": "String",
+        "blobPath": "fxin/{name}.gif",
+        "connection": "AzureWebJobsStorage"
+      },
+      {
+        "name": "$return",
+        "type": "queue",
+        "direction": "Out",
+        "queueName": "testqueue"
+      }
+    ]
+  },
+  {
+    "name": "SendMail",
+    "scriptFile": "Lemoncode.Azure.Fx.dll",
+    "entryPoint": "Lemoncode.Azure.Fx.TestFunctions.SendMail",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "In",
+        "authLevel": "Function",
+        "methods": [
+          "get",
+          "post"
+        ]
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "Test",
+    "scriptFile": "Lemoncode.Azure.Fx.dll",
+    "entryPoint": "Lemoncode.Azure.Fx.TestFunctions.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "In",
+        "authLevel": "Function",
+        "methods": [
+          "get",
+          "post"
+        ]
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  }
+]

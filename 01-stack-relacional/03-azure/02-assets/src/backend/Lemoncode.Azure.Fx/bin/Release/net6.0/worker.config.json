@@ -1,0 +1,9 @@
+{
+  "description": {
+    "language": "dotnet-isolated",
+    "extensions": [ ".dll" ],
+    "defaultExecutablePath": "dotnet",
+    "defaultWorkerPath": "Lemoncode.Azure.Fx.dll",
+    "workerIndexing": "false"
+  }
+}

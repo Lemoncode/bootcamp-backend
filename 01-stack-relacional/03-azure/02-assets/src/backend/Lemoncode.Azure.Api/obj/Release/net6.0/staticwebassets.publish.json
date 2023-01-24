@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "aeZ8NW8hKdiBP+ZVm/a3dM5vue02gdptIlhWXh2xsOM=",
+  "Source": "Lemoncode.Azure.Api",
+  "BasePath": "_content/Lemoncode.Azure.Api",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
