@@ -1,0 +1,1 @@
+dotnet Lemoncode.Azure.Console.dll %*

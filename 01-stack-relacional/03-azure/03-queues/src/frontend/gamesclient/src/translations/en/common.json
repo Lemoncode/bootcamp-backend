@@ -1,0 +1,433 @@
+{
+    "SITE": {
+        "LOADING": "Loading",
+        "SITENAV": {
+            "HOME": "Home",
+            "PROFILE": "Profile",
+            "SCHEDULE": "Schedule",
+            "STUDENTS": "Students",
+            "HIGH_SCHOOL": "High School",
+            "MESSAGES": "Messages",
+            "SCHOOL_MANAGEMENT": "School Management",
+            "SECURITY": "Security",
+            "TEACHER_NOTEBOOK": "Teacher Notebook",
+            "CLOSE_SESSION_NAV_ITEM": "Close session",
+            "CLOSE_SESSION_MESSAGE": "You`re ready to close session, continue ?",
+            "CLOSE_SESSION_TITLE": "Warning",
+            "CLOSE_SESSION_BUTTON_CANCEL": "Cancel",
+            "CLOSE_SESSION_BUTTON_CONFIRM": "Close session",
+            "CLOSE_PANEL": "Close"
+        },
+        "SITEHEADER": {
+            "WELCOME_MESSAGE": "Welcome {{user}} !",
+            "NO_MESSAGES": "You don't have pending messages, congrats !",
+            "NOTIFICATIONS": "Notifications ({{total}})",
+            "DELETE_NOTIFICATIONS": "Delete all",
+            "GO_TO_MESSAGE": "Go to message",
+            "DELETE_NOTIFICATION": "Delete notification"
+        },
+        "PUBLIC_SITE": {
+            "INTERNAL_ACCESS_MESSAGE": "If you are a student, teacher, or staff of the institution, enter here:",
+            "EXTERNAL_ACCESS_MESSAGE": "If you are a father, mother or any person outside the institution, enter here:",
+            "INTERNAL_ACCESS_BUTTON": "Internal access",
+            "EXTERNAL_ACCESS_BUTTON": "External access",
+            "INTRANET": "Intranet",
+            "FOOTER": "All rights reserved © 2022 Centros Educativos Casvia"
+        }
+    },
+    "HOME": {
+        "TITLE": "Home",
+        "MY_DAY": {
+            "TODAY": "Today",
+            "ADD_EVENT": "+ Add event",
+            "GO_TO_SCHEDULE": "Go to schedule",
+            "FULL_DAY_FORMATED": "{{date, fullDate}}"
+        }
+    },
+    "PROFILE": {
+        "TITLE": "Profile",
+        "NAV": {
+            "MY_DATA": "My information",
+            "MY_SUBJECTS": "My subjects"
+        },
+        "BUTTONS": {
+            "CANCEL": "Cancel",
+            "EDIT": "Edit",
+            "SAVE": "Save changes",
+            "UPLOAD_NEW_IMAGE": "Upload image"
+        },
+        "FIELDS": {
+            "NAME": "Full name",
+            "BIRTHDATE": "Birth date",
+            "LANGUAGE": "Language",
+            "USERNAME": "User",
+            "ADDRESS": "Address",
+            "CITY": "City",
+            "STATE": "State",
+            "ZIP_CODE": "Postal code",
+            "EMAIL": "Email",
+            "PHONES": "Phones",
+            "HOME_PHONE": "Home phone",
+            "WORK_PHONE": "Work phone",
+            "MOBILE_PHONE": "Mobile phone",
+            "UPLOAD_PICTURE": "Upload new picture"
+        },
+        "LANGUAGE": {
+            "SPANISH": {
+                "KEY": "es",
+                "TEXT": "Spanish"
+            },
+            "ENGLISH": {
+                "KEY": "en",
+                "TEXT": "English"
+            }
+        }
+    },
+    "SCHEDULE": {
+        "TITLE": "Schedule",
+        "ADD_EVENT": "Add event",
+        "CREATE_EVENT_TITLE": "New event",
+        "EDIT_EVENT_TITLE": "Edit event",
+        "READONLY_EVENT_TITLE": "View event",
+        "BUTTONS": {
+            "SAVE_EVENT": "Save event",
+            "GO_BACK": "Go back",
+            "DELETE_EVENT": "Delete event",
+            "CANCEL_DELETE": "Cancel"
+        },
+        "EVENT_FORM": {
+            "TITLE": "Title",
+            "DESCRIPTION": "Description",
+            "TYPE": "Event type",
+            "IS_RECURRING": "Is recurring ?",
+            "RECURRENCY_TYPE": "Recurrency type",
+            "PLACE": "Place",
+            "ATTENDEES": "Attendees",
+            "RECURRENCE_END": "End of recurrency",
+            "START_EVENT": "Start of the event",
+            "END_EVENT": "End of the event",
+            "WHOLE_DAY": "* Whole day"
+        },
+        "MESSAGES": {
+            "DELETE_EVENT_MESSAGE": "You`re ready to delete the current event and all its recurrences. Are you sure? This action is irreversible ",
+            "DELETE_EVENT_TITLE": "Warning"
+        }
+    },
+    "SCHOOL_MANAGEMENT": {
+        "TITLE": "School Management",
+        "SCHOOL": "School",
+        "PIVOT": {
+            "SCHOOL_YEARS": "Cycles",
+            "GRADES": "Grades",
+            "GROUPS": "Groups",
+            "ACADEMIC_YEARS": "Academic years",
+            "DISTRIBUTION_LISTS": "Distribution lists"
+        },
+        "SCHOOL_YEAR": {
+            "TITLE": "Cycle",
+            "NAME": "Cycle name",
+            "MANAGER": {
+                "NAME": "Cycle manager",
+                "ID": "Cycle manager ID"
+            },
+            "SCHOOL": {
+                "ID": "School ID",
+                "NAME": "School name"
+            },
+            "CREATE": {
+                "LINK": "Create cycle",
+                "TITLE": "New cycle"
+            },
+            "EDII": "Edit cycle",
+            "VIEW": "Cycle detail"
+        },
+        "SCHOOL_GRADE": {
+            "TITLE": "Grade",
+            "NAME": "Grade name",
+            "CYCLE": {
+                "ID": "Cycle ID",
+                "NAME": "Cycle name"
+            },
+            "CREATE": {
+                "LINK": "Create school grade",
+                "TITLE": "New school grade"
+            },
+            "EDII": "Edit grade",
+            "VIEW": "Grade detail"
+        },
+        "GROUP": {
+            "TITLE": "Group",
+            "NAME": "Group name",
+            "PIVOTS": {
+                "DETAIL": "Detail",
+                "STUDENTS": "Students",
+                "SUBJECTS": "Subjects"
+            },
+            "ACADEMIC_YEAR": {
+                "NAME": "Academic year of the group",
+                "MOBILE_NAME": "Academic year"
+            },
+            "GRADE": {
+                "NAME": "Grade of the group"
+            },
+            "STUDENTS": {
+                "NAME": "Students",
+                "NO_STUDENTS": "There are no assigned students yet",
+                "DELETE_STUDENT": "Delete",
+                "EDIT_TUTOR": {
+                    "BUTTON": "Tutor",
+                    "PANEL_TITLE": "Edit tutor",
+                    "SAVE": "Save changes",
+                    "CANCEL": "Cancel"
+                },
+                "ADD_STUDENT": {
+                    "BUTTON": "Add new student",
+                    "TITLE": "New student",
+                    "FIELDS": {
+                        "NAME": "Student name"
+                    }
+                },
+                "ADD_SUBJECT": {
+                    "BUTTON": "Add new subject",
+                    "TITLE": "New subject",
+                    "FIELDS": {
+                        "NAME": "Subject name"
+                    }
+                }
+            },
+            "SUBJECTS": {
+                "NAME": "Subjects",
+                "ID": "Subject ID",
+                "TITLE": "Subject name",
+                "TYPE": "Subject type",
+                "CYCLE": "Cycle of the subject",
+                "MANAGER": "Manager of the subject",
+                "GRADE": "Grade of the subject",
+                "IS_SHARED": {
+                    "NAME": "Is shared",
+                    "YES": "Yes",
+                    "NO": "No"
+                },
+                "NO_SUBJECTS": "There are no assigned subjects yet"
+            },
+            "CREATE": {
+                "LINK": "Create group",
+                "TITLE": "New group"
+            },
+            "EDII": "Edit group",
+            "VIEW": "Group detail",
+            "SEARCH": "Search"
+        },
+        "ACADEMIC_YEAR": {
+            "TITLE": "Academic year",
+            "NAME": "Academic year name",
+            "IS_CURRENT": {
+                "NAME": "Is current",
+                "YES": "Yes",
+                "NO": "No",
+                "YES_MOBILE": "Is current",
+                "NO_MOBILE": "Not current"
+            },
+            "CREATE": {
+                "LINK": "Create academic year",
+                "TITLE": "New academic year"
+            },
+            "EDII": "Edit academic year",
+            "VIEW": "Academic year detail"
+        },
+        "DISTRIBUTION_LIST": {
+            "TITLE": "Distribution list",
+            "ID": "Distribution list ID",
+            "NAME": "Distribution list name",
+            "RECIPIENTS": {
+                "TITLE": "Recipients",
+                "NAME": "Recipient's name",
+                "EMAIL": "Recipient's email",
+                "IMAGE": "Recipient's image",
+                "NO_RECIPIENTS": "There are no assigned recipients yet"
+            },
+            "CREATE": {
+                "LINK": "Create distribution list",
+                "TITLE": "New distribution list"
+            },
+            "EDIT": "Edit distribution list",
+            "VIEW": "Distribution list detail"
+        },
+        "MESSAGES": {
+            "DELETE": "You're ready to delete the current register, are you sure? This action is irreversible",
+            "TITLE": "Warning"
+        },
+        "CANCEL": "Cancel",
+        "EDIT": "Edit",
+        "VIEW": "View",
+        "DELETE": "Delete",
+        "GO_BACK": "Go back",
+        "SAVE": "Save"
+    },
+    "DEMO": {
+        "SCHOOL": "School",
+        "LANGUAGE": "Language"
+    },
+    "MESSAGES": {
+        "TITLE": "Messages",
+        "PIVOT": {
+            "RECEIVED": "Received",
+            "SENT": "Sent",
+            "DRAFT": "Drafts",
+            "ARCHIVED": "Archived"
+        },
+        "LIST": {
+            "RECEIVED": {
+                "USER_FROM": "From",
+                "MESSAGE_DATE": "Received",
+                "TITLE": "Subject",
+                "READ": "Read",
+                "VIEW": "View"
+            },
+            "SENT": {
+                "USER_TO": "To",
+                "MESSAGE_DATE": "Sent",
+                "TITLE": "Subject",
+                "VIEW": "View"
+            },
+            "DRAFT": {
+                "USER_TO": "To",
+                "MESSAGE_DATE": "Created",
+                "TITLE": "Subject",
+                "VIEW": "View"
+            },
+            "ARCHIVED": {
+                "USER_TO": "To",
+                "USER_FROM": "From",
+                "MESSAGE_DATE": "Sent",
+                "TITLE": "Subject",
+                "VIEW": "View"
+            }
+        },
+        "FILTER": {
+            "USER_TO": "To",
+            "USER_FROM": "From",
+            "DATE_TO": "Until",
+            "DATE_FROM": "Since",
+            "RESET": "Reset filter"
+        },
+        "ACTION": {
+            "CREATE_MESSAGE": {
+                "TITLE": "New message",
+                "GO_BACK": "Messages",
+                "TYPE": "Message Type",
+                "TO": "To",
+                "SUBJECT": "Subject",
+                "ATTACH_FILES": "Attach files",
+                "SAVE_DRAFT": "Save draft",
+                "DISCARD": "Discard",
+                "SEND": "Send"
+            },
+            "EDIT_MESSAGE": {
+                "GO_BACK": "Messages",
+                "ATTACH_FILES": "Attach files",
+                "CANCEL": "Cancel",
+                "SEND": "Send",
+                "RESPONSE_ACCEPT": "YES",
+                "RESPONSE_REJECT": "NO"
+            },
+            "DRAFT_MESSAGE": {
+                "TITLE": "Edit draft",
+                "GO_BACK": "Messages",
+                "TYPE": "Message Type",
+                "TO": "To",
+                "SUBJECT": "Subject",
+                "ATTACH_FILES": "Attach files",
+                "CANCEL": "Cancel",
+                "SEND": "Send"
+            },
+            "VIEW_MESSAGE": {
+                "TITLE": "View message",
+                "GO_BACK": "Messages",
+                "TYPE": "Message Type",
+                "TO": "To",
+                "SUBJECT": "Subject",
+                "FILES": "Files"
+            }
+        },
+        "HOME": {
+            "TITLE": "Messages",
+            "GO_TO_MESSAGES": "Go to messages",
+            "NEW_MESSAGE": "+ new messages"
+        }
+    },
+    "SECURITY": {
+        "TITLE": "Security",
+        "PIVOT_ROLES": "Roles",
+        "PIVOT_USERS": "Users",
+        "ROLE": {
+            "TITLE": "Role detail",
+            "ROLE_NAME": "Role",
+            "EDIT_ROLE": "Edit",
+            "TOTAL_PERMISSIONS": "Total permissions",
+            "GO_TO_SECURITY": "Roles",
+            "DELETE_ROLE": "Delete role",
+            "CANCEL": "Cancel",
+            "EDIT": "Edit",
+            "SAVE_CHANGES": "Save changes",
+            "DELETE_ROLE_TITLE": "Warning",
+            "DELETE_ROLE_MESSAGE": "You're ready to delete the current register, are you sure? This action is irreversible",
+            "DETAIL": {
+                "TITLE": "Name",
+                "DESCRIPTION": "Description",
+                "PERMISSIONS": "PERMISSIONS"
+            },
+            "CREATE": {
+                "TITLE": "New role",
+                "CANCEL": "Cancel",
+                "CREATE": "Create role",
+                "RETURN": "Roles"
+            }
+        },
+        "CATEGORIES": {
+            "SECURITY": "Security",
+            "USER_PROFILE": "User profile",
+            "SCHEDULE": "Schedule",
+            "CENTER_MANAGEMENT": "Center Management",
+            "TEACHER_BOOK": "Teacher's book",
+            "ORIENTATION_DEPARTMENT": "Orientation Department",
+            "ASSIST_CONTROL": "Assist control",
+            "CANTEEN_MANAGEMENT": "Canteen Management",
+            "ROUTES_MANAGEMENT": "Routes Management",
+            "TUTORSHIPS": "Tutorships",
+            "LANGUAGES": "Languages",
+            "CURRICULUM_VITAE_MANAGEMENT": "Resume Management",
+            "BOOKS_MANAGEMENT": "Books Management",
+            "STUDENTS_MANAGEMENT": "Student management",
+            "NOTIFICATIONS": "Notifications",
+            "INCIDENTS": "Incidents"
+        }
+    },
+    "SIGNING": {
+        "RESUME": {
+            "TITLE": "Presence control",
+            "CENTER": "Center",
+            "NO_SIGNING": "No clock in",
+            "SIGN_IN": "Clock in:",
+            "SIGN_OUT": "Cloch out:",
+            "SIGN": "Signing"
+        }
+    },
+    "TASKS": {
+        "RESUME": {
+            "TITLE": "Pending Tasks",
+            "LINK": "Pending task list"
+        }
+    },
+    "TEACHER_NOTEBOOK": {
+        "TITLE": "Teacher Notebook",
+        "PIVOT": {
+            "RESUME": "Resume",
+            "TASKS": "Tasks",
+            "TESTS": "Tests",
+            "GROUPS": "Groups",
+            "QUALIFICATIONS": "Qualifications",
+            "COURSES": "Courses"
+        }
+    }
+}

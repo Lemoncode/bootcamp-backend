@@ -1,0 +1,434 @@
+{
+    "SITE": {
+        "LOADING": " Cargando ",
+        "SITENAV": {
+            "HOME": "Inicio",
+            "PROFILE": "Perfil",
+            "SCHEDULE": "Agenda",
+            "STUDENTS": "Alumnos",
+            "HIGH_SCHOOL": "Bachillerato Int",
+            "MESSAGES": "Mensajes",
+            "SCHOOL_MANAGEMENT": "Administración",
+            "SECURITY": "Seguridad",
+            "TEACHER_NOTEBOOK": "Cuaderno del profesor",
+            "CLOSE_SESSION_NAV_ITEM": "Cerrar Sesión",
+            "CLOSE_SESSION_MESSAGE": "Va usted a cerrar sesión, ¿desea continuar?",
+            "CLOSE_SESSION_TITLE": "Atención",
+            "CLOSE_SESSION_BUTTON_CANCEL": "Cancelar",
+            "CLOSE_SESSION_BUTTON_CONFIRM": "Cerrar sesión",
+            "CLOSE_PANEL": "Cerrar"
+        },
+        "SITEHEADER": {
+            "WELCOME_MESSAGE": "¡ Bienvenido {{user}} !",
+            "NO_MESSAGES": "¡ Enhorabuena, no tiene mensajes pendientes !",
+            "NOTIFICATIONS": "Notificaciones ({{total}})",
+            "DELETE_NOTIFICATIONS": "Eliminar todas",
+            "GO_TO_MESSAGE": "Ir al mensaje",
+            "DELETE_NOTIFICATION": "Borrar notificación"
+        },
+        "PUBLIC_SITE": {
+            "INTERNAL_ACCESS_MESSAGE": "Si es usted alumno, profesor, o personal de la institución, ingrese aquí:",
+            "EXTERNAL_ACCESS_MESSAGE": "Si es usted padre, madre o cualquier persona ajena a la institución, ingrese aquí:",
+            "INTERNAL_ACCESS_BUTTON": "Acceso interno",
+            "EXTERNAL_ACCESS_BUTTON": "Acceso externo",
+            "INTRANET": "Intranet",
+            "FOOTER": "Todos los derechos reservados © 2022 Centros Educativos Casvia"
+        }
+    },
+    "HOME": {
+        "TITLE": "Inicio",
+        "MY_DAY": {
+            "TODAY": "Hoy",
+            "ADD_EVENT": "+ Agregar evento",
+            "GO_TO_SCHEDULE": "Ir a agenda",
+            "FULL_DAY_FORMATED": "{{date, fullDate}}"
+        }
+    },
+    "PROFILE": {
+        "TITLE": "Perfil",
+        "NAV": {
+            "MY_DATA": "Mis datos",
+            "MY_SUBJECTS": "Mis asignaturas"
+        },
+        "BUTTONS": {
+            "CANCEL": "Cancelar",
+            "EDIT": "Editar",
+            "SAVE": "Guardar cambios",
+            "UPLOAD_NEW_IMAGE": "Subir imagen"
+        },
+        "FIELDS": {
+            "NAME": "Nombre y apellido",
+            "BIRTHDATE": "Fecha de nacimiento",
+            "LANGUAGE": "Idioma de la intranet",
+            "USERNAME": "Usuario",
+            "ADDRESS": "Dirección",
+            "CITY": "Localidad",
+            "STATE": "Provincia",
+            "ZIP_CODE": "Código postal",
+            "EMAIL": "Email",
+            "PHONES": "Teléfono/s",
+            "HOME_PHONE": "Casa",
+            "WORK_PHONE": "Trabajo",
+            "MOBILE_PHONE": "Móvil",
+            "UPLOAD_PICTURE": "Cargar nueva imagen"
+        },
+        "LANGUAGE": {
+            "SPANISH": {
+                "KEY": "es",
+                "TEXT": "Español"
+            },
+            "ENGLISH": {
+                "KEY": "en",
+                "TEXT": "Inglés"
+            }
+        }
+    },
+    "SCHEDULE": {
+        "TITLE": "Agenda",
+        "ADD_EVENT": "Agregar evento",
+        "CREATE_EVENT_TITLE": "Nuevo evento",
+        "EDIT_EVENT_TITLE": "Editar evento",
+        "READONLY_EVENT_TITLE": "Ver evento",
+        "BUTTONS": {
+            "SAVE_EVENT": "Guardar evento",
+            "GO_BACK": "Volver",
+            "DELETE_EVENT": "Borrar evento",
+            "CANCEL_DELETE": "Cancelar"
+        },
+        "EVENT_FORM": {
+            "TITLE": "Título",
+            "DESCRIPTION": "Descripción",
+            "TYPE": "Tipo de evento",
+            "IS_RECURRING": "¿Es recurrente ?",
+            "RECURRENCY_TYPE": "Tipo de recurrencia",
+            "PLACE": "Lugar",
+            "ATTENDEES": "Asistentes",
+            "RECURRENCE_END": "Fin de recurrencia",
+            "START_EVENT": "Inicio del evento",
+            "END_EVENT": "Fin del evento",
+            "WHOLE_DAY": "* Día completo"
+        },
+        "MESSAGES": {
+            "DELETE_EVENT_MESSAGE": "Va usted a borrar el presente evento y todas sus recurrencias, ¿está seguro? Esta acción es irreversible.",
+            "DELETE_EVENT_TITLE": "Atención"
+        }
+    },
+    "SCHOOL_MANAGEMENT": {
+        "TITLE": "Administración",
+        "SCHOOL": "Colegio",
+        "PIVOT": {
+            "SCHOOL_YEARS": "Ciclos",
+            "GRADES": "Grados",
+            "GROUPS": "Grupos",
+            "ACADEMIC_YEARS": "Años académicos",
+            "DISTRIBUTION_LISTS": "Listas de distribución"
+        },
+        "SCHOOL_YEAR": {
+            "TITLE": "Ciclo",
+            "NAME": "Nombre del ciclo lectivo",
+            "MANAGER": {
+                "NAME": "Coordinador del ciclo",
+                "ID": "ID del coordinador del ciclo"
+            },
+            "SCHOOL": {
+                "ID": "ID de la escuela",
+                "NAME": "Nombre de la escuela"
+            },
+            "CREATE": {
+                "LINK": "Crear ciclo lectivo",
+                "TITLE": "Nuevo ciclo lectivo"
+            },
+            "EDIT": "Editar ciclo lectivo",
+            "VIEW": "Detalle ciclo lectivo"
+        },
+        "SCHOOL_GRADE": {
+            "TITLE": "Grado",
+            "NAME": "Nombre del grado escolar",
+            "CYCLE": {
+                "ID": "ID del ciclo lectivo",
+                "NAME": "Nombre del ciclo lectivo"
+            },
+            "CREATE": {
+                "LINK": "Crear grado escolar",
+                "TITLE": "Nuevo grado escolar"
+            },
+            "EDIT": "Editar grado escolar",
+            "VIEW": "Detalle de grado escolar"
+        },
+        "GROUP": {
+            "TITLE": "Grupo",
+            "NAME": "Nombre del grupo",
+            "PIVOTS": {
+                "DETAIL": "Detalle",
+                "STUDENTS": "Estudiantes",
+                "SUBJECTS": "Asignaturas"
+            },
+            "ACADEMIC_YEAR": {
+                "NAME": "Año académico del grupo"
+            },
+            "GRADE": {
+                "NAME": "Grado del grupo"
+            },
+            "STUDENTS": {
+                "NAME": "Estudiantes",
+                "NO_STUDENTS": "Aún no hay alumnos asignados",
+                "DELETE_STUDENT": "Borrar",
+                "EDIT_TUTOR": {
+                    "BUTTON": "Tutor",
+                    "PANEL_TITLE": "Editar tutor",
+                    "SAVE": "Guardar cambios",
+                    "CANCEL": "Cancelar"
+                },
+                "ADD_STUDENT": {
+                    "BUTTON": "Agregar nuevo alumno",
+                    "TITLE": "Nuevo alumno",
+                    "FIELDS": {
+                        "NAME": "Nombre del alumno"
+                    }
+                },
+                "ADD_SUBJECT": {
+                    "BUTTON": "Agregar asignatura",
+                    "TITLE": "Nueva asignatura",
+                    "FIELDS": {
+                        "NAME": "Nombre de la asignatura"
+                    }
+                }
+            },
+            "SUBJECTS": {
+                "NAME": "Asignaturas",
+                "ID": "ID de la asignatura",
+                "TITLE": "Nombre de la asignatura",
+                "TYPE": "Tipo de asignatura",
+                "CYCLE": "Ciclo de la asignatura",
+                "MANAGER": "Coordinador de la asignatura",
+                "GRADE": "Grado de la asignatura",
+                "IS_SHARED": {
+                    "NAME": "Es compartida",
+                    "YES": "Si",
+                    "NO": "No"
+                },
+                "NO_SUBJECTS": "Aún no hay asignaturas asignadas"
+            },
+            "CREATE": {
+                "LINK": "Crear grupo",
+                "TITLE": "Nuevo grupo"
+            },
+            "EDIT": "Editar grupo",
+            "VIEW": "Detalle de grupo",
+            "SEARCH": "Buscar"
+        },
+        "ACADEMIC_YEAR": {
+            "TITLE": "Año académico",
+            "NAME": "Nombre del año académico",
+            "IS_CURRENT": {
+                "NAME": "Es actual",
+                "YES": "Si",
+                "NO": "No",
+                "YES_MOBILE": "Es actual",
+                "NO_MOBILE": "No es actual"
+            },
+            "CREATE": {
+                "LINK": "Crear año académico",
+                "TITLE": "Nuevo año académico"
+            },
+            "EDIT": "Editar año académico",
+            "VIEW": "Detalle de año académico"
+        },
+        "DISTRIBUTION_LIST": {
+            "TITLE": "Lista de distribución",
+            "ID": "ID de la lista de distribution",
+            "NAME": "Nombre de la lista de distribution",
+            "RECIPIENTS": {
+                "TITLE": "Destinatarios",
+                "NAME": "Nombre del destinatario",
+                "EMAIL": "Email del destinatario",
+                "IMAGE": "Imagen del destinatario",
+                "NO_RECIPIENTS": "Aún no hay destinatarios asignados"
+            },
+            "CREATE": {
+                "LINK": "Crear lista de distribución",
+                "TITLE": "Nueva lista de distribución"
+            },
+            "EDIT": "Editar lista de distribución",
+            "VIEW": "Detalle de lista de distribución"
+        },
+        "MESSAGES": {
+            "DELETE": "Va usted a borrar el presente registro, ¿está seguro? Esta acción es irreversible.",
+            "TITLE": "Atención"
+        },
+        "CANCEL": "Cancelar",
+        "EDIT": "Editar",
+        "VIEW": "Ver",
+        "DELETE": "Borrar",
+        "GO_BACK": "Volver",
+        "SAVE": "Guardar"
+    },
+    "DEMO": {
+        "SCHOOL": "Colegio",
+        "LANGUAGE": "Idioma"
+    },
+    "MESSAGES": {
+        "TITLE": "Mensajes",
+        "PIVOT": {
+            "RECEIVED": "Recibidos",
+            "SENT": "Enviados",
+            "DRAFT": "Borradores",
+            "ARCHIVED": "Archivados"
+        },
+        "LIST": {
+            "RECEIVED": {
+                "USER_FROM": "De",
+                "MESSAGE_DATE": "Recibido",
+                "TITLE": "Asunto",
+                "READ": "Leído",
+                "VIEW": "Ver"
+            },
+            "SENT": {
+                "USER_TO": "Para",
+                "MESSAGE_DATE": "Enviado",
+                "TITLE": "Asunto",
+                "VIEW": "Ver"
+            },
+            "DRAFT": {
+                "USER_TO": "Para",
+                "MESSAGE_DATE": "Creado",
+                "TITLE": "Asunto",
+                "VIEW": "Ver"
+            },
+            "ARCHIVED": {
+                "USER_TO": "Para",
+                "USER_FROM": "De",
+                "MESSAGE_DATE": "Enviado",
+                "TITLE": "Asunto",
+                "VIEW": "Ver"
+            }
+        },
+        "FILTER": {
+            "USER_TO": "Para",
+            "USER_FROM": "De",
+            "DATE_TO": "Hasta",
+            "DATE_FROM": "Desde",
+            "RESET": "Borrar filtros"
+        },
+        "ACTION": {
+            "CREATE_MESSAGE": {
+                "TITLE": "Mensaje nuevo",
+                "GO_BACK": "Mensajes",
+                "TYPE": "Tipo de mensaje",
+                "TO": "Para",
+                "SUBJECT": "Asunto",
+                "ATTACH_FILES": "Adjuntar archivos",
+                "SAVE_DRAFT": "Guardar borrador",
+                "DISCARD": "Descartar",
+                "SEND": "Enviar"
+            },
+            "EDIT_MESSAGE": {
+                "GO_BACK": "Mensajes",
+                "TYPE": "Tipo de mensaje",
+                "ATTACH_FILES": "Adjuntar archivos",
+                "CANCEL": "Cancelar",
+                "SEND": "Enviar",
+                "RESPONSE_ACCEPT": "SI",
+                "RESPONSE_REJECT": "NO"
+            },
+            "DRAFT_MESSAGE": {
+                "TITLE": "Ver Borrador",
+                "GO_BACK": "Mensajes",
+                "TYPE": "Tipo de mensaje",
+                "TO": "Para",
+                "SUBJECT": "Asunto",
+                "ATTACH_FILES": "Adjuntar archivos",
+                "SAVE_DRAFT": "Guardar borrador",
+                "CANCEL": "Cancelar",
+                "SEND": "Enviar"
+            },
+            "VIEW_MESSAGE": {
+                "TITLE": "Ver mensaje",
+                "GO_BACK": "Mensajes",
+                "TYPE": "Tipo de mensaje",
+                "TO": "Para",
+                "SUBJECT": "Asunto",
+                "FILES": "Adjuntos"
+            }
+        },
+        "HOME": {
+            "TITLE": "Mensajes",
+            "GO_TO_MESSAGES": "Ir a Mensajes",
+            "NEW_MESSAGE": "+ Nuevo mensaje"
+        }
+    },
+    "SECURITY": {
+        "TITLE": "Seguridad",
+        "PIVOT_ROLES": "Roles",
+        "PIVOT_USERS": "Usuarios",
+        "ROLE": {
+            "TITLE": "Detalle rol",
+            "ROLE_NAME": "Rol",
+            "EDIT_ROLE": "Editar",
+            "TOTAL_PERMISSIONS": "Total permisos",
+            "GO_TO_SECURITY": "Roles",
+            "DELETE_ROLE": "Eliminar rol",
+            "CANCEL": "Cancelar",
+            "EDIT": "Editar",
+            "SAVE_CHANGES": "Guardar cambios",
+            "DELETE_ROLE_TITLE": "Atención",
+            "DELETE_ROLE_MESSAGE": "Va usted a borrar el presente registro, ¿está seguro? Esta acción es irreversible",
+            "DETAIL": {
+                "TITLE": "Nombre",
+                "DESCRIPTION": "Descripción",
+                "PERMISSIONS": "PERMISOS"
+            },
+            "CREATE": {
+                "TITLE": "Nuevo rol",
+                "CANCEL": "Cancelar",
+                "CREATE": "Crear rol",
+                "RETURN": "Roles"
+            }
+        },
+        "CATEGORIES": {
+            "SECURITY": "Seguridad",
+            "USER_PROFILE": "Perfil de usuario",
+            "SCHEDULE": "Agenda / Calendario",
+            "CENTER_MANAGEMENT": "Gestión de centro",
+            "TEACHER_BOOK": "Cuaderno del profesor",
+            "ORIENTATION_DEPARTMENT": "Departamento de orientación",
+            "ASSIST_CONTROL": "Control de asistencia",
+            "CANTEEN_MANAGEMENT": "Gestión de comedor",
+            "ROUTES_MANAGEMENT": "Gestión de rutas",
+            "TUTORSHIPS": "Tutorías",
+            "LANGUAGES": "Certificación de idiomas",
+            "CURRICULUM_VITAE_MANAGEMENT": "Gestión de CVs",
+            "BOOKS_MANAGEMENT": "Gestor documental",
+            "STUDENTS_MANAGEMENT": "Alumnos",
+            "NOTIFICATIONS": "Notificaciones",
+            "INCIDENTS": "Incidencias"
+        }
+    },
+    "SIGNING": {
+        "RESUME": {
+            "TITLE": "Control de presencia",
+            "CENTER": "Centro",
+            "NO_SIGNING": "Sin fichaje de entrada",
+            "SIGN_IN": "Entrada:",
+            "SIGN_OUT": "Salida:",
+            "SIGN": "Fichar"
+        }
+    },
+    "TASKS": {
+        "RESUME": {
+            "TITLE": "Pendientes",
+            "LINK": "Listado de Pendientes"
+        }
+    },
+    "TEACHER_NOTEBOOK": {
+        "TITLE": "Cuaderno del profesor",
+        "PIVOT": {
+            "RESUME": "Resumen",
+            "TASKS": "Tareas",
+            "TESTS": "Tests",
+            "GROUPS": "Grupos",
+            "QUALIFICATIONS": "Notas",
+            "COURSES": "Asignaturas"
+        }
+    }
+}

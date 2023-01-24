@@ -1,0 +1,16 @@
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Settings.job
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Lemoncode.Azure.Console.exe
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Lemoncode.Azure.Console.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Lemoncode.Azure.Console.deps.json
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Lemoncode.Azure.Console.runtimeconfig.json
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Lemoncode.Azure.Console.pdb
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Azure.Core.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Azure.Storage.Blobs.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Azure.Storage.Common.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Azure.Storage.Queues.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\Newtonsoft.Json.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\SendGrid.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\StarkbankEcdsa.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\System.IO.Hashing.dll
+C:\Dev\Samples\Lemoncode.Azure\src\backend\Lemoncode.Azure.Console\obj\Release\net6.0\PubTmp\Out\app_data\Jobs\Triggered\Lemoncode.Azure.Console\System.Memory.Data.dll

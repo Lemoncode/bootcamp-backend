@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Lemoncode.Azure.Api.props" />
+</Project>
