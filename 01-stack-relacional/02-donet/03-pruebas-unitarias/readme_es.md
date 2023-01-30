@@ -33,7 +33,8 @@ De nuevo, es importante destacar que la base de datos de precios, representada p
 ![Diagrama de interacciones](crypto-fiat-converter.png)
 
 El comportamientod de la base de datos de precios lo define el contrato
-```
+
+```csharp
 public interface IPriceDatabase
 {
     CurrentPrice GetPrice(string cryptoCode);
