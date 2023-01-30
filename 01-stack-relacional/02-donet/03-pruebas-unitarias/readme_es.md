@@ -18,7 +18,8 @@ y una calculadora-conversor de criptomoneda a EUR por otro lado.
 Para simplificar, solamente 3 criptomonedas están soportadas: HBAR, BTC y ETH, y el resultado siempre está en EUR.
 
 La forma de utilizarla, como cliente, es instanciando `Converter` y llamando a su único método. Por ejemplo:
-```
+
+```csharp
 IPriceDatabase priceDatabase = new InMemoryPriceDatabase(); // base de datos en memoria, por ahora
 var converter = new Converter(priceDatabase);
 var result = converter.ConvertToEur("BTC", 2.5);
