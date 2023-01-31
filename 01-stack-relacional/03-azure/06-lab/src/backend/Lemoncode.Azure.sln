@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lemoncode.Azure.DurableFx",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lemoncode.Azure.Images", "Lemoncode.Azure.Images\Lemoncode.Azure.Images.csproj", "{90902961-930E-4FB3-9F15-34EEBF14C8A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lemoncode.Azure.FxGames", "Lemoncode.Azure.FxGames\Lemoncode.Azure.FxGames.csproj", "{A62C8DFC-08A1-4859-AFCE-ED621E236877}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lemoncode.Azure.FxGames", "Lemoncode.Azure.FxGames\Lemoncode.Azure.FxGames.csproj", "{A62C8DFC-08A1-4859-AFCE-ED621E236877}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{41D7F227-9CD9-41BA-91C8-17CC15D8093E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CEA9C45E-9F49-4F97-9A49-A5BB2684007D} = {41D7F227-9CD9-41BA-91C8-17CC15D8093E}
+		{7AA9C0AE-1913-4CEA-9DCB-FC3E548A640B} = {41D7F227-9CD9-41BA-91C8-17CC15D8093E}
+		{5BA91F47-6B23-4FA9-AD16-B21612F4950E} = {41D7F227-9CD9-41BA-91C8-17CC15D8093E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05667406-DAB3-450E-96FA-921D73BFB4B2}

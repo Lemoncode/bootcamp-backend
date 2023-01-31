@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Threading.Tasks;
 using System.Data.SqlTypes;
+using Microsoft.AspNetCore.Http;
 
 namespace Lemoncode.Azure.FxGames
 {
@@ -29,12 +30,16 @@ namespace Lemoncode.Azure.FxGames
             logger = loggerFactory.CreateLogger<ScreenshotsFunctions>();
         }
 
+        [FunctionName("TestHttp")]
+        public void TestHttp([HttpTrigger] HttpRequest request)
+        {
+            var a = 1;
+        }
 
         [FunctionName("ResizeImage")]
         public void ResizeImageFunction(
             [BlobTrigger("screenshots/{folder}/{name}", Connection = "AzureWebJobsGamesStorage")] Stream image,
             [Blob("thumbnails/{folder}/{name}", FileAccess.Write, Connection = "AzureWebJobsGamesStorage")] Stream imageSmall,
-            [Queue("screenshots")] string message,
             string name,
             string folder)
         {
@@ -46,12 +51,6 @@ namespace Lemoncode.Azure.FxGames
                 ResizeImage(input, imageSmall, ImageSize.Small, format);
             }
 
-            message = JsonConvert.SerializeObject(new ScreenshotMessage
-            {
-                GameId = Int32.Parse(folder),
-                Filename = name,
-                ScreenshotUrl = string.Empty
-            });
         }
 
         //[FunctionName("ResizeImageQueue")]
