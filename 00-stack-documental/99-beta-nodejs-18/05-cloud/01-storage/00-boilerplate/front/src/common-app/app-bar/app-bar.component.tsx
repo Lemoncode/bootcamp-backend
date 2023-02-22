@@ -1,19 +1,23 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import LogoutIcon from '@material-ui/icons/ExitToApp';
+import { useNavigate } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/ExitToApp';
 import { routes } from 'core/router';
 import * as api from './api';
 import * as classes from './app-bar.styles';
 
-export const AppBarComponent: React.FunctionComponent = (props) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const AppBarComponent: React.FC<Props> = (props) => {
   const { children } = props;
   const appBarRef = React.useRef<HTMLDivElement>(null);
   const [height, setHeight] = React.useState(0);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (appBarRef.current) {
@@ -23,7 +27,7 @@ export const AppBarComponent: React.FunctionComponent = (props) => {
 
   const handleClick = async () => {
     await api.logout();
-    history.push(routes.root);
+    navigate(routes.root);
   };
 
   return (

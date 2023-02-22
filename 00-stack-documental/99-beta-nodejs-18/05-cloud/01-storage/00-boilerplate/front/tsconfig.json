@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "es6",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "declaration": false,
     "noImplicitAny": false,
     "sourceMap": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "noLib": false,
     "allowJs": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -23,5 +23,5 @@
       "common-app": ["common-app"]
     }
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "./vite-env.d.ts"]
 }
