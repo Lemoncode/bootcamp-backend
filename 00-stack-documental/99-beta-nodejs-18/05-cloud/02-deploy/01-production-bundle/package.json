@@ -13,6 +13,7 @@
     "console-runners": "node --watch dist/console-runners/index",
     "start:local-db": "docker-compose up -d",
     "clean": "rimraf dist",
+    "build": "npm run clean && tsc --project tsconfig.prod.json",
     "build:dev": "tsc --outDir dist",
     "build:watch": "npm run build:dev -- --watch --preserveWatchOutput",
     "test": "cross-env MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs jest -c ./config/test/jest.js",
