@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 import { Theme } from './theme.vm';
 
-const defaultTheme = createMuiTheme();
+const defaultTheme = createTheme();
 
-export const theme: Theme = defaultTheme
+export const theme: Theme = defaultTheme;

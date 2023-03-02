@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row } from 'react-table';
-import TableBody from '@material-ui/core/TableBody';
+import TableBody from '@mui/material/TableBody';
 import { RowRendererProps } from '../table.vm';
 
 interface Props<T extends object = {}> {

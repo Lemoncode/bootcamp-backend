@@ -1,6 +1,6 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
 import { cx } from '@emotion/css';
 import { User } from './user.vm';
 import * as classes from './user.styles';
@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-export const UserComponent: React.FunctionComponent<Props> = (props) => {
+export const UserComponent: React.FC<Props> = (props) => {
   const { user, className } = props;
 
   return (

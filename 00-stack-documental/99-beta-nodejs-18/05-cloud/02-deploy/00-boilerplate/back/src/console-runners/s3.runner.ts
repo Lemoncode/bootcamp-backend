@@ -9,7 +9,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 export const run = async () => {
   try {
     const client = new S3Client({ region: 'eu-west-3' });
-    const bucket = 'bucket-name';
+    const bucket = 'lab-to-rm';
     const fileName = 'user-avatar-in-s3.png';
     const command = new GetObjectCommand({
       Bucket: bucket,
