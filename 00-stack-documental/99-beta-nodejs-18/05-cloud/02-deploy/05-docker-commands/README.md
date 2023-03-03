@@ -1,4 +1,4 @@
-# 01 Docker commands
+# 05 Docker commands
 
 In this example we are going to learn and run Docker commands.
 
@@ -69,6 +69,7 @@ Let's remove all stopped containers:
 
 ```bash
 docker container rm <CONTAINER ID>
+docker rm <CONTAINER ID>
 docker container prune
 ```
 
@@ -77,17 +78,11 @@ docker container prune
 Docker run `pull`s images automatically if it hasn't them. Let's remove an existing image:
 
 ```bash
-docker image rm <IMAGE ID>
+docker image rm <IMAGE ID>:<tag>
+docker rmi <IMAGE ID>:<tag>
 docker image prune
 ```
-> `prune`: Remove all dangling images, that is, all images with name equals <none>. Dangling images are not referenced by other images and are safe to delete
-
-Let's run again the docker image:
-
-```bash
-docker images
-docker run hello-world
-```
+> `prune`: Remove all dangling images, that is, all images with name equals <none>. Dangling images are not referenced by other images and are safe to delete.
 
 Finally, we can run a container as interactive mode:
 
@@ -96,8 +91,12 @@ docker run ubuntu // exited automatically
 docker run -it ubuntu sh
 ```
 
+> Download the `ubuntu` image without `pull` command.
+>
 > NOTE: Open new terminal and write `docker ps`.
+>
 > sh: bash terminal
+>
 > We will see in next examples how to connect with interactive mode to a running container using `docker exec -it <Container ID> sh
 
 # ¿Con ganas de aprender Backend?
