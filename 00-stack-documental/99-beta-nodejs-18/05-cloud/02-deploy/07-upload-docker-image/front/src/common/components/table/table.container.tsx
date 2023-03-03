@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   useTable,
-  usePagination,
   TableInstance,
   UsePaginationInstanceProps,
 } from 'react-table';

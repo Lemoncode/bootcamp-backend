@@ -1,30 +1,18 @@
 import React from 'react';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { LoginScene, BookListScene, BookScene, UserScene } from 'scenes';
 import { switchRoutes } from './routes';
 
-export const RouterComponent: React.FunctionComponent = () => {
+export const RouterComponent: React.FC = () => {
   return (
     <HashRouter>
-      <Switch>
-        <Route exact={true} path={switchRoutes.root} component={LoginScene} />
-        <Route
-          exact={true}
-          path={switchRoutes.bookList}
-          component={BookListScene}
-        />
-        <Route
-          exact={true}
-          path={switchRoutes.createBook}
-          component={BookScene}
-        />
-        <Route
-          exact={true}
-          path={switchRoutes.editBook}
-          component={BookScene}
-        />
-        <Route exact={true} path={switchRoutes.user} component={UserScene} />
-      </Switch>
+      <Routes>
+        <Route path={switchRoutes.root} element={<LoginScene />} />
+        <Route path={switchRoutes.user} element={<UserScene />} />
+        <Route path={switchRoutes.bookList} element={<BookListScene />} />
+        <Route path={switchRoutes.createBook} element={<BookScene />} />
+        <Route path={switchRoutes.editBook} element={<BookScene />} />
+      </Routes>
     </HashRouter>
   );
 };

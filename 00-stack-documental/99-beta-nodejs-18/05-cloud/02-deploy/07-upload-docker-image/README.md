@@ -100,9 +100,9 @@ docker push <user-name>/<app-name>:3
 We should update the `latest` version to tag equals `3`:
 
 ```bash
-docker tag <user-name>/<app-name>:3 <user-name>/<app-name>
+docker tag <user-name>/<app-name>:3 <user-name>/<app-name>:latest
 docker images
-docker push <user-name>/<app-name>
+docker push <user-name>/<app-name>:latest
 ```
 
 > `latest` version doesn't upload automatically
