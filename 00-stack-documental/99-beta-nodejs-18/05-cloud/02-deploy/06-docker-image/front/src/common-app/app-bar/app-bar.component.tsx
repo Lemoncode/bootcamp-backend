@@ -1,21 +1,25 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import HomeIcon from '@material-ui/icons/Home';
-import UserIcon from '@material-ui/icons/Person';
-import LogoutIcon from '@material-ui/icons/ExitToApp';
+import { useNavigate, useLocation } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import HomeIcon from '@mui/icons-material/Home';
+import UserIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/ExitToApp';
 import { linkRoutes } from 'core/router';
 import * as api from './api';
 import * as classes from './app-bar.styles';
 
-export const AppBarComponent: React.FunctionComponent = (props) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const AppBarComponent: React.FC<Props> = (props) => {
   const { children } = props;
   const appBarRef = React.useRef<HTMLDivElement>(null);
   const [height, setHeight] = React.useState(0);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   React.useEffect(() => {
@@ -26,7 +30,7 @@ export const AppBarComponent: React.FunctionComponent = (props) => {
 
   const handleClick = async () => {
     await api.logout();
-    history.push(linkRoutes.root);
+    navigate(linkRoutes.root);
   };
 
   return (
@@ -37,7 +41,7 @@ export const AppBarComponent: React.FunctionComponent = (props) => {
             <IconButton
               color="inherit"
               onClick={() => {
-                history.push(linkRoutes.bookList);
+                navigate(linkRoutes.bookList);
               }}
             >
               <HomeIcon fontSize="large" />
@@ -52,7 +56,7 @@ export const AppBarComponent: React.FunctionComponent = (props) => {
             <IconButton
               color="inherit"
               onClick={() => {
-                history.push(linkRoutes.user);
+                navigate(linkRoutes.user);
               }}
             >
               <UserIcon fontSize="large" />

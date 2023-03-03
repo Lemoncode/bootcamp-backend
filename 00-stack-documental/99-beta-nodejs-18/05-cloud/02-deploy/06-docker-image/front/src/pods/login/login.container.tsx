@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSnackbarContext } from 'common/components';
 import { linkRoutes } from 'core/router';
 import * as api from './api';
@@ -10,13 +10,13 @@ interface Props {
   className?: string;
 }
 
-export const LoginContainer: React.FunctionComponent<Props> = () => {
+export const LoginContainer: React.FC<Props> = () => {
   const { showMessage } = useSnackbarContext();
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleLogin = async (user: User) => {
     try {
       await api.login(user.email, user.password);
-      history.push(linkRoutes.bookList);
+      navigate(linkRoutes.bookList);
     } catch {
       showMessage('Email y/o password inválidos', 'error');
     }
