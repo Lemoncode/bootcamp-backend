@@ -1,6 +1,6 @@
-# 08 Automatic Heroku deploy
+# 08 Automatic Render deploy
 
-In this example we are going to deploy app to Heroku using Docker
+In this example we are going to deploy app to Render using Docker
 
 We will start from `07-upload-docker-image`.
 
@@ -35,7 +35,7 @@ git push -u origin main
 
 ```
 
-Create a new render app:
+Create a new _Render_ app:
 
 ![02-create-render-app](./readme-resources/02-create-render-app.png)
 

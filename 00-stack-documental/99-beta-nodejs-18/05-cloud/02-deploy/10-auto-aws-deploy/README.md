@@ -1,4 +1,4 @@
-# 09 Automatic AWS deploy
+# 10 Automatic AWS deploy
 
 In this example we are going to deploy app to AWS.
 
