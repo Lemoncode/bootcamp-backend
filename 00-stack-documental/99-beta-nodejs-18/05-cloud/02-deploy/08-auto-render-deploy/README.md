@@ -22,19 +22,6 @@ npm install
 
 ```
 
-<!-- First, we will create a new heroku app:
-
-![01-create-heroku-app](./readme-resources/01-create-heroku-app.png)
-
-![02-create-heroku-app](./readme-resources/02-create-heroku-app.png)
-
-Then we will use `Github Actions` as pipeline to deploy the app to Heroku and we will need:
-
-- Download Heroku cli
-- Credentials to login in Heroku
-- Build Docker image
-- Push image to internal Heroku registry. -->
-
 Create new repository and upload files:
 
 ![01-create-repo](./readme-resources/01-create-repo.png)
