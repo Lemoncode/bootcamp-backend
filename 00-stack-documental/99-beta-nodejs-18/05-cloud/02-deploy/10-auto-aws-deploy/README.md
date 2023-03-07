@@ -90,7 +90,6 @@ _./Dockerfile_
 ...
 + EXPOSE 80
 + ENV PORT=80
-ENV NODE_ENV=production
 ENV STATIC_FILES_PATH=./public
 ENV API_MOCK=false
 ENV CORS_ORIGIN=false
@@ -108,7 +107,7 @@ Then we will use `Github Actions` as pipeline to deploy the app to AWS and we wi
 Remove `./.github/workflows/cd.yml` content:
 
 ```diff
-name: Continuos Deployment Workflow
+name: CD Workflow
 
 on:
   push:
@@ -116,23 +115,37 @@ on:
       - main
 
 - env:
--   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
--   IMAGE_NAME: registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+-   IMAGE_NAME: ghcr.io/${{github.repository}}:${{github.run_number}}-${{github.run_attempt}}
+
+- permissions:
+-   contents: 'read'
+-   packages: 'write'
 
 jobs:
- cd:
-  runs-on: ubuntu-latest
-  steps:
--     - name: Checkout repository
--       uses: actions/checkout@v2
--     - name: Login heroku app Docker registry
--       run: heroku container:login
--     - name: Build docker image
--       run: docker build -t ${{ env.IMAGE_NAME }} .
--     - name: Deploy docker image
--       run: docker push ${{ env.IMAGE_NAME }}
--     - name: Release
--       run: heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }}
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+-     - name: Log in to GitHub container registry
+-       uses: docker/login-action@v2
+-       with:
+-         registry: ghcr.io
+-         username: ${{ github.actor }}
+-         password: ${{ secrets.GITHUB_TOKEN }}
+
+-     - name: Build and push docker image
+-       run: |
+-         docker build -t ${{env.IMAGE_NAME}} .
+-         docker push ${{env.IMAGE_NAME}}
+
+-     - name: Deploy to Azure
+-       uses: azure/webapps-deploy@v2
+-       with:
+-         app-name: ${{ secrets.AZURE_APP_NAME }}
+-         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+-         images: ${{env.IMAGE_NAME}}
 
 ```
 
@@ -158,19 +171,33 @@ Set `Admin Elastic Beanstalk` permissions:
 
 ![12-set-permissions](./readme-resources/12-set-permissions.png)
 
-We will skip steps 3 and 4 (Add tags and Review).
+We create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
+
+Let's select the new user and click on `Security credentials`
+
+![13-security-crendentials-tab](./readme-resources/13-security-crendentials-tab.png)
+
+Scroll down and click on `Create access key`:
+
+![14-create-access-key](./readme-resources/14-create-access-key.png)
+
+Select the use case:
+
+![15-use-case](./readme-resources/15-use-case.png)
+
+Skips the optional step (description tag).
 
 In the `final step`, Amazon provides us the `Access key ID` and `Secret access key`. We will store this credentials to use it:
 
-![13-copy-credentials](./readme-resources/13-copy-credentials.png)
+![16-copy-credentials](./readme-resources/16-copy-credentials.png)
 
 Add credentials as Github secrets:
 
-![14-github-secret](./readme-resources/14-github-secret.png)
+![17-github-secret](./readme-resources/17-github-secret.png)
 
-![15-set-access-key-id](./readme-resources/15-set-access-key-id.png)
+![18-set-access-key-id](./readme-resources/18-set-access-key-id.png)
 
-![16-set-secret-access-key](./readme-resources/16-set-secret-access-key.png)
+![19-set-secret-access-key](./readme-resources/19-set-secret-access-key.png)
 
 Also we need to set as secrets:
 
@@ -179,14 +206,14 @@ Also we need to set as secrets:
 - AWS_REGION: for example `eu-west-3`.
 - AWS_DEPLOY_S3_BUCKET: auto-generated bucket by `Elastic Beanstalk`.
 
-![17-all-secrets](./readme-resources/17-all-secrets.png)
+![20-all-secrets](./readme-resources/20-all-secrets.png)
 
 Let's upate the `Github Actions`:
 
 _./.github/workflows/cd.yml_
 
 ```diff
-name: Continuos Deployment Workflow
+name: CD Workflow
 
 on:
   push:
@@ -194,20 +221,22 @@ on:
       - main
 
 + env:
-+   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}
++   APP_VERSION_LABEL: ${{ secrets.AWS_EB_APP_NAME }}-${{github.run_number}}-${{github.run_attempt}}
 
 jobs:
   cd:
     runs-on: ubuntu-latest
     steps:
-+     - name: Checkout repository
-+       uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
 +     - name: AWS login
 +       uses: aws-actions/configure-aws-credentials@v1
 +       with:
 +         aws-access-key-id: ${{ secrets.AWS_DEPLOY_ACCESS_KEY_ID }}
 +         aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET_ACCESS_KEY }}
 +         aws-region: ${{ secrets.AWS_REGION }}
+
 +     - name: Upload files to S3
 +       run: |
 +         zip -r ${{ env.APP_VERSION_LABEL }}.zip * .dockerignore
@@ -238,8 +267,10 @@ _./.github/workflows/cd.yml_
         run: |
           zip -r ${{ env.APP_VERSION_LABEL }}.zip * .dockerignore
           aws s3 cp ${{ env.APP_VERSION_LABEL }}.zip s3://${{ secrets.AWS_DEPLOY_S3_BUCKET }}/${{ env.APP_VERSION_LABEL }}.zip
+
 +     - name: Create EB App version
 +       run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_EB_APP_NAME }} --version-label ${{ env.APP_VERSION_LABEL }} --source-bundle S3Bucket=${{ secrets.AWS_DEPLOY_S3_BUCKET }},S3Key=${{ env.APP_VERSION_LABEL }}.zip --no-auto-create-application
+
 +     - name: Update environment
 +       run: aws elasticbeanstalk update-environment --environment-name ${{ secrets.AWS_EB_ENV_NAME }} --version-label ${{ env.APP_VERSION_LABEL }}
 
