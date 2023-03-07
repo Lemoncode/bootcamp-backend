@@ -213,8 +213,8 @@ _./package.json_
 ...
   "scripts": {
     ...
--   "start:dev": "node --watch dist/index",
-+   "start:dev": "node -r dotenv/config --watch dist/index",
+-   "start:dev": "nodemon dist/index",
++   "start:dev": "nodemon -r dotenv/config dist/index",
     ...
   },
 ```
@@ -235,8 +235,8 @@ _./package.json_
 ...
   "scripts": {
     ...
--   "start:dev": "node -r dotenv/config --watch dist/index",
-+   "start:dev": "node --watch dist/index",
+-   "start:dev": "nodemon -r dotenv/config dist/index",
++   "start:dev": "nodemon dist/index",
     ...
   },
 ```

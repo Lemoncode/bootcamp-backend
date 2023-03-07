@@ -56,10 +56,10 @@ _./package.json_
   "scripts": {
 -   "prestart": "sh ./create-dev-env.sh && npm run clean && npm run build:dev",
 -   "start": "run-p -l build:watch start:dev start:local-db",
--   "start:dev": "node --watch dist/index",
+-   "start:dev": "nodemon dist/index",
 -   "prestart:console-runners": "npm run prestart",
 -   "start:console-runners": "run-p -l build:watch start:local-db console-runners",
--   "console-runners": "node --watch dist/console-runners/index",
+-   "console-runners": "nodemon --no-stdin dist/console-runners/index",
 -   "start:local-db": "docker-compose up -d",
 -   "clean": "rimraf dist",
 -   "build": "npm run clean && tsc --project tsconfig.prod.json",

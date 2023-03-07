@@ -55,10 +55,10 @@ _./package.json_
   "scripts": {
     "prestart": "npm run clean && npm run build:dev",
     "start": "run-p -l build:watch start:dev",
-    "start:dev": "node --watch dist/index",
+    "start:dev": "nodemon dist/index",
 +   "prestart:console-runners": "npm run prestart",
 +   "start:console-runners": "run-p -l build:watch console-runners",
-+   "console-runners": "node --watch dist/console-runners/index",
++   "console-runners": "nodemon --no-stdin dist/console-runners/index",
     "clean": "rimraf dist",
     "build:dev": "tsc --outDir dist",
     "build:watch": "npm run build:dev -- --watch --preserveWatchOutput"
