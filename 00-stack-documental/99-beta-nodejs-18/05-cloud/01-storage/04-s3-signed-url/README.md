@@ -39,7 +39,6 @@ import {
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
 - import fs from 'fs';
-- import { Readable } from 'stream';
 - import path from 'path';
 + import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -48,7 +47,7 @@ export const run = async () => {
     const client = new S3Client({ region: 'eu-west-3' });
     const bucket = 'bucket-name';
     const fileName = 'user-avatar-in-s3.png';
--   const imageStream = fs.createReadStream(path.resolve(__dirname, fileName));
+-   const imageStream = fs.createReadStream(path.resolve('./', fileName));
 -   const command = new PutObjectCommand({
 +   const command = new GetObjectCommand({
       Bucket: bucket,
@@ -95,7 +94,7 @@ Add barrel file:
 _./back/src/core/clients/index.ts_
 
 ```javascript
-export * from './s3.client';
+export * from './s3.client.js';
 
 ```
 
@@ -106,9 +105,9 @@ _./back/src/pods/user/user.mappers.ts_
 ```diff
 + import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 + import { GetObjectCommand } from '@aws-sdk/client-s3';
-+ import { s3Client } from 'core/clients';
-import * as model from 'dals/user';
-import * as apiModel from './user.api-model';
++ import { s3Client } from '#core/clients/index.js';
+import * as model from '#dals/index.js';
+import * as apiModel from './user.api-model.js';
 
 + // TODO: Move to env variable
 + const bucket = 'bucket-name';
@@ -148,8 +147,8 @@ _./back/src/pods/user/user.rest-api.ts_
 
 ```diff
 import { Router } from 'express';
-import { userRepository } from 'dals';
-import { mapUserFromModelToApi } from './user.mappers';
+import { userRepository } from '#dals/index.js';
+import { mapUserFromModelToApi } from './user.mappers.js';
 
 export const userApi = Router();
 

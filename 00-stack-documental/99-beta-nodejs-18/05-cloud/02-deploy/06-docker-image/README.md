@@ -27,7 +27,7 @@ We can create our custom images. In this case, we will use [the node image](http
 _./Dockerfile_
 
 ```Docker
-FROM node:16-alpine
+FROM node:18-alpine
 ```
 
 > You can use [Docker VSCode extension](https://code.visualstudio.com/docs/containers/overview)
@@ -37,13 +37,14 @@ Let's create the path where we are going to copy our app:
 _./Dockerfile_
 
 ```diff
-FROM node:16-alpine
+FROM node:18-alpine
 + RUN mkdir -p /usr/app
 + WORKDIR /usr/app
 
 ```
 
 > RUN: run commands inside container
+>
 > WORKDIR: all commands after that will be executed in this path
 
 Let's add the `.dockerignore` to avoid unnecessary files:
@@ -77,7 +78,7 @@ Copy all files:
 _./Dockerfile_
 
 ```diff
-FROM node:16-alpine
+FROM node:18-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -90,12 +91,12 @@ Execute install and build:
 _./Dockerfile_
 
 ```diff
-FROM node:16-alpine
+FROM node:18-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
 COPY ./back ./
-+ RUN npm install
++ RUN npm ci
 + RUN npm run build
 
 ```
@@ -116,7 +117,8 @@ docker images
 docker run --name book-container -it book-store-app:1 sh
 ```
 
-> Tag is optionally.
+> Tag is optional.
+>
 > We can see the files after build in `cd ./dist && ls`
 
 We could run this server after build it:
@@ -124,12 +126,12 @@ We could run this server after build it:
 _./Dockerfile_
 
 ```diff
-FROM node:16-alpine
+FROM node:18-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
 COPY ./back ./
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 + ENV PORT=3000
@@ -208,26 +210,26 @@ If we check `docker images` we can see dangling images, due to use same tags for
 docker image prune
 ```
 
-On the other hand, we have an image with `271MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
+On the other hand, we have an image with `~271MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
 
 _./Dockerfile_
 
 ```diff
-- FROM node:16-alpine
-+ FROM node:16-alpine AS base
+- FROM node:18-alpine
++ FROM node:18-alpine AS base
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
 + # Build front app
 + FROM base AS front-build
 + COPY ./front ./
-+ RUN npm install
++ RUN npm ci
 + RUN npm run build
 
 + # Build back app
 + FROM base AS back-build
 COPY ./back ./
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 + # Release
@@ -235,6 +237,7 @@ RUN npm run build
 + COPY --from=front-build /usr/app/dist ./public
 + COPY --from=back-build /usr/app/dist ./
 + COPY ./back/package.json ./
++ RUN sed -i 's/.\/dist/./' package.json
 + COPY ./back/package-lock.json ./
 + RUN npm ci --only=production
 
@@ -248,6 +251,10 @@ ENV AUTH_SECRET=MY_AUTH_SECRET
 + CMD node index
 
 ```
+
+> We need to replace NodeJS imports in `package.json` from `./dist` to `root path` becasue we are copying `back/dist` folder to the `root` one in the container.
+>
+> [More info about sed tool](https://www.gnu.org/software/sed/manual/sed.html)
 
 Run it:
 

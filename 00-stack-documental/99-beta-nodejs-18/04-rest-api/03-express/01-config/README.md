@@ -126,6 +126,26 @@ _./package.json_
 ...
 ```
 
+Using the experimental `watch` flag is not the best option, because it's not ready at all and it could cause some extra re-builds, so we will use `nodemon`:
+
+```bash
+npm install nodemon --save-dev
+
+```
+
+Update `package.json`:
+
+_./package.json_
+
+```diff
+...
+  "scripts": {
+-   "start": "node --watch src/index"
++   "start": "nodemon src/index"
+  },
+...
+```
+
 Now, `Nodejs >= 18` provides a lot of ES "new" features (even [import alias](https://nodejs.org/api/packages.html#imports)), that's why, we will not install [babel](https://github.com/babel/babel) this time.
 
 Let's install necessary dev libraries:
@@ -176,10 +196,10 @@ _./package.json_
 ```diff
 ...
   "scripts": {
--   "start": "node --watch src/index"
+-   "start": "nodemon src/index"
 +   "prestart": "npm run clean && npm run build:dev",
 +   "start": "run-p -l build:watch start:dev",
-+   "start:dev": "node --watch dist/index",
++   "start:dev": "nodemon dist/index",
 +   "clean": "rimraf dist",
 +   "build:dev": "tsc --outDir dist",
 +   "build:watch": "npm run build:dev -- --watch --preserveWatchOutput"

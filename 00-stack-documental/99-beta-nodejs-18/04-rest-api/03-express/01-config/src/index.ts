@@ -3,7 +3,7 @@ import express from "express";
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("My awesome books portal actualizado");
+  res.send("My awesome books portal");
 });
 
 app.listen(3000, () => {

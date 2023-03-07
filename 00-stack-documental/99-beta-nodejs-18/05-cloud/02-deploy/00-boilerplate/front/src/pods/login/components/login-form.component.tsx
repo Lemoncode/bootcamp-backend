@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { User, createEmptyUser } from '../login.vm';
 import * as classes from './login-form.styles';
 
@@ -9,7 +9,7 @@ interface Props {
   onLogin: (user: User) => void;
 }
 
-export const LoginFormComponent: React.FunctionComponent<Props> = (props) => {
+export const LoginFormComponent: React.FC<Props> = (props) => {
   const { onLogin } = props;
   const { register, handleSubmit } = useForm({
     defaultValues: createEmptyUser(),

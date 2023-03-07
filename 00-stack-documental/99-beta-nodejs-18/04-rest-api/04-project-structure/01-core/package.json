@@ -7,7 +7,7 @@
   "scripts": {
     "prestart": "npm run clean && npm run build:dev",
     "start": "run-p -l build:watch start:dev",
-    "start:dev": "node --watch dist/index",
+    "start:dev": "nodemon dist/index",
     "clean": "rimraf dist",
     "build:dev": "tsc --outDir dist",
     "build:watch": "npm run build:dev -- --watch --preserveWatchOutput"
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.14",
+    "nodemon": "^2.0.21",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.3"

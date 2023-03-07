@@ -47,20 +47,36 @@ _./package.json_
 
 ```json
 {
-  "name": "01-config",
+  "name": "bootcamp-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index"
+    "start": "node index.js"
+  },
+  "imports": {
+    "#common/*.js": "./common/*.js",
+    "#common-app/*.js": "./common-app/*.js",
+    "#core/*.js": "./core/*.js",
+    "#dals/*.js": "./dals/*.js",
+    "#pods/*.js": "./pods/*.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    ...
+    "@aws-sdk/client-s3": "^3.281.0",
+    "@aws-sdk/s3-request-presigner": "^3.282.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.12.1"
   }
 }
+
 
 ```
 
@@ -73,7 +89,6 @@ Result:
 |- dals/
 |- pods/
 |- public/
-|- app.js
 |- index.js
 |- package.json
 

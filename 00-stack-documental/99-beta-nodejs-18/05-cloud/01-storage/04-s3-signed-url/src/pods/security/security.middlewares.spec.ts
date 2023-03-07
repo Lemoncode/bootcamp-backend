@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-import * as helpers from 'common/helpers/jwt.helpers';
-import { UserSession } from 'common-app/models';
-import { authenticationMiddleware } from './security.middlewares';
+import * as helpers from '#common/helpers/jwt.helpers.js';
+import { UserSession } from '#common-app/models/index.js';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 describe('pods/security/security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
-      // Arrange
       const authorization = undefined;
       const verifyJWTStub = jest
         .spyOn(helpers, 'verifyJWT')
@@ -24,6 +23,7 @@ describe('pods/security/security.middlewares specs', () => {
 
       // Act
       await authenticationMiddleware(req, res, next);
+
       // Assert
       expect(res.sendStatus).toHaveBeenCalled();
       expect(res.sendStatus).toHaveBeenCalledWith(401);

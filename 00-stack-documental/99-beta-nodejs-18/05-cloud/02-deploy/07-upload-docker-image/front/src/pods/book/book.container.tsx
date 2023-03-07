@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-interface Params {
+interface Params extends Record<string, string> {
   id: string;
 }
 
