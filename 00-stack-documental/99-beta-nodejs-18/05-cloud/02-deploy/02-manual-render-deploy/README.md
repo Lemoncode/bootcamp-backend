@@ -24,11 +24,45 @@ npm install
 
 [Render](https://render.com/) is a cloud provider that allows you to deploy different types of apps based on git repository changes.
 
-Let's create a new empty repository:
+First, we need to prepare the final files that we want to deploy, let's build the front project:
+
+_front terminal_
+
+```bash
+npm run build
+
+```
+
+Let's copy the `front/dist` folder in the `back/public` folder.
+
+Build the back project:
+
+_back terminal_
+
+```bash
+npm run build
+
+```
+
+Now we have something like:
+
+_./back_
+
+```
+|-- config/
+|-- dist/
+|-- node_module/
+|-- public/
+|-- src/
+|-- ...
+|-- package-lock.json
+|-- package.json
+
+```
+
+Let's create a new empty repository to deploy our app placing the builded files:
 
 ![01-create-repo](./readme-resources/01-create-repo.png)
-
-Since we executed the `npm run build` command to generate the `production build` and we have the `public` folder with the `front` app bundle, we could upload to the repository:
 
 - Clone repository:
 
@@ -39,10 +73,9 @@ git clone git@github.com...
 
 Let's copy all necessary files:
 
-- `dist` folder content.
-- `public` folder.
-- `package.json` file. Let's copy and update with necessary dependencies.
-
+- `back/dist` folder content.
+- `back/public` folder.
+- `back/package.json` file. Let's copy and update with necessary dependencies.
 
 _./package.json_
 
@@ -116,6 +149,7 @@ _./package.json_
 }
 
 ```
+
 Result:
 
 ```
