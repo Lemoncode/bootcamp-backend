@@ -75,7 +75,9 @@ Clicks on _Generate token_ button and update values in Azure configuration secti
 
 ![12-update-azure-values](./readme-resources/12-update-azure-values.png)
 
-> NOTE: use your Github username or organization name instead of `lemoncode` for `DOCKER_REGISTRY_SERVER_USERNAME`.
+> DOCKER_REGISTRY_SERVER_URL: `https://ghcr.io`
+>
+> DOCKER_REGISTRY_SERVER_USERNAME: use your Github username or organization name instead of `lemoncode`.
 
 Add environment variables to our app:
 

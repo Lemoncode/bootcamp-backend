@@ -39,7 +39,6 @@ Create a new _Render_ app:
 
 ![02-create-render-app](./readme-resources/02-create-render-app.png)
 
-
 Configure account to get access to the new repository:
 
 ![03-configure-account](./readme-resources/03-configure-account.png)
