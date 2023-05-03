@@ -3,32 +3,28 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "prestart": "sh ./create-dev-env.sh",
-    "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch"
+    "prestart": "sh ./create-dev-env.sh && npm run clean && npm run build:dev",
+    "start": "run-p -l build:watch start:dev",
+    "start:dev": "nodemon --quiet dist/index",
+    "build:dev": "tsc --outDir dist",
+    "build:watch": "npm run build:dev -- --watch --preserveWatchOutput",
+    "clean": "rimraf dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "imports": {
+    "#core/*.js": "./dist/core/*.js"
+  },
   "dependencies": {
-    "@cloudamqp/amqp-client": "^2.1.0",
-    "dotenv": "^16.0.1"
+    "@cloudamqp/amqp-client": "^2.1.1",
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.18.10",
-    "@babel/core": "^7.18.13",
-    "@babel/node": "^7.18.10",
-    "@babel/preset-env": "^7.18.10",
-    "@babel/preset-typescript": "^7.18.6",
-    "@types/node": "^16.11.57",
-    "babel-plugin-module-resolver": "^4.1.0",
+    "@types/node": "^18.15.3",
     "cross-env": "^7.0.3",
-    "nodemon": "^2.0.19",
+    "nodemon": "^2.0.21",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.7.4"
+    "rimraf": "^4.4.0",
+    "typescript": "^4.9.5"
   }
 }

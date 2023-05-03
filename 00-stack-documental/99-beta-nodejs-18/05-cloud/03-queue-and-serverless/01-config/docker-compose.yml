@@ -2,7 +2,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:5.0.9
+    image: mongo:6
     ports:
       - '27017:27017'
     volumes:
@@ -11,7 +11,7 @@ services:
         target: /data/db
   message-broker:
     container_name: message-broker
-    image: rabbitmq:3.10-management-alpine
+    image: rabbitmq:3.11-management-alpine
     ports:
       - '5672:5672'
       - '15672:15672'
