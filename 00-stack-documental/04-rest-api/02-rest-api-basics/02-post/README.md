@@ -8,26 +8,13 @@ We will start from `01-get`.
 
 Let's implement the admin side now, we will insert a new book:
 
-> To create the requests for next methods we could use [Postman](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en) or similar app.
+> To create the requests for next methods we could use [Postman](https://www.postman.com/downloads/) or similar app.
 
-Add a new book in body:
-
-```
-{
-    "title": "El señor de los anillos",
-    "releaseDate": "29/07/1954",
-    "author": "J. R. R. Tolkien"
-},
-
-```
-
-> See request headers in Postman
-
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-const { getBookList, getBook } = require("./mock-db");
+import http from "http";
+import { getBookList, getBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
   const { url, method } = req;
@@ -49,14 +36,34 @@ const handleRequest = (req, res) => {
 
 ```
 
+Run app:
+
+```bash
+node index.mjs
+
+```
+
+The request:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
+{
+    "title": "El señor de los anillos",
+    "releaseDate": "29/07/1954",
+    "author": "J. R. R. Tolkien"
+}
+```
+
 How we could get the body data? Remember that Nodejs has a single thread, that is, we can't retrieve all data in request because it could be a heavy process if data file has too much size.
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-- const { getBookList, getBook } = require("./mock-db");
-+ const { getBookList, getBook, insertBook } = require("./mock-db");
+import http from "http";
+- import { getBookList, getBook } from "./mock-db.mjs";
++ import { getBookList, getBook, insertBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
   const { url, method } = req;
@@ -92,6 +99,26 @@ const handleRequest = (req, res) => {
 ```
 
 > The default data limit size is 5mb
+
+Run app:
+
+```bash
+node index.mjs
+
+```
+
+The request:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
+{
+    "title": "El señor de los anillos",
+    "releaseDate": "29/07/1954",
+    "author": "J. R. R. Tolkien"
+}
+```
 
 # ¿Con ganas de aprender Backend?
 
