@@ -193,7 +193,8 @@ _./tsconfig.json_
     "module": "ESNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"]
 }

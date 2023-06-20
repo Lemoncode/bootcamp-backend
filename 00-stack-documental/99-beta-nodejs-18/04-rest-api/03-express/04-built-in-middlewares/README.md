@@ -36,6 +36,13 @@ app.listen(3000, () => {
 
 ```
 
+Run app:
+
+```bash
+npm start
+
+```
+
 Add new book:
 
 ```json
@@ -49,7 +56,9 @@ BODY:
 }
 ```
 
-We need to use a middleware for parsing incoming request bodies:
+> NOTE: Use a breakpoint.
+
+Why is it not insert the data? Because we need to use a middleware for parsing incoming request bodies:
 
 _./src/index.ts_
 

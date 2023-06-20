@@ -19,8 +19,8 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-- import { getBookList, getBook } from "./mock-db";
-+ import { getBookList, getBook, insertBook } from "./mock-db";
+- import { getBookList, getBook } from "./mock-db.js";
++ import { getBookList, getBook, insertBook } from "./mock-db.js";
 
 ...
 
@@ -36,9 +36,19 @@ app.listen(3000, () => {
 
 ```
 
+Run app:
+
+```bash
+npm start
+
+```
+
 Add new book:
 
 ```json
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
 {
     "title": "El señor de los anillos",
     "releaseDate": "29/07/1954",
@@ -46,13 +56,15 @@ Add new book:
 }
 ```
 
-We need to use a middleware for parsing incoming request bodies:
+> NOTE: Use a breakpoint.
+
+Why is it not insert the data? Because we need to use a middleware for parsing incoming request bodies:
 
 _./src/index.ts_
 
 ```diff
 import express from "express";
-import { getBookList, getBook, insertBook } from "./mock-db";
+import { getBookList, getBook, insertBook } from "./mock-db.js";
 
 const app = express();
 + app.use(express.json());
@@ -70,8 +82,8 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-- import { getBookList, getBook, insertBook } from "./mock-db";
-+ import { getBookList, getBook, insertBook, updateBook } from "./mock-db";
+- import { getBookList, getBook, insertBook } from "./mock-db.js";
++ import { getBookList, getBook, insertBook, updateBook } from "./mock-db.js";
 ...
 
 + app.put("/api/books/:id", async (req, res) => {
@@ -92,7 +104,7 @@ Update request:
 
 ```
 URL: http://localhost:3000/api/books/1
-
+METHOD: PUT
 BODY:
 {
     "title": "Choque de reyes Actualizado",
@@ -113,7 +125,7 @@ import {
   insertBook,
   updateBook,
 + deleteBook,
-} from "./mock-db";
+} from "./mock-db.js";
 
 ...
 
@@ -130,6 +142,13 @@ app.listen(3000, () => {
 
 ```
 
+The request:
+
+```
+URL: http://localhost:3000/api/books/1
+METHOD: DELETE
+```
+
 We have improved the legibility with `express` but we still could have a better way to organize the routes, using the [express Router](https://expressjs.com/en/guide/routing.html#express-router) to creare modular route handlers:
 
 _./src/books.api.ts_
@@ -142,7 +161,7 @@ import {
   insertBook,
   updateBook,
   deleteBook,
-} from "./mock-db";
+} from "./mock-db.js";
 
 export const booksApi = Router();
 
@@ -190,8 +209,8 @@ import express from "express";
 -   insertBook,
 -   updateBook,
 -   deleteBook,
-- } from "./mock-db";
-+ import { booksApi } from "./books.api";
+- } from "./mock-db.js";
++ import { booksApi } from "./books.api.js";
 
 const app = express();
 app.use(express.json());
@@ -271,7 +290,8 @@ _./src/index.ts_
 ```diff
 import express from "express";
 + import path from "path";
-import { booksApi } from "./books.api";
++ import url from "url";
+import { booksApi } from "./books.api.js";
 
 const app = express();
 app.use(express.json());
@@ -280,6 +300,7 @@ app.use(express.json());
 -   res.send("My awesome books portal");
 - });
 + // TODO: Feed env variable in production
++ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 + app.use("/", express.static(path.resolve(__dirname, "../public")));
 
 app.use("/api/books", booksApi);
@@ -289,6 +310,10 @@ app.listen(3000, () => {
 });
 
 ```
+
+> NOTE: `__dirname` was a Global NodeJS using CommonJS. The new way is using [import.meta.url](https://nodejs.org/api/all.html#all_esm_importmetaurl)
+>
+> NOTE: `__dirname` is equals to the full path to `dist` folder
 
 # ¿Con ganas de aprender Backend?
 
