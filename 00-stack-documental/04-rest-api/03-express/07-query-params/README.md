@@ -47,6 +47,14 @@ booksApi
 ...
 ```
 
+Run app:
+
+```bash
+cd back
+npm start
+
+```
+
 Let's try some urls:
 
 ```
