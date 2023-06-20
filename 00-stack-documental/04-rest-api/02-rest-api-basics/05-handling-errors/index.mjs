@@ -1,23 +1,18 @@
-const http = require('http');
-const {
+import http from "http";
+import {
   getBookList,
   getBook,
   insertBook,
   updateBook,
   deleteBook,
-} = require('./mock-db');
+} from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
   const { url, method } = req;
-  req.on('error', (error) => {
-    res.statusCode = 400;
-    res.end();
-  });
-
-  if (url === '/api/books') {
-    if (method === 'GET') {
+  if (url === "/api/books") {
+    if (method === "GET") {
       try {
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader("Content-Type", "application/json");
         res.statusCode = 200;
         res.write(JSON.stringify(getBookList()));
         res.end();
@@ -25,17 +20,17 @@ const handleRequest = (req, res) => {
         res.statusCode = 500;
         res.end();
       }
-    } else if (method === 'POST') {
+    } else if (method === "POST") {
       let data = [];
-      req.on('data', (chunk) => {
+      req.on("data", (chunk) => {
         console.log({ chunk });
         data += chunk;
       });
 
-      req.on('end', () => {
-        const book = JSON.parse(data.toString('utf8'));
+      req.on("end", () => {
+        const book = JSON.parse(data.toString("utf8"));
         const newBook = insertBook(book);
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader("Content-Type", "application/json");
         res.statusCode = 201;
         res.write(JSON.stringify(newBook));
         res.end();
@@ -44,26 +39,31 @@ const handleRequest = (req, res) => {
   } else if (/\/api\/books\/\d$/.test(url)) {
     const [, bookIdString] = url.match(/\/api\/books\/(\d)$/);
     const bookId = Number(bookIdString);
-    if (method === 'GET') {
-      res.setHeader('Content-Type', 'application/json');
+    if (method === "GET") {
+      res.setHeader("Content-Type", "application/json");
       res.statusCode = 200;
       const book = getBook(bookId);
       res.write(JSON.stringify(book));
       res.end();
-    } else if (method === 'PUT') {
+    } else if (method === "PUT") {
       let data = [];
-      req.on('data', (chunk) => {
+      req.on("data", (chunk) => {
         console.log({ chunk });
         data += chunk;
       });
 
-      req.on('end', () => {
-        const book = JSON.parse(data.toString('utf8'));
+      req.on("error", (error) => {
+        res.statusCode = 400;
+        res.end();
+      });
+
+      req.on("end", () => {
+        const book = JSON.parse(data.toString("utf8"));
         updateBook(bookId, book);
         res.statusCode = 204;
         res.end();
       });
-    } else if (method === 'DELETE') {
+    } else if (method === "DELETE") {
       deleteBook(bookId);
       res.statusCode = 204;
       res.end();
