@@ -17,10 +17,10 @@ Hello from file!
 
 And try to read it using `fs`:
 
-_./index.js_
+_./index.mjs_
 
 ```javascript
-const fs = require("fs");
+import fs from "fs";
 
 fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
   if (error) {
@@ -31,13 +31,12 @@ fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
 });
 
 console.log("Start program");
-
 ```
 
 Run app:
 
 ```bash
-node index
+node index.mjs
 
 ```
 
