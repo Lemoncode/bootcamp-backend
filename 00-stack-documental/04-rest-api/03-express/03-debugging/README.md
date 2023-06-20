@@ -13,33 +13,6 @@ npm install
 
 ```
 
-Update babel config for sourceMaps:
-
-_./.babelrc_
-
-```diff
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "16"
-        }
-      }
-    ],
-    "@babel/preset-typescript"
-- ]
-+ ],
-+ "env": {
-+   "development": {
-+     "sourceMaps": "inline"
-+   }
-+ }
-}
-
-```
-
 Using `JavaScript Debug Terminal`:
 
 ![02-js-debug-terminal](./readme-resources/02-js-debug-terminal.png)
@@ -51,7 +24,7 @@ npm start
 
 ```
 
-- Another option is adding debug `launch.json` in VS Code:
+- The old-fashioned way option is adding debug `launch.json` in VS Code:
 
 ![01-add-launch.json](./readme-resources/01-add-launch.json.png)
 
@@ -63,45 +36,20 @@ _./.vscode/launch.json_
   "configurations": [
     {
       "type": "node",
-      "request": "attach",
-      "name": "Debug",
-      "port": 9229,
-      "address": "localhost",
-      "restart": true,
-      "sourceMaps": true,
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "${workspaceFolder}",
-      "skipFiles": ["node_modules/**", "<node_internals>/**"]
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\src\\index.ts",
+      "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]
 }
-
 ```
 
 > Maybe you have to disable `usePreview` flag on VSCode settings.
 > `"debug.javascript.usePreview": false`
 
-Add debug command:
-
-_./package.json_
-
-```diff
-...
-  "scripts": {
-    "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-+   "start:debug": "run-p -l type-check:watch \"start:dev -- --inspect-brk\"",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch"
-  },
-...
-```
-
-- And run app in debug mode (`bash` terminal or default one) and run Debug mode:
-
-```bash
-npm run start:debug
-```
+Now it appears `Launch Program` option to run it.
 
 # ¿Con ganas de aprender Backend?
 
