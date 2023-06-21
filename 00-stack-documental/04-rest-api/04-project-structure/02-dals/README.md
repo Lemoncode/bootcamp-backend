@@ -334,7 +334,7 @@ _./tsconfig.json_
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
 +   "baseUrl": "./src",
 +   "paths": {
 +     "#*": ["*"]
