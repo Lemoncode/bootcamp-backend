@@ -1,1 +1,1 @@
-export * from './rest-api.server';
+export * from "./rest-api.server.js";
