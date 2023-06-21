@@ -44,7 +44,7 @@ Add barrel file:
 _./src/core/servers/index.ts_
 
 ```typescript
-export * from "./rest-api.server";
+export * from "./rest-api.server.js";
 
 ```
 
@@ -56,8 +56,9 @@ _./src/index.ts_
 import express from "express";
 - import cors from "cors";
 import path from "path";
-+ import { createRestApiServer } from "./core/servers";
-import { booksApi } from "./books.api";
+import url from "url";
++ import { createRestApiServer } from "./core/servers/index.js";
+import { booksApi } from "./books.api.js";
 
 - const app = express();
 - app.use(express.json());
@@ -71,6 +72,7 @@ import { booksApi } from "./books.api";
 + const restApiServer = createRestApiServer();
 
 // TODO: Feed env variable in production
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 - app.use("/", express.static(path.resolve(__dirname, "../public")));
 + restApiServer.use("/", express.static(path.resolve(__dirname, "../public")));
 
@@ -117,7 +119,7 @@ Add barrel file:
 _./src/core/constants/index.ts_
 
 ```typescript
-export * from "./env.constants";
+export * from "./env.constants.js";
 
 ```
 
@@ -128,7 +130,7 @@ _./src/core/servers/rest-api.server.ts_
 ```diff
 import express from "express";
 import cors from "cors";
-+ import { envConstants } from "../constants";
++ import { envConstants } from "../constants/index.js";
 
 export const createRestApiServer = () => {
   const restApiServer = express();
@@ -155,13 +157,15 @@ _./src/index.ts_
 ```diff
 import express from "express";
 import path from "path";
-import { createRestApiServer } from "./core/servers";
-+ import { envConstants } from "./core/constants";
-import { booksApi } from "./books.api";
+import url from "url";
+import { createRestApiServer } from "./core/servers/index.js";
++ import { envConstants } from "./core/constants/index.js";
+import { booksApi } from "./books.api.js";
 
 const restApiServer = createRestApiServer();
 
 - // TODO: Feed env variable in production
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 - restApiServer.use("/", express.static(path.resolve(__dirname, "../public")));
 + const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
 + restApiServer.use("/", express.static(staticFilesPath));
@@ -186,7 +190,7 @@ How to set this `env variables`? It depends on each OS:
 We will use [dotenv](https://github.com/motdotla/dotenv) library to be OS agnostic:
 
 ```bash
-npm install dotenv --save-dev
+npm install dotenv --save
 ```
 
 Define `.env` file:
@@ -208,24 +212,20 @@ _./package.json_
 ```diff
 ...
   "scripts": {
-    "start": "run-p -l type-check:watch start:dev",
--   "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-+   "start:dev": "nodemon --exec babel-node -r dotenv/config --extensions \".ts\" src/index.ts",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch"
+    ...
+-   "start:dev": "nodemon --esm src/index.ts",
++   "start:dev": "nodemon -r dotenv/config --esm src/index.ts",
+    ...
   },
 ```
+
+> [Using preload option](https://github.com/motdotla/dotenv#preload)
 
 ```bash
 npm start
 ```
 
 Another approach is load config script from code, it's a nice way to provide [config's options](https://github.com/motdotla/dotenv#options). Move to production dependencies:
-
-```bash
-npm install dotenv -P
-
-```
 
 Restore script:
 
@@ -234,35 +234,49 @@ _./package.json_
 ```diff
 ...
   "scripts": {
-    "start": "run-p -l type-check:watch start:dev",
--   "start:dev": "nodemon --exec babel-node -r dotenv/config --extensions \".ts\" src/index.ts",
-+   "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch"
+    ...
+-   "start:dev": "nodemon -r dotenv/config --esm src/index.ts",
++   "start:dev": "nodemon --esm src/index.ts",
+    ...
   },
 ```
 
-Rename `index.ts` to `app.ts`.
+> [Using from code](https://github.com/motdotla/dotenv#usage)
 
-And create `index.ts` with config:
+Add file to load env variables:
 
-_./src/index.ts_
+_./src/core/load-env.ts_
 
 ```typescript
 import { config } from "dotenv";
 config();
 
-require("./app");
+```
+
+Update `index.ts` file, this import should be the first one in your code:
+
+_./src/index.ts_
+
+```diff
++ import "./core/load-env.js";
+import express from "express";
+import path from "path";
+...
 
 ```
+
+> NOTE: It does not work if we write the load-env code in the `index.ts` file due to how the ES modules import works.
+>
+> [More info here](https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import)
 
 Finally, we should `ignore` the `.env` file to avoid conflicts with production environments because if we upload this file, we will overwrite production values with these ones.
 
 _./.gitignore_
 
-```
+```diff
 node_modules
-.env
+dist
++ .env
 
 ```
 
