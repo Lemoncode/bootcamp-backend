@@ -1,7 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { envConstants } from 'core/constants';
-import { connectToDBServer, disconnectFromDBServer } from 'core/servers';
-import { getCommentContext } from 'dals/comment/comment.context';
+import { envConstants } from '#core/constants/index.js';
+import {
+  connectToDBServer,
+  disconnectFromDBServer,
+} from '#core/servers/index.js';
+import { getCommentContext } from '#dals/comment/comment.context.js';
 
 const runQueries = async () => {
   const result = await getCommentContext()
@@ -20,7 +23,7 @@ const runQueries = async () => {
         },
       },
       {
-        $unwind: '$movie'
+        $unwind: '$movie',
       },
       {
         $project: {
@@ -35,6 +38,7 @@ const runQueries = async () => {
       },
     ])
     .toArray();
+  console.log({ result });
 };
 
 export const run = async () => {

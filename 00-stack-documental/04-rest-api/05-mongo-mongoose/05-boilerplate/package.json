@@ -8,7 +8,8 @@
     "prestart": "sh ./create-dev-env.sh",
     "start": "run-p -l type-check:watch start:dev start:local-db",
     "start:dev": "nodemon --esm src/index.ts",
-    "start:console-runners": "nodemon --no-stdin --esm src/console-runners/index.ts",
+    "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
+    "console-runners": "nodemon --no-stdin --esm src/console-runners/index.ts",
     "start:local-db": "docker-compose up -d",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
