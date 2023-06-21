@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { Book } from './book.model';
+import { Book } from './book.model.js';
 
 const bookSchema = new Schema<Book>({
   title: { type: Schema.Types.String, required: true },
