@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
-import { routes } from 'core/router';
+import { routes } from '@/core/router';
 import * as api from './api';
 import * as classes from './app-bar.styles';
 

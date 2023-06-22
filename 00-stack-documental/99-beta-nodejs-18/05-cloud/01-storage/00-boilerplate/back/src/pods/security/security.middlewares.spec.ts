@@ -6,6 +6,7 @@ import { authenticationMiddleware } from './security.middlewares.js';
 describe('pods/security/security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
+      // Arrange
       const authorization = undefined;
       const verifyJWTStub = jest
         .spyOn(helpers, 'verifyJWT')

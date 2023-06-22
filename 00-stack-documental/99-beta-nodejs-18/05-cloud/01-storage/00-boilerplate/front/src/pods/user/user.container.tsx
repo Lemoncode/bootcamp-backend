@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbarContext } from 'common/components';
-import { routes } from 'core/router';
+import { useSnackbarContext } from '@/common/components';
+import { routes } from '@/core/router';
 import * as api from './api';
 import { createEmptyUser, User } from './user.vm';
 import { mapUserFromApiToVm } from './user.mappers';

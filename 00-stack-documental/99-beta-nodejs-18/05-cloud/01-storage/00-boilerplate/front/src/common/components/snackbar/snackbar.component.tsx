@@ -17,8 +17,8 @@ Global snack bar (use one to rule them all :))
 Initialize on app provider:
 
 ```typescript
-import { RouterComponent } from 'core/router';
-import { SnackbarComponent, SnackbarProvider } from 'common/components';
+import { RouterComponent } from '@/core/router';
+import { SnackbarComponent, SnackbarProvider } from '@/common/components';
 
 const App: React.FC = () => {
   return (
@@ -31,7 +31,7 @@ const App: React.FC = () => {
 ```
 ```typescript
 import { LoginComponent } from './login.component';
-import { useSnackbarContext } from 'common/components';
+import { useSnackbarContext } from '@/common/components';
 
 export const LoginContainer: React.FC = () => {
   const { showMessage } = useSnackbarContext();

@@ -25,7 +25,11 @@ booksApi
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
-      res.send(mapBookFromModelToApi(book));
+      if (book) {
+        res.send(mapBookFromModelToApi(book));
+      } else {
+        res.sendStatus(404);
+      }
     } catch (error) {
       next(error);
     }
