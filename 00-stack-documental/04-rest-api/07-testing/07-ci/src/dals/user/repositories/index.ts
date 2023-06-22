@@ -1,6 +1,6 @@
-import { mockRepository } from './user.mock-repository';
-import { dbRepository } from './user.db-repository';
-import { envConstants } from 'core/constants';
+import { mockRepository } from './user.mock-repository.js';
+import { dbRepository } from './user.db-repository.js';
+import { envConstants } from '#core/constants/index.js';
 
 export const userRepository = envConstants.isApiMock
   ? mockRepository
