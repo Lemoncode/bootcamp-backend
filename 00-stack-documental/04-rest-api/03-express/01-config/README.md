@@ -215,7 +215,7 @@ _./package.json_
   "scripts": {
 +   "start": "run-p -l type-check:watch start:dev",
 -   "start": "nodemon src/index"
-+   "start:dev": "nodemon --esm src/index.ts",
++   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
 +   "type-check": "tsc --noEmit --preserveWatchOutput",
 +   "type-check:watch": "npm run type-check -- --watch"
   },

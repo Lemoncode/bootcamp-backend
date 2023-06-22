@@ -127,7 +127,7 @@ _./src/dals/user/repositories/index.ts_
 ```typescript
 import { mockRepository } from './user.mock-repository.js';
 import { dbRepository } from './user.db-repository.js';
-import { envConstants } from 'core/constants/index.js';
+import { envConstants } from '#core/constants/index.js';
 
 export const userRepository = envConstants.isApiMock
   ? mockRepository
@@ -294,7 +294,7 @@ Add barrel file:
 _./src/common-app/models/index.ts_
 
 ```typescript
-export * from './user-session';
+export * from './user-session.js';
 
 ```
 
@@ -337,16 +337,7 @@ Let's update the index with this new API:
 _./src/index.ts_
 
 ```diff
-import '#core/load-env.js';
-import express from 'express';
-import path from 'path';
-import url from 'url';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from '#common/middlewares/index.js';
-import { createRestApiServer, connectToDBServer } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
+...
 import { booksApi } from '#pods/book/index.js';
 + import { securityApi } from '#pods/security/index.js';
 
@@ -624,16 +615,7 @@ Secure all book API:
 _./src/index.ts_
 
 ```diff
-import '#core/load-env.js';
-import express from 'express';
-import path from 'path';
-import url from 'url';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from '#common/middlewares/index.js';
-import { createRestApiServer, connectToDBServer } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
+...
 import { booksApi } from '#pods/book/index.js';
 - import { securityApi } from '#pods/security/index.js';
 + import { securityApi, authenticationMiddleware } from '#pods/security/index.js';

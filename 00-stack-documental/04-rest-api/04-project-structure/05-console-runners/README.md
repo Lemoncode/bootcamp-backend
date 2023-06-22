@@ -54,8 +54,8 @@ _./package.json_
 ...
   "scripts": {
     "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --esm src/index.ts",
-+   "start:console-runners": "nodemon --no-stdin --esm src/console-runners/index.ts",
+    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
++   "start:console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
