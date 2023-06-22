@@ -1,1 +1,1 @@
-export * from './hash-password.helpers';
+export * from './hash-password.helpers.js';
