@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-import { UserSession, Role } from 'common-app/models';
+import { envConstants } from '#core/constants/index.js';
+import { UserSession, Role } from '#common-app/models/index.js';
 
 const verify = (token: string, secret: string): Promise<UserSession> =>
   new Promise((resolve, reject) => {
