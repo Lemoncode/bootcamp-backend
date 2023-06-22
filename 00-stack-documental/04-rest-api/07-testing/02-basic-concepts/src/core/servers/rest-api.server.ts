@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { envConstants } from '../constants';
+import { envConstants } from '../constants/index.js';
 
 export const createRestApiServer = () => {
   const restApiServer = express();
