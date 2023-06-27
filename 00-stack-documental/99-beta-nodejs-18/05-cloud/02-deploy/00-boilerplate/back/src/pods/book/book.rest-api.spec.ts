@@ -20,11 +20,13 @@ app.use((req, res, next) => {
 });
 app.use(booksApi);
 
-describe('pods/book/book.rest-api specs', () => {
+const MONGODB_URI = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
+
+describe('@/pods/book/book.rest-api specs', () => {
   beforeAll(async () => {
-    const connectionString = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
-    await connectToDBServer(connectionString);
+    await connectToDBServer(MONGODB_URI);
   });
+
   beforeEach(async () => {
     await getBookContext().insertOne({
       _id: new ObjectId(),
@@ -37,6 +39,7 @@ describe('pods/book/book.rest-api specs', () => {
   afterEach(async () => {
     await getBookContext().deleteMany({});
   });
+
   afterAll(async () => {
     await disconnectFromDBServer();
   });

@@ -1,5 +1,5 @@
 import React from 'react';
-import TableRow, { TableRowProps } from '@material-ui/core/TableRow';
+import TableRow, { TableRowProps } from '@mui/material/TableRow';
 import { cx } from '@emotion/css';
 import * as classes from './row.component.styles';
 

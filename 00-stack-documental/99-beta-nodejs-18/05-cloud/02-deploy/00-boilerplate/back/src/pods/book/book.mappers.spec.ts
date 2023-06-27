@@ -3,7 +3,7 @@ import * as model from '#dals/index.js';
 import * as apiModel from './book.api-model.js';
 import { mapBookListFromApiToModel } from './book.mappers.js';
 
-describe('pods/book/book.mappers spec', () => {
+describe('@/pods/book/book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
     it.each<apiModel.Book[]>([undefined, null, []])(
       'should return empty array when it feeds bookList equals %p',
