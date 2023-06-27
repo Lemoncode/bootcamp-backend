@@ -1,2 +1,2 @@
-export * from './security.rest-api';
-export * from './security.middlewares';
+export * from './security.rest-api.js';
+export * from './security.middlewares.js';

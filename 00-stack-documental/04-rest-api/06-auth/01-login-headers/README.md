@@ -692,7 +692,7 @@ _./src/dals/user/user.model.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-+ import { Role } from 'common-app/models/index.js';
++ import { Role } from '#common-app/models/index.js';
 
 export interface User {
   _id: ObjectId;
