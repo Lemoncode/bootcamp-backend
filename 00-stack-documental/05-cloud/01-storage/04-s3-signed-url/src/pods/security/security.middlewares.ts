@@ -1,7 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
-import { verifyJWT } from 'common/helpers';
-import { envConstants } from 'core/constants';
-import { UserSession, Role } from 'common-app/models';
+import { verifyJWT } from '#common/helpers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { UserSession, Role } from '#common-app/models/index.js';
 
 export const authenticationMiddleware = async (
   req: Request,

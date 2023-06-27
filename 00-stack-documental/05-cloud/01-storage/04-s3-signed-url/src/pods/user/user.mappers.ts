@@ -1,8 +1,8 @@
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from 'core/clients';
-import * as model from 'dals/user';
-import * as apiModel from './user.api-model';
+import { s3Client } from '#core/clients/index.js';
+import * as model from '#dals/index.js';
+import * as apiModel from './user.api-model.js';
 
 // TODO: Move to env variable
 const bucket = 'bucket-name';
