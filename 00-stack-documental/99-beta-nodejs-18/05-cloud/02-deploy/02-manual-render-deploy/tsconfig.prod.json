@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "sourceMap": false,
-    "outDir": "dist"
-  },
-  "exclude": ["**/*.spec.ts", "./src/console-runners"]
-}
