@@ -36,7 +36,7 @@ Choose NodeJS platform:
 
 ![03-choose-platform](./readme-resources/03-choose-platform.png)
 
-Before upload the code, we will create a `zip` file with same files that we deploy on Heroku example. Let's copy all necessary files:
+Before upload the code, we will create a `zip` file with same files that we previously deploy on the `Render` example. Let's copy all necessary files:
 
 - `dist` folder content.
 - `public` folder.
@@ -47,20 +47,36 @@ _./package.json_
 
 ```json
 {
-  "name": "01-config",
+  "name": "bootcamp-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index"
+    "start": "node index.js"
+  },
+  "imports": {
+    "#common/*": "./common/*",
+    "#common-app/*": "./common-app/*",
+    "#core/*": "./core/*",
+    "#dals/*": "./dals/*",
+    "#pods/*": "./pods/*"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    ...
+    "@aws-sdk/client-s3": "^3.281.0",
+    "@aws-sdk/s3-request-presigner": "^3.282.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.12.1"
   }
 }
+
 
 ```
 
@@ -73,7 +89,6 @@ Result:
 |- dals/
 |- pods/
 |- public/
-|- app.js
 |- index.js
 |- package.json
 
@@ -87,17 +102,15 @@ Update code:
 
 ![05-upload-code](./readme-resources/05-upload-code.png)
 
-Let's add `env variables`:
+Continue to next steps:
 
-![06-configuring-env-variables](./readme-resources/06-configuring-env-variables.png)
+![06-preset](./readme-resources/06-preset.png)
+
+Let's continue with default values and let's add `env variables` in step 5:
 
 ![07-add-env-variables](./readme-resources/07-add-env-variables.png)
 
 > NOTE: Since aws security group was configured only with HTTP inbound rule, we have to set `NODE_ENV` equals `development` to avoid create Cookie with secure flag.
-
-Create app:
-
-![08-create-app](./readme-resources/08-create-app.png)
 
 # ¿Con ganas de aprender Backend?
 
