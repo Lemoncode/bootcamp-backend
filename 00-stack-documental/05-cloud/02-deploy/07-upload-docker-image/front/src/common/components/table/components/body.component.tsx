@@ -1,12 +1,12 @@
 import React from 'react';
 import { Row } from 'react-table';
-import TableBody from '@material-ui/core/TableBody';
+import TableBody from '@mui/material/TableBody';
 import { RowRendererProps } from '../table.vm';
 
 interface Props<T extends object = {}> {
   rows: Row<T>[];
   prepareRow: (row: Row<T>) => void;
-  rowRenderer: (props: RowRendererProps<T>) => React.ReactElement<HTMLElement>;
+  rowRenderer: (props: RowRendererProps<T>) => React.ReactNode;
   className?: string;
 }
 
@@ -22,7 +22,7 @@ export const BodyComponent: React.FunctionComponent<Props> = (props) => {
             ...rowProps,
             row: row.original,
             index: row.index,
-          }),
+          }) as React.ReactElement,
           { key: rowProps?.key }
         );
       })}
