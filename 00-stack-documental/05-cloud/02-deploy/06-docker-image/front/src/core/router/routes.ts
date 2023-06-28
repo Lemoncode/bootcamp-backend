@@ -22,8 +22,12 @@ export const switchRoutes: SwitchRoutes = {
   ...baseRoutes,
 };
 
+type EditParams = {
+  id: string;
+};
+
 interface LinkRoutes extends Omit<BaseRoutes, 'editBook'> {
-  editBook: ({ id: string }) => string;
+  editBook: (editParams: EditParams) => string;
 }
 
 export const linkRoutes: LinkRoutes = {

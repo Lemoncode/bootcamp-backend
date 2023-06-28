@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBarComponent } from 'common-app/app-bar';
+import { AppBarComponent } from '@/common-app/app-bar';
 import * as classes from './app.layout.styles';
 
 interface ChildrenProps {
@@ -10,7 +10,7 @@ interface Props {
   children: (props: ChildrenProps) => React.ReactNode;
 }
 
-export const AppLayout: React.FunctionComponent<Props> = (props) => {
+export const AppLayout: React.FC<Props> = (props) => {
   const { children } = props;
 
   return (
