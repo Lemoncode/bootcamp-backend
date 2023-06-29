@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { messageBroker } from 'core/servers';
-import { Book, bookRepository } from 'dals';
-import { authorizationMiddleware } from 'pods/security';
+import { messageBroker } from '#core/servers/index.js';
+import { Book, bookRepository } from '#dals/index.js';
+import { authorizationMiddleware } from '#pods/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from './book.mappers';
+} from './book.mappers.js';
 
 export const booksApi = Router();
 
@@ -16,6 +16,7 @@ const sendBookToArchive = async (book: Book) => {
   const dateKey =
     book.releaseDate.getFullYear() < new Date().getFullYear() ? 'old' : 'new';
   const routingKey = `${priceKey}.${book.author}.${dateKey}`;
+  console.log({ routingKey });
   const channel = await messageBroker.channel(1);
   await channel.basicPublish(exchangeName, routingKey, JSON.stringify(book), {
     deliveryMode: 2,
@@ -28,6 +29,7 @@ booksApi
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList(page, pageSize);
+
       res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
@@ -37,7 +39,11 @@ booksApi
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
-      res.send(mapBookFromModelToApi(book));
+      if (book) {
+        res.send(mapBookFromModelToApi(book));
+      } else {
+        res.sendStatus(404);
+      }
     } catch (error) {
       next(error);
     }
