@@ -128,7 +128,6 @@ BODY:
 }
 ```
 
-
 ```
 URL: http://localhost:3000/api/books
 METHOD: POST
