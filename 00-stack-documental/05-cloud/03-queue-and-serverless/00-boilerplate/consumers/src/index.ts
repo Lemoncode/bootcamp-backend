@@ -1,4 +1,1 @@
-import { config } from 'dotenv';
-config();
-
-require('./app');
+import '#core/load-env.js';
