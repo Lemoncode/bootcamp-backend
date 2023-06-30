@@ -1,5 +1,5 @@
 import React from 'react';
-import TableCell, { TableCellProps } from '@material-ui/core/TableCell';
+import TableCell, { TableCellProps } from '@mui/material/TableCell';
 
 export type CellProps = TableCellProps;
 
