@@ -1,6 +1,6 @@
-# 03 Deploy heroku
+# 03 Deploy Render
 
-In this example we are going to deploy app to Heroku.
+In this example we are going to deploy app to `Render`.
 
 We will start from `02-custom-transport`.
 
@@ -29,8 +29,8 @@ _./back/src/core/logger/logger.ts_
 ```diff
 import { createLogger } from 'winston';
 + import Transport from 'winston-transport';
-+ import { envConstants } from 'core/constants';
-import { console, file, rollbar } from './transports';
++ import { envConstants } from '#core/constants/index.js';
+import { console, file, rollbar } from './transports/index.js';
 
 + let transports: Transport[] = [console, file];
 + if (envConstants.isProduction) {
@@ -51,7 +51,7 @@ _./Dockerfile_
 ```diff
 ...
 
-ENV NODE_ENV=production
++ ENV NODE_ENV=production
 ENV STATIC_FILES_PATH=./public
 - ENV API_MOCK=false
 + ENV API_MOCK=true
@@ -60,13 +60,9 @@ ENV CORS_ORIGIN=false
 ...
 ```
 
-We will create a new heroku app:
-
-![01-create-heroku-app](./readme-resources/01-create-heroku-app.png)
-
-![02-create-heroku-app](./readme-resources/02-create-heroku-app.png)
-
 Create new repository and upload files:
+
+![01-create-repo](./readme-resources/01-create-repo.png)
 
 ```bash
 git init
@@ -77,54 +73,39 @@ git push -u origin main
 
 ```
 
-We need an [auth token](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-authorizations-create) to login inside Github Action job:
+Create a new _Render_ app:
 
-```bash
-heroku login
-heroku authorizations:create -d <description>
-```
+![02-create-render-app](./readme-resources/02-create-render-app.png)
 
-> -d: Set a custom authorization description
-> -e: Set expiration in seconds (default no expiration)
-> `heroku authorizations`: Get auth token list.
+Configure account to get access to the new repository:
 
-Add `Auth token` to git repository secrets:
+![03-configure-account](./readme-resources/03-configure-account.png)
 
-![03-github-secret](./readme-resources/03-github-secret.png)
+Configure web service:
 
-![04-token-as-secret](./readme-resources/04-token-as-secret.png)
+![04-configure-web-service](./readme-resources/04-configure-web-service.png)
 
-> [Heroku API KEY storage](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-authorizations-create)
+![05-configure-runtime](./readme-resources/05-configure-runtime.png)
 
-We will add `HEROKU_APP_NAME` as secret too:
+Add environment variables (Advanced settings):
 
-![05-heroku-app-name](./readme-resources/05-heroku-app-name.png)
+![06-add-env-vars](./readme-resources/06-add-env-vars.png)
 
-> We need Heroku app name as identifier Heroku deployment.
+Update docker settings:
 
-Run again github actions:
+![07-docker-settings](./readme-resources/07-docker-settings.png)
 
-![06-open-failed-job](./readme-resources/06-open-failed-job.png)
+Clicks on `Create Web Service` button.
 
-![07-re-run-job](./readme-resources/07-re-run-job.png)
-
-Add heroku env variables:
-
-![08-heroku-env-variables](./readme-resources/08-heroku-env-variables.png)
-
-> Include the `AUTH_SECRET` to get valid JWT token-
-
-Open browser at `https://<app-name>.herokuapp.com/` and run `info`, `warn` and `error` logs.
+Open browser at `https://<app-name>.onrender.com` and run `info`, `warn` and `error` logs.
 
 Check results in rollbar, remember filter by environment:
 
 ![09-rollbar-env-filter](./readme-resources/09-rollbar-env-filter.png)
 
-Checks logs in heroku:
+Checks logs in `Render`:
 
-```bash
-heroku logs --tail -a <app-name>
-```
+![10-render-logs](./readme-resources/10-render-logs.png)
 
 # ¿Con ganas de aprender Backend?
 

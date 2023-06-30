@@ -1,6 +1,6 @@
 import { format } from 'winston';
-import { RollbarTransport } from 'common/logger-transports';
-import { envConstants } from 'core/constants';
+import { RollbarTransport } from '#common/logger-transports/index.js';
+import { envConstants } from '#core/constants/index.js';
 
 const { combine, timestamp, prettyPrint } = format;
 

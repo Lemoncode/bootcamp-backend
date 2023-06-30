@@ -1,7 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSnackbarContext } from 'common/components';
-import { linkRoutes } from 'core/router';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbarContext } from '@/common/components';
+import { linkRoutes } from '@/core/router';
 import * as api from './api';
 import { createEmptyUser, User } from './user.vm';
 import { mapUserFromApiToVm } from './user.mappers';
@@ -11,10 +11,10 @@ interface Props {
   className?: string;
 }
 
-export const UserContainer: React.FunctionComponent<Props> = (props) => {
+export const UserContainer: React.FC<Props> = (props) => {
   const { className } = props;
   const { showMessage } = useSnackbarContext();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [user, setUser] = React.useState<User>(createEmptyUser());
 
@@ -23,7 +23,7 @@ export const UserContainer: React.FunctionComponent<Props> = (props) => {
       const apiUser = await api.getUser();
       setUser(mapUserFromApiToVm(apiUser));
     } catch {
-      history.push(linkRoutes.root);
+      navigate(linkRoutes.root);
       showMessage('Introduzca credenciales', 'error');
     }
   };
