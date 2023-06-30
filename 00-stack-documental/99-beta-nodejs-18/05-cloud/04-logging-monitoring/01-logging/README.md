@@ -48,18 +48,19 @@ Add barrel file:
 _./back/src/core/logger/index.ts_
 
 ```javascript
-export * from "./logger";
+export * from "./logger.js";
+
 ```
 
 Replace `console.log` by `logger`:
 
-_./back/src/app.ts_
+_./back/src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
-+ import { logger } from 'core/logger';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
+...
+import { createRestApiServer, connectToDBServer } from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
++ import { logger } from '#core/logger/index.js';
 ...
 
 restApiServer.listen(envConstants.PORT, async () => {
@@ -100,8 +101,9 @@ _./back/src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-+ import { logger } from 'core/logger';
-import { envConstants } from 'core/constants';
+import { UserSession } from '#common-app/models/index.js';
++ import { logger } from '#core/logger/index.js';
+import { envConstants } from '#core/constants/index.js';
 ...
 
 securityApi
@@ -136,31 +138,27 @@ _./back/src/common/middlewares/logger.middlewares.ts_
 import { RequestHandler, ErrorRequestHandler } from 'express';
 + import { Logger } from 'winston';
 
-- export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
-+ export const logRequestMiddleware = (logger: Logger): RequestHandler => async (req, res, next) => {
-- console.log(req.url);
-+ logger.info(req.url);
-  next();
-};
+- export const logRequestMiddleware: RequestHandler =
++ export const logRequestMiddleware = (logger: Logger): RequestHandler =>
+    async (req, res, next) => {
+-     console.log(req.url);
++     logger.info(req.url);
+      next();
+    };
 
-- export const logErrorRequestMiddleware: ErrorRequestHandler = async (
--   error,
--   req,
--   res,
--   next
-- ) => {
+- export const logErrorRequestMiddleware: ErrorRequestHandler = 
 + export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler =>
-+   async (error, req, res, next) => {
-- console.error(error);
-+ logger.error(error.stack);
-  res.sendStatus(500);
-};
+    async (error, req, res, next) => {
+-    console.error(error);
++    logger.error(error.stack);
+     res.sendStatus(500);
+  };
 
 ```
 
 Update app:
 
-_./back/src/app.ts_
+_./back/src/index.ts_
 
 ```diff
 ...
@@ -244,8 +242,6 @@ export const logger = createLogger({
 >
 > `printf`: create custom message
 
-Run it.
-
 The best feature in this kind of libraries is we can save our logs in different transports at the same time. Let's move `console` transport to its own file:
 
 _./back/src/core/logger/transports/console.transport.ts_
@@ -266,6 +262,8 @@ export const console = new transports.Console({
 });
 
 ```
+
+Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs.
 
 Let's add a new `File` transport, for example, we will save only `warnings` and `errors` in this file:
 
@@ -295,8 +293,8 @@ Add barrel file:
 _./back/src/core/logger/transports/index.ts_
 
 ```javascript
-export * from './console.transport';
-export * from './file.transport';
+export * from './console.transport.js';
+export * from './file.transport.js';
 
 ```
 
@@ -307,7 +305,7 @@ _./back/src/core/logger/logger.ts_
 ```diff
 - import { createLogger, transports, format } from 'winston';
 + import { createLogger } from 'winston';
-+ import { console, file } from './transports';
++ import { console, file } from './transports/index.js';
 
 - const { combine, colorize, timestamp, printf } = format;
 
@@ -329,6 +327,20 @@ export const logger = createLogger({
 ```
 
 Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in `./back/app.log`.
+
+Add to .gitignore:
+
+_./back/.gitignore_
+
+```diff
+node_modules
+dist
+.env
+mongo-data
+globalConfig.json
+public
++ *.log
+```
 
 # ¿Con ganas de aprender Backend?
 
