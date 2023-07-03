@@ -1,1 +1,1 @@
-export * from './rollbar.transport';
+export * from './rollbar.transport.js';
