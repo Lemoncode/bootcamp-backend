@@ -84,11 +84,25 @@ Set `S3 Full Access` permissions:
 
 ![Set S3 Full Access permissions](./readme-resources/04-set-permissions.png)
 
-We will skip `step 3` (Add tags). It could be usefull for user information, like email or some info to indentify this user.
+We create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
+
+Let's select the new user and click on `Security credentials`
+
+![Clicks on security credentials tab](./readme-resources/05-security-crendentials-tab.png)
+
+Scroll down and click on `Create access key`:
+
+![Clicks on create access key button](./readme-resources/06-create-access-key.png)
+
+Select the use case:
+
+![Select the use case](./readme-resources/07-use-case.png)
+
+Skips the optional step (description tag).
 
 In the `final step`, Amazon provides us the `Access key ID` and `Secret access key`. We will store this credentials to use in the app:
 
-![IAM user crendetials](./readme-resources/05-copy-credentials.png)
+![IAM user crendetials](./readme-resources/08-copy-credentials.png)
 
 We have several ways to [setting credentials in node.js](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html) like using [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html) or [env variables](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html), we will implement the last one:
 
@@ -177,7 +191,6 @@ import {
 } from '@aws-sdk/client-s3';
 + import fs from 'fs';
 + import { Readable } from 'stream';
-+ import path from 'path';
 
 export const run = async () => {
   try {
@@ -192,9 +205,7 @@ export const run = async () => {
     console.log({ data });
 
 +   const image = data.Body as Readable;
-+   const destination = fs.createWriteStream(
-+     path.resolve(__dirname, './test.png')
-+   );
++   const destination = fs.createWriteStream('./test.png');
 +   image.pipe(destination);
   } catch (error) {
     console.error(error);
@@ -204,9 +215,10 @@ export const run = async () => {
 ```
 
 > [fs createWriteStream](https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_createwritestream_path_options)
+>
+> Check `back/test.png` file.
 
-
-Upload image, for example, copy inside `console-runners` the `99-resources/user-avatar-in-s3.png` image:
+Upload image, for example, copy inside `root path` the `99-resources/user-avatar-in-s3.png` image:
 
 _./back/src/console-runners/s3.runner.ts_
 
@@ -218,15 +230,15 @@ import {
 + PutObjectCommand,
 } from '@aws-sdk/client-s3';
 import fs from 'fs';
-import { Readable } from 'stream';
-import path from 'path';
+- import { Readable } from 'stream';
++ import path from 'path';
 
 export const run = async () => {
   try {
     const client = new S3Client({ region: 'eu-west-3' });
     const bucket = 'bucket-name';
 +   const fileName = 'user-avatar-in-s3.png';
-+   const imageStream = fs.createReadStream(path.resolve(__dirname, fileName));
++   const imageStream = fs.createReadStream(path.resolve('./', fileName));
 -   const command = new GetObjectCommand({
 +   const command = new PutObjectCommand({
       Bucket: bucket,
@@ -238,9 +250,7 @@ export const run = async () => {
     console.log({ data });
 
 -   const image = data.Body as Readable;
--   const destination = fs.createWriteStream(
--     path.resolve(__dirname, './test.png')
--   );
+-   const destination = fs.createWriteStream('./test.png');
 -   image.pipe(destination);
   } catch (error) {
     console.error(error);

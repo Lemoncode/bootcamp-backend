@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { bookRepository } from 'dals';
-import { authorizationMiddleware } from 'pods/security';
+import { bookRepository } from '#dals/index.js';
+import { authorizationMiddleware } from '#pods/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from './book.mappers';
+} from './book.mappers.js';
 
 export const booksApi = Router();
 
@@ -15,6 +15,7 @@ booksApi
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList(page, pageSize);
+
       res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
@@ -24,7 +25,11 @@ booksApi
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
-      res.send(mapBookFromModelToApi(book));
+      if (book) {
+        res.send(mapBookFromModelToApi(book));
+      } else {
+        res.sendStatus(404);
+      }
     } catch (error) {
       next(error);
     }

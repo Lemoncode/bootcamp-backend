@@ -1,5 +1,5 @@
-import * as calculator from './calculator';
-import * as business from './business/calculator.business';
+import * as calculator from './calculator.js';
+import * as business from './business/calculator.business.js';
 
 jest.mock('./business/calculator.business', () => ({
   isLowerThan: jest.fn().mockImplementation(() => {

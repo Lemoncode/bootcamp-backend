@@ -1,15 +1,15 @@
 import React from 'react';
-import { HashRouter, Switch, Route } from 'react-router-dom';
-import { LoginScene, UserScene } from 'scenes';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { LoginScene, UserScene } from '@/scenes';
 import { routes } from './routes';
 
-export const RouterComponent: React.FunctionComponent = () => {
+export const RouterComponent: React.FC = () => {
   return (
     <HashRouter>
-      <Switch>
-        <Route exact={true} path={routes.root} component={LoginScene} />
-        <Route exact={true} path={routes.user} component={UserScene} />
-      </Switch>
+      <Routes>
+        <Route path={routes.root} element={<LoginScene />} />
+        <Route path={routes.user} element={<UserScene />} />
+      </Routes>
     </HashRouter>
   );
 };

@@ -13,7 +13,12 @@ npm install
 
 ```
 
-Remove `node_modules`and move all files to back folder.
+Remove `node_modules` folder and move all files inside a new `back` folder.
+
+```bash
+cd back
+npm install
+```
 
 Middlewares allow us to extend express functionality as a unique global point of app's configuration and we could install existing third party middlewares for concepts like enable CORS, JWT tokens, Cookie parser, etc.
 
@@ -120,7 +125,8 @@ _./back/src/index.ts_
 import express from "express";
 + import cors from 'cors';
 import path from "path";
-import { booksApi } from "./books.api";
+import url from "url";
+import { booksApi } from "./books.api.js";
 
 const app = express();
 app.use(express.json());
@@ -150,7 +156,40 @@ npm start
 
 If we need for example send some headers or cookies with authorization token, we need to enable `credentials` mode:
 
-_./back/src/index.ts_
+```bash
+cd back/
+npm install cookie-parser --save
+npm install @types/cookie-parser --save-dev
+
+```
+
+Configure it:
+
+_./back/src/books.api.ts_
+
+```diff
+import express from "express";
++ import cookieParser from "cookie-parser";
+import cors from "cors";
+import path from "path";
+import url from "url";
+import { booksApi } from "./books.api.js";
+
+const app = express();
+app.use(express.json());
++ app.use(cookieParser());
+app.use(
+  cors({
+    methods: "GET",
+    origin: "http://localhost:8080",
+  })
+);
+...
+```
+
+Adding a `cross-site` cookie
+
+_./back/src/books.api.ts_
 
 ```diff
 ...
@@ -158,14 +197,29 @@ _./back/src/index.ts_
     const { id } = req.params;
     const bookId = Number(id);
     const book = await getBook(bookId);
-+   res.setHeader('Authorization', 'Basic my-user:my-password');
++   res.cookie("my-cookie", "my-token", {
++     sameSite: "none",
++     secure: true, // necessary for sameSite: "none"
++   });
     res.send(book);
   })
 ...
 ```
 
-> Check Reponse Headers in Chrome
-> [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+Run app:
+
+```bash
+cd back/
+npm start
+
+cd front/
+npm start
+
+```
+
+Now, we can see the header `Set-Cookie` in the `Response Headers` section but the browser does not includes this cookie in the storage.
+
+Let's update the frontend code:
 
 _./front/app.js_
 
@@ -198,7 +252,7 @@ npm start
 
 ```
 
-Enable on backend:
+As we see, this configuration has to be enable on backend too:
 
 _./back/src/index.ts_
 
@@ -207,6 +261,7 @@ _./back/src/index.ts_
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     methods: "GET",

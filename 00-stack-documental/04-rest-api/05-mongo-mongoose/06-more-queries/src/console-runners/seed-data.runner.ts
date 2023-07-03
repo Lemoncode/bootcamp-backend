@@ -1,10 +1,10 @@
-import { prompt } from 'inquirer';
-import { runCommand } from './console-runners.helpers';
+import inquirer from 'inquirer';
+import { runCommand } from './console-runners.helpers.js';
 
 const seedDataContainerPath = '/opt/app';
 
 export const run = async () => {
-  const { seedDataPath, containerName, dbName } = await prompt([
+  const { seedDataPath, containerName, dbName } = await inquirer.prompt([
     {
       name: 'seedDataPath',
       type: 'input',

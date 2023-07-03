@@ -1,4 +1,4 @@
-import { db } from 'core/servers';
-import { User } from './user.model';
+import { db } from '#core/servers/index.js';
+import { User } from './user.model.js';
 
 export const getUserContext = () => db?.collection<User>('users');

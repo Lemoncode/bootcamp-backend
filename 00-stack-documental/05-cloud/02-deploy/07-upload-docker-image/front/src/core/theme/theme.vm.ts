@@ -1,3 +1,3 @@
-import { Theme as DefaultTheme } from '@material-ui/core/styles';
+import { Theme as DefaultTheme } from '@mui/material/styles';
 
 export type Theme = DefaultTheme;

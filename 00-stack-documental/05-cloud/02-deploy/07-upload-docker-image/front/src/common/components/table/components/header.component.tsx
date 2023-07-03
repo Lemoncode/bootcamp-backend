@@ -1,8 +1,8 @@
 import React from 'react';
 import { cx } from '@emotion/css';
 import { HeaderGroup } from 'react-table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { CellHeaderProps } from '../table.vm';
 import { CellComponent } from './cell.component';
 import * as innerClasses from './header.styles';

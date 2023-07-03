@@ -8,12 +8,12 @@ We will start from `02-post`.
 
 Now, we can implement the route for update existing book. We could apply same concepts previously learned in `POST` and use it in `PUT` method:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-- const { getBookList, getBook, insertBook } = require("./mock-db");
-+ const { getBookList, getBook, insertBook, updateBook } = require("./mock-db");
+import http from "http";
+- import { getBookList, getBook, insertBook } from "./mock-db.mjs";
++ import { getBookList, getBook, insertBook, updateBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
 ...
@@ -52,11 +52,18 @@ const handleRequest = (req, res) => {
 
 ```
 
+Run app:
+
+```bash
+node index.mjs
+
+```
+
 The request:
 
 ```
 URL: http://localhost:3000/api/books/1
-
+METHOD: PUT
 BODY:
 {
     "title": "Choque de reyes Actualizado",

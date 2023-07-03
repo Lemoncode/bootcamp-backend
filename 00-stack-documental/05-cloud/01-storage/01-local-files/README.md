@@ -38,6 +38,8 @@ npm start
 
 ```
 
+> Remember run backend server with `API_MOCK=true`
+
 Open browser in `http://localhost:8080`
 
 Since we have users's images in `public` folder: `admin-avatar.png` and `user-avatar.png`, we will refactor `back` project like:
@@ -126,21 +128,28 @@ It means we have published the users's images in:
 - `http://localhost:3000/admin-avatar.png`
 - `http://localhost:3000/user-avatar.png`
 
-Since, we have configured the webpack proxy to avoid `CORS` configuration:
+Since, we have configured a proxy to avoid `CORS` configuration:
 
-_./front/config/webpack/dev.js_
+_./front/vite.config.js_
 
-```
-  proxy: {
-    '/api': 'http://localhost:3000',
-    '/': 'http://localhost:3000',
+```javascript
+...
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000',
+      '/images': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/images/, ''),
+      },
+    },
   },
 ```
 
-We have published the images in `8080` port, because webpack redirect it to `3000` one:
+We have published the images in `8080` port, because the proxy redirects it to `3000` one:
 
-- `http://localhost:8080/admin-avatar.png`
-- `http://localhost:8080/user-avatar.png`
+- `http://localhost:8080/images/admin-avatar.png`
+- `http://localhost:8080/images/user-avatar.png`
 
 # ¿Con ganas de aprender Backend?
 

@@ -38,7 +38,7 @@ const sendBookToArchive = async (book: Book) => {
 
 Update consumers:
 
-_./consumers/src/app.ts_
+_./consumers/src/index.ts_
 
 > We have to delete current exchange in RabbitMQ Server Management
 >
@@ -50,16 +50,6 @@ _./consumers/src/app.ts_
 ...
 
 const exchangeName = 'price-archive';
-
-const run = async () => {
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-  const channel = await messageBroker.channel(2);
-  channel.prefetch(1);
-- channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
-+ channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });
-  await priceArchiveConsumerOne(channel);
-  await priceArchiveConsumerTwo(channel);
-};
 
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
@@ -85,6 +75,28 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
       },
 ...
 
+await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+const channel = await messageBroker.channel(2);
+channel.prefetch(1);
+- channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
++ channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });
+await priceArchiveConsumerOne(channel);
+await priceArchiveConsumerTwo(channel);
+
+```
+
+Run POST method again:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
+{
+    "title": "My new book",
+    "releaseDate": "2022-09-10T00:00:00.000Z",
+    "author": "John Doe",
+    "price": 20
+}
 ```
 
 > Close `consumers` process to see how to queues are deleted

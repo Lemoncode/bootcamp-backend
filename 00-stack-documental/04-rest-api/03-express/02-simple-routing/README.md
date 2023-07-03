@@ -106,7 +106,7 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-+ import { getBookList } from "./mock-db";
++ import { getBookList } from "./mock-db.js";
 
 const app = express();
 
@@ -125,7 +125,18 @@ app.listen(3000, () => {
 
 ```
 
+> NOTE: [Mandatory file extensions](https://nodejs.org/api/esm.html#mandatory-file-extensions). We have to use `.js` even for TypeScript
+>
+> There is [--experimental-specifier-resolution](https://nodejs.org/api/all.html#all_cli_node_optionsoptions) flag to avoid the extension but it's experimental
+>
 > Note: express are setting content-type header for us.
+
+Run app:
+
+```bash
+npm start
+
+```
 
 How we could define the route for "Get book detail"?
 
@@ -133,8 +144,8 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-- import { getBookList } from "./mock-db";
-+ import { getBookList, getBook } from "./mock-db";
+- import { getBookList } from "./mock-db.js";
++ import { getBookList, getBook } from "./mock-db.js";
 
 const app = express();
 
@@ -157,6 +168,13 @@ app.get("/api/books", async (req, res) => {
 app.listen(3000, () => {
   console.log("Server ready at port 3000");
 });
+
+```
+
+Run app:
+
+```bash
+npm start
 
 ```
 

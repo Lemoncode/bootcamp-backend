@@ -24,10 +24,10 @@ So, we need mix the minimum `URLs` and `HTTP methods` to identify the resource a
 
 Create simple server as start up point:
 
-_./index.js_
+_./index.mjs_
 
 ```javascript
-const http = require("http");
+import http from "http";
 
 const handleRequest = (req, res) => {
   res.write("My awesome books portal");
@@ -44,7 +44,7 @@ server.listen(3000);
 Run app:
 
 ```bash
-node index
+node index.mjs
 
 ```
 
@@ -52,11 +52,11 @@ Normally, the same server that provides data, it's the same that expose frontend
 
 Let's define the first route to expose the current book list:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-+ const { getBookList } = require("./mock-db");
+import http from "http";
++ import { getBookList } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
 + const { url, method } = req;
@@ -73,9 +73,18 @@ const handleRequest = (req, res) => {
 
 ```
 
+> Now the [file extension is mandatory](https://nodejs.org/docs/latest-v18.x/api/esm.html#mandatory-file-extensions) on imports
+
+Run app:
+
+```bash
+node index.mjs
+
+```
+
 Why it fails? The payloads are always send it like [`string` or `Buffer`](https://nodejs.org/dist/latest/docs/api/http.html#responsewritechunk-encoding-callback). How could a frontend application parse to the desired format if we always send it by `string`?
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 ...
@@ -96,14 +105,21 @@ const handleRequest = (req, res) => {
 
 ```
 
+Run app:
+
+```bash
+node index.mjs
+
+```
+
 Let's implement now the next query to get the book details:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http = require("http");
-- const { getBookList } = require("./mock-db");
-+ const { getBookList, getBook } = require("./mock-db");
+import http from "http";
+- import { getBookList } from "./mock-db.mjs";
++ import { getBookList, getBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
   const { url, method } = req;
@@ -129,6 +145,13 @@ const handleRequest = (req, res) => {
 ```
 
 > [Regex match method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+
+Run app:
+
+```bash
+node index.mjs
+
+```
 
 # ¿Con ganas de aprender Backend?
 

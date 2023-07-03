@@ -5,6 +5,7 @@ interface BaseRoutes {
   bookList: string;
   createBook: string;
   editBook: string;
+  user: string;
 }
 
 const baseRoutes: BaseRoutes = {
@@ -12,6 +13,7 @@ const baseRoutes: BaseRoutes = {
   bookList: '/book-list',
   createBook: '/book-list/create',
   editBook: '/book-list/:id',
+  user: '/user',
 };
 
 type SwitchRoutes = BaseRoutes;
@@ -20,8 +22,12 @@ export const switchRoutes: SwitchRoutes = {
   ...baseRoutes,
 };
 
+type EditParams = {
+  id: string;
+};
+
 interface LinkRoutes extends Omit<BaseRoutes, 'editBook'> {
-  editBook: ({ id: string }) => string;
+  editBook: (editParams: EditParams) => string;
 }
 
 export const linkRoutes: LinkRoutes = {

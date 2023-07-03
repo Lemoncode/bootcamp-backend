@@ -13,21 +13,19 @@ npm install
 
 ```
 
-Clean `app` file:
+Clean `index` file:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
-import express from "express";
-import path from "path";
-- import { createRestApiServer, connectToDBServer, db } from "core/servers";
-+ import { createRestApiServer, connectToDBServer } from "core/servers";
-import { envConstants } from "core/constants";
+...
 import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from "common/middlewares";
-import { booksApi } from "pods/book";
+  createRestApiServer,
+  connectToDBServer,
+- db,
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { booksApi } from '#pods/book/index.js';
 ...
 
 restApiServer.listen(envConstants.PORT, async () => {
@@ -66,9 +64,9 @@ _./src/dals/book/repositories/book.mock-repository.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { db } from "../../mock-data";
+import { BookRepository } from "./book.repository.js";
+import { Book } from "../book.model.js";
+import { db } from "../../mock-data.js";
 
 const insertBook = (book: Book) => {
 - const id = (db.books.length + 1).toString();
@@ -114,7 +112,7 @@ _./src/dals/mock-data.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
-import { Book } from "./book";
+import { Book } from "./book/index.js";
 
 export interface DB {
   books: Book[];
@@ -182,8 +180,8 @@ _./src/pods/book/book.mappers.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
-import * as model from "dals";
-import * as apiModel from "./book.api-model";
+import * as model from "#dals/index.js";
+import * as apiModel from "./book.api-model.js";
 
 export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
 - id: book.id,
@@ -225,6 +223,22 @@ CORS_METHODS=GET,POST,PUT,DELETE
 
 Check mock queries `Get book list` and `Update book`.
 
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
+```
+
+```
+URL: http://localhost:3000/api/books/<object-id>
+METHOD: PUT
+BODY:
+{
+    "title": "Choque de reyes Actualizado",
+    "releaseDate": "2022-07-21T00:00:00.000Z",
+    "author": "Otro autor"
+}
+```
+
 Update env variable `API_MOCK=false` and running:
 
 _./.env_
@@ -246,9 +260,9 @@ Implement `get book list`:
 _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
-+ import { db } from 'core/servers';
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
++ import { db } from '#core/servers/index.js';
+import { BookRepository } from "./book.repository.js";
+import { Book } from "../book.model.js";
 
 export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
@@ -257,6 +271,13 @@ export const dbRepository: BookRepository = {
   },
 ...
 
+```
+
+Try url:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
 ```
 
 Implement `insert new book`:
@@ -276,9 +297,12 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
 ```
 
-> Body
+Try url:
 
 ```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
 {
     "title": "El señor de los anillos",
     "releaseDate": "1954-07-29T00:00:00.000Z",
@@ -310,6 +334,16 @@ getBookList: async (page?: number, pageSize?: number) => {
 > [limit](https://www.mongodb.com/docs/manual/reference/method/cursor.limit/)
 > [Limit Nodejs API](https://mongodb.github.io/node-mongodb-native/4.8/classes/FindCursor.html#limit)
 
+Try url:
+
+```
+URLs:
+http://localhost:3000/api/books?page=1&pageSize=5
+http://localhost:3000/api/books?page=2&pageSize=5
+
+METHOD: GET
+```
+
 Implement `update book`:
 
 _./src/dals/book/repositories/book.db-repository.ts_
@@ -336,16 +370,29 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ```
 
 > NOTE: Show `updateOne` method.
-> In the Mongo v4 does not exist `returnDocument`, but it does in v5.
+> In the Mongo v4 does not exist `returnDocument`, but it does in >v5.
 > [Mongo Console docs](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/) differs from [Mongo Driver docs](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate)
+
+Try url:
+
+```
+URL: http://localhost:3000/api/books/<objet-id>
+METHOD: PUT
+BODY:
+{
+    "title": "Choque de reyes Actualizado",
+    "releaseDate": "2022-07-21T00:00:00.000Z",
+    "author": "Otro autor"
+}
+```
 
 In order to avoid repeat `db.collection<Book>("books")` we can move to a file and use it:
 
 _./src/dals/book/book.context.ts_
 
 ```typescript
-import { db } from 'core/servers';
-import { Book } from './book.model';
+import { db } from '#core/servers/index.js';
+import { Book } from './book.model.js';
 
 export const getBookContext = () => db?.collection<Book>('books');
 
@@ -356,10 +403,10 @@ Update `db-repository`:
 _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
-- import { db } from 'core/servers';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-+ import { getBookContext } from '../book.context';
+- import { db } from '#core/servers/index.js';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
++ import { getBookContext } from '../book.context.js';
 
 export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
@@ -396,9 +443,9 @@ _./src/dals/book/repositories/book.db-repository.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
-import { BookRepository } from "./book.repository";
-import { Book } from "../book.model";
-import { getBookContext } from '../book.context';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+import { getBookContext } from '../book.context.js';
 
 ...
   getBook: async (id: string) => {
@@ -409,6 +456,13 @@ import { getBookContext } from '../book.context';
   },
 ...
 
+```
+
+Try url:
+
+```
+URL: http://localhost:3000/api/books/<objet-id>
+METHOD: GET
 ```
 
 Implement `delete book`:
@@ -427,11 +481,32 @@ _./src/dals/book/repositories/book.db-repository.ts_
 
 ```
 
+Try url:
+
+```
+URL: http://localhost:3000/api/books/<objet-id>
+METHOD: DELETE
+```
+
 Update `rest-api` to update response error:
 
 _./src/pods/book/book.rest-api.ts_
 
 ```diff
+...
+  .get('/:id', async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const book = await bookRepository.getBook(id);
++     if (book) {
+        res.send(mapBookFromModelToApi(book));
++     } else {
++       res.sendStatus(404);
++     }
+    } catch (error) {
+      next(error);
+    }
+  })
 ...
   .put('/:id', async (req, res, next) => {
     try {

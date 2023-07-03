@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   useTable,
-  usePagination,
   TableInstance,
   UsePaginationInstanceProps,
 } from 'react-table';
@@ -25,7 +24,7 @@ type TableProps = TableInstance & UsePaginationInstanceProps<{}>;
 interface Props<T = {}> {
   columns: Column[];
   rows: T[];
-  rowRenderer: (props: RowRendererProps<T>) => React.ReactElement<HTMLElement>;
+  rowRenderer: (props: RowRendererProps<T>) => React.ReactNode
   onCreate?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;

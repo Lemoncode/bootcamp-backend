@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { Book } from './book';
-import { User } from './user';
+import { Book } from './book/index.js';
+import { User } from './user/index.js';
 
 export interface DB {
   users: User[];

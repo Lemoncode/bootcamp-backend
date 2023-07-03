@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Book } from './book';
+import { Book } from './book/index.js';
 
 export interface DB {
   books: Book[];

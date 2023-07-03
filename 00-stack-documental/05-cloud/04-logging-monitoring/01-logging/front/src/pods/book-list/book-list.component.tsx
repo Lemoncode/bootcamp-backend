@@ -1,5 +1,5 @@
 import React from 'react';
-import { TableContainer } from 'common/components';
+import { TableContainer } from '@/common/components';
 import { Book } from './book-list.vm';
 import { BookRowComponent } from './components';
 

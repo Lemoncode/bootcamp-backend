@@ -12,7 +12,7 @@ So, we will analyze the current app and check which errors we could have to answ
 
 Let's start with [status code 404](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404):
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 ...
@@ -27,9 +27,23 @@ _./index.js_
 
 ```
 
+Run app:
+
+```bash
+node index.mjs
+
+```
+
+The request:
+
+```
+URL: http://localhost:3000/api/invalid-route
+METHOD: GET
+```
+
 If there is any error to send a request, for example, there is a file too large, we could send [status code 400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400):
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 ...
@@ -62,7 +76,7 @@ _./index.js_
 
 For server errors, we could see the [status code 500](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500) which it's for not handled errors
 
-_./index.js_
+_./index.mjs_
 
 ```diff
 ...

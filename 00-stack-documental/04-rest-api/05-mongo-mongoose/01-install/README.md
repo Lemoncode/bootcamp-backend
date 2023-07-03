@@ -22,7 +22,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:5.0.9
+    image: mongo:6
     ports:
       - '27017:27017'
 
@@ -40,10 +40,10 @@ _./package.json_
   "scripts": {
 -   "start": "run-p -l type-check:watch start:dev",
 +   "start": "run-p -l type-check:watch start:dev start:local-db",
-    "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "start:console-runners": "npm run type-check && babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
+    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+    "start:console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
 +   "start:local-db": "docker-compose up -d",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
 ...
@@ -60,13 +60,13 @@ We could connect to this container using Docker o Mongo Compass:
 ```bash
 docker ps
 docker exec -it book-store-db sh
-mongo
+mongosh
 show dbs
 use my-db
 show collections
-db.clients.insert({ name: "Client 1" })
+db.clients.insertOne({ name: "Client 1" })
 show collections
-db.clients.find().pretty()
+db.clients.find()
 exit
 exit
 ```
@@ -85,6 +85,11 @@ npm run start:local-db
 ```
 
 Let's add a Docker `volume`:
+
+```bash
+docker-compose down
+
+```
 
 _./docker-compose.yml_
 
@@ -105,15 +110,30 @@ services:
 
 ```
 
+> If you are using linux, you have to create the `mongo-data` folder previously.
+>
 > The short hand but could have some issues in linux or mac
->  volumes:
->    - './mongo-data:/data/db'
->  volumes:
->    mongo-data:
+>
+
+```
+  volumes:
+    - './mongo-data:/data/db'
+  volumes:
+    mongo-data:
+```
 
 ```bash
 npm run start:local-db
+
+```
+
+Create some data using `Mongo Compass`.
+
+```bash
 docker-compose down
+
+npm run start:local-db
+
 ```
 
 Let's ignore the `volume` folder:
@@ -122,6 +142,7 @@ _./.gitignore_
 
 ```diff
 node_modules
+dist
 .env
 + mongo-data
 

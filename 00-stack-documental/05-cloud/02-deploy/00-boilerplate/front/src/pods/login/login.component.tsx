@@ -6,7 +6,7 @@ interface Props {
   onLogin: (user: User) => void;
 }
 
-export const LoginComponent: React.FunctionComponent<Props> = (props) => {
+export const LoginComponent: React.FC<Props> = (props) => {
   const { onLogin } = props;
   return (
     <CardComponent title="Bienvenido">

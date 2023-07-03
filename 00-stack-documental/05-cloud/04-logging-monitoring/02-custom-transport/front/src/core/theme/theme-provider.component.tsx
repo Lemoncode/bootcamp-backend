@@ -1,18 +1,22 @@
 import React from 'react';
-import StylesProvider from '@material-ui/styles/StylesProvider';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import StyledEngineProvider from '@mui/material/StyledEngineProvider';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
+import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from './theme';
 
-export const ThemeProviderComponent: React.FunctionComponent = (props) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const ThemeProviderComponent: React.FC<Props> = (props) => {
   const { children } = props;
 
   return (
-    <StylesProvider injectFirst>
+    <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
       </ThemeProvider>
-    </StylesProvider>
+    </StyledEngineProvider>
   );
 };

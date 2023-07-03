@@ -44,24 +44,26 @@ Add barrel file:
 _./src/common/middlewares/index.ts_
 
 ```typescript
-export * from "./logger.middlewares";
+export * from "./logger.middlewares.js";
 
 ```
 
-Update `app` file:
+Update `index` file:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
+import "#core/load-env.js";
 import express from "express";
 import path from "path";
-import { createRestApiServer } from "core/servers";
-import { envConstants } from "core/constants";
+import url from "url";
 + import {
 +   logRequestMiddleware,
 +   logErrorRequestMiddleware,
-+ } from "common/middlewares";
-import { booksApi } from "pods/book";
++ } from "#common/middlewares/index.js";
+import { createRestApiServer } from "#core/servers/index.js";
+import { envConstants } from "#core/constants/index.js";
+import { booksApi } from "#pods/book/index.js";
 
 ...
 

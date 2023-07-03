@@ -24,25 +24,23 @@ Let's create the `index` file:
 _./src/console-runners/index.ts_
 
 ```typescript
-import { prompt } from "inquirer";
+import inquier from "inquirer";
 
-(async () => {
-  let exit = false;
-  while (!exit) {
-    const answer = await prompt({
-      name: "consoleRunner",
-      type: "list",
-      message: "Which console-runner do you want to run?",
-      choices: ["create-admin", "exit"],
-    });
+let exit = false;
+while (!exit) {
+  const answer = await inquier.prompt({
+    name: "consoleRunner",
+    type: "list",
+    message: "Which console-runner do you want to run?",
+    choices: ["create-admin", "exit"],
+  });
 
-    if (answer.consoleRunner !== "exit") {
-      console.log("Create admin runner");
-    } else {
-      exit = true;
-    }
+  if (answer.consoleRunner !== "exit") {
+    console.log("Create admin runner");
+  } else {
+    exit = true;
   }
-})();
+}
 
 ```
 
@@ -56,9 +54,9 @@ _./package.json_
 ...
   "scripts": {
     "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-+   "start:console-runners": "npm run type-check && babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
-    "type-check": "tsc --noEmit",
+    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
++   "start:console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
+    "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
 ...
@@ -70,25 +68,14 @@ Running it:
 npm run start:console-runners
 ```
 
-> If fails because the [inquirer@9](https://github.com/SBoudrias/Inquirer.js/releases/tag/inquirer%409.0.0) supports native ES Modules.
-> We will install the 8.x version instead of migrate the whole project
-
-```bash
-npm install inquirer@8 --save-dev
-```
-
-Running it again:
-
-```bash
-npm run start:console-runners
-```
+> If your project does not supports native ES Modules for NodeJS you have to  install the 8.x version.
 
 We can create a file for each `runner`:
 
 _./src/console-runners/create-admin.runner.ts_
 
 ```typescript
-import { prompt, QuestionCollection } from "inquirer";
+import inquirer, { QuestionCollection } from "inquirer";
 
 const passwordQuestions: QuestionCollection = [
   {
@@ -107,16 +94,16 @@ const passwordQuestions: QuestionCollection = [
 
 export const run = async () => {
   // TODO: Connect to DB
-  const { user } = await prompt({
+  const { user } = await inquirer.prompt({
     name: "user",
     type: "input",
     message: "User name:",
   });
 
-  let passwordAnswers = await prompt(passwordQuestions);
+  let passwordAnswers = await inquirer.prompt(passwordQuestions);
   while (passwordAnswers.password !== passwordAnswers.confirmPassword) {
     console.error("Password does not match, fill it again");
-    passwordAnswers = await prompt(passwordQuestions);
+    passwordAnswers = await inquirer.prompt(passwordQuestions);
   }
 
   // TODO: Insert into DB and disconnect it
@@ -130,29 +117,29 @@ Update main file:
 _./src/console-runners/index.ts_
 
 ```diff
-import { prompt } from "inquirer";
+import inquier from "inquirer";
 
-(async () => {
-  let exit = false;
-  while (!exit) {
-    const answer = await prompt({
-      name: "consoleRunner",
-      type: "list",
-      message: "Which console-runner do you want to run?",
-      choices: ["create-admin", "exit"],
-    });
+let exit = false;
+while (!exit) {
+  const answer = await inquier.prompt({
+    name: "consoleRunner",
+    type: "list",
+    message: "Which console-runner do you want to run?",
+    choices: ["create-admin", "exit"],
+  });
 
-    if (answer.consoleRunner !== "exit") {
--     console.log("Create admin runner");
-+     const { run } = require(`./${answer.consoleRunner}.runner`);
-+     await run();
-    } else {
-      exit = true;
-    }
+  if (answer.consoleRunner !== "exit") {
+-   console.log("Create admin runner");
++   const { run } = await import(`./${answer.consoleRunner}.runner.js`);
++   await run();
+  } else {
+    exit = true;
   }
-})();
+}
 
 ```
+
+> [Dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)
 
 # ¿Con ganas de aprender Backend?
 

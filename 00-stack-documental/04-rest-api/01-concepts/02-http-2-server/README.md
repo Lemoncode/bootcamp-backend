@@ -8,12 +8,12 @@ We will start from `01-http-server`.
 
 Let's use `http2` built-in package from nodejs:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-- const http = require("http");
-+ const http2 = require("http2");
-const fs = require("fs");
+- import http from "http";
++ import http2 from "http2";
+import fs from "fs";
 
 const handleRequest = (req, res) => {
   if (req.url === "/") {
@@ -35,7 +35,7 @@ server.listen(3000);
 Run app:
 
 ```bash
-node index
+node index.mjs
 
 ```
 
@@ -59,11 +59,11 @@ Copy into `certificate` folder.
 
 Update server:
 
-_./index.js_
+_./index.mjs_
 
 ```diff
-const http2 = require("http2");
-const fs = require("fs");
+import http2 from "http2";
+import fs from "fs";
 
 + const serverOptions = {
 +   key: fs.readFileSync("certificate/key.pem"),
@@ -88,6 +88,8 @@ server.listen(3000);
 ```
 
 Open `https://localhost:3000`
+
+> Open with SECURE PROTOCOL: https
 
 # ¿Con ganas de aprender Backend?
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { cx } from '@emotion/css';
 import { TableProps, HeaderGroup, Row } from 'react-table';
-import AddIcon from '@material-ui/icons/Add';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import Typography from '@material-ui/core/Typography';
+import AddIcon from '@mui/icons-material/Add';
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import Typography from '@mui/material/Typography';
 import { ConfirmationDialogComponent } from '../confirmation-dialog';
 import { IconButtonComponent } from '../icon-button';
 import { HeaderComponent, BodyComponent } from './components';
@@ -23,7 +23,7 @@ interface Props<T extends object = {}> {
   cellHeaderPropsList: CellHeaderProps[];
   rows: Row<T>[];
   prepareRow: (row: Row<T>) => void;
-  rowRenderer: (props: RowRendererProps<T>) => React.ReactElement<HTMLElement>;
+  rowRenderer: (props: RowRendererProps<T>) => React.ReactNode
   labels: TableLabelProps;
   onCreate?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onDelete?: () => void;

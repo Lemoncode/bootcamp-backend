@@ -1,25 +1,26 @@
-import { Router } from 'express';
-import { bookRepository } from 'dals';
+import { Router } from "express";
+import { bookRepository } from "#dals/index.js";
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from './book.mappers';
+} from "./book.mappers.js";
 
 export const booksApi = Router();
 
 booksApi
-  .get('/', async (req, res, next) => {
+  .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList(page, pageSize);
+
       res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
   })
-  .get('/:id', async (req, res, next) => {
+  .get("/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
@@ -28,7 +29,7 @@ booksApi
       next(error);
     }
   })
-  .post('/', async (req, res, next) => {
+  .post("/", async (req, res, next) => {
     try {
       const book = mapBookFromApiToModel(req.body);
       const newBook = await bookRepository.saveBook(book);
@@ -37,7 +38,7 @@ booksApi
       next(error);
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put("/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
       const book = mapBookFromApiToModel({ ...req.body, id });
@@ -47,7 +48,7 @@ booksApi
       next(error);
     }
   })
-  .delete('/:id', async (req, res, next) => {
+  .delete("/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
       await bookRepository.deleteBook(id);
