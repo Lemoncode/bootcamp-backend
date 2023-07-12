@@ -227,7 +227,7 @@ Add barrel file:
 _./src/pods/book/graphql/index.ts_
 
 ```javascript
-export * from './book.resolver.js';
+export * from './book.resolvers.js';
 export * from './book.schema.js';
 
 ```
