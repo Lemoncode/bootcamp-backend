@@ -1,12 +1,15 @@
-import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express';
+import { Express } from 'express';
+import { createHandler, HandlerOptions } from 'graphql-http/lib/use/express';
+import playground from 'graphql-playground-middleware-express';
+const graphqlPlayground = playground.default;
+import { envConstants } from '#core/constants/index.js';
 
-export const createGraphQLServer = async (
-  expressApp,
-  config: ApolloServerExpressConfig
+export const createGraphqlServer = (
+  expressApp: Express,
+  options: HandlerOptions
 ) => {
-  const graphqlServer = new ApolloServer(config);
-  await graphqlServer.start();
-
-  graphqlServer.applyMiddleware({ app: expressApp });
-  return graphqlServer;
+  expressApp.use('/graphql', createHandler(options));
+  if (!envConstants.isProduction) {
+    expressApp.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
+  }
 };

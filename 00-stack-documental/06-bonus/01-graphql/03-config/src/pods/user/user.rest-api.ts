@@ -1,13 +1,14 @@
 import { Router } from 'express';
-import { userRepository } from 'dals';
-import { mapUserFromModelToApi } from './user.mappers';
+import { userRepository } from '#dals/index.js';
+import { mapUserFromModelToApi } from './user.mappers.js';
 
 export const userApi = Router();
 
 userApi.get('/', async (req, res, next) => {
   try {
     const user = await userRepository.getUserById(req.userSession.id);
-    res.send(mapUserFromModelToApi(user));
+    const apiUser = await mapUserFromModelToApi(user);
+    res.send(apiUser);
   } catch (error) {
     next(error);
   }

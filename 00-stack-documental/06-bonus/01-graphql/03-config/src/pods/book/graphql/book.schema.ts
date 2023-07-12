@@ -1,6 +1,6 @@
-import { gql } from 'apollo-server-express';
+import { buildSchema as graphql } from 'graphql';
 
-export const bookTypeDefs = gql`
+export const bookSchema = graphql(`
   type Book {
     id: String!
     title: String!
@@ -11,4 +11,4 @@ export const bookTypeDefs = gql`
   type Query {
     books: [Book!]!
   }
-`;
+`);

@@ -1,2 +1,2 @@
-export * from './book.rest-api';
-export * from './graphql';
+export * from './book.rest-api.js';
+export * from './graphql/index.js';

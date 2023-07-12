@@ -1,24 +1,31 @@
 import { ObjectId } from 'mongodb';
-import { bookContext } from '../book.context';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+import { getBookContext } from '../book.context.js';
 
 export const dbRepository: BookRepository = {
-  getBookList: async () => await bookContext.find().lean(),
-  getBook: async (id: string) =>
-    await bookContext.findOne({ _id: new ObjectId(id) }).lean(),
-  saveBook: async (book: Book) =>
-    await bookContext
-      .findOneAndUpdate(
-        {
-          _id: book._id,
-        },
-        { $set: book },
-        { upsert: true, new: true }
-      )
-      .lean(),
+  getBookList: async (page?: number, pageSize?: number) => {
+    const skip = Boolean(page) ? (page - 1) * pageSize : 0;
+    const limit = pageSize ?? 0;
+    return await getBookContext().find().skip(skip).limit(limit).toArray();
+  },
+  getBook: async (id: string) => {
+    return await getBookContext().findOne({
+      _id: new ObjectId(id),
+    });
+  },
+  saveBook: async (book: Book) => {
+    const { value } = await getBookContext().findOneAndUpdate(
+      {
+        _id: book._id,
+      },
+      { $set: book },
+      { upsert: true, returnDocument: 'after' }
+    );
+    return value;
+  },
   deleteBook: async (id: string) => {
-    const { deletedCount } = await bookContext.deleteOne({
+    const { deletedCount } = await getBookContext().deleteOne({
       _id: new ObjectId(id),
     });
     return deletedCount === 1;
