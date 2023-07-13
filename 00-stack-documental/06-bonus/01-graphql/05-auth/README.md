@@ -480,6 +480,8 @@ _./src/pods/book/graphql/book.schema.ts_
 - export const bookSchema = graphql(`
 + export const bookSchema = securityDirectives(
 +   graphql(`
++     directive @isAuthenticated on FIELD_DEFINITION
+
       type Book {
         id: String!
         title: String!
