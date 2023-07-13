@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-import { logger } from 'core/logger';
-import { UserSession } from 'common-app/models';
-import { userRepository } from 'dals';
-import { authenticationMiddleware } from './security.middlewares';
+import { UserSession } from '#common-app/models/index.js';
+import { logger } from '#core/logger/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { userRepository } from '#dals/index.js';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 export const securityApi = Router();
 

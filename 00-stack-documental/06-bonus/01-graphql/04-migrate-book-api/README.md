@@ -15,95 +15,45 @@ npm install
 
 Let's continue with book GraphQL implementation, this time we will add the pagination params:
 
-_./src/pods/book/graphql/book.type-defs.ts_
+_./src/pods/book/graphql/book.schema.ts_
 
 ```diff
-import { gql } from 'apollo-server-express';
-
-export const bookTypeDefs = gql`
-  type Book {
-    id: String!
-    title: String!
-    releaseDate: String!
-    author: String!
-  }
-
+...
   type Query {
 -   books: [Book!]!
 +   books(page: Int, pageSize: Int): [Book!]!
   }
-`;
+`);
 
 ```
 
 _./src/pods/book/graphql/book.resolvers.ts_
 
 ```diff
-+ import { GraphQLFieldResolver } from 'graphql';
-import { bookRepository } from 'dals';
-import { Book } from '../book.api-model';
-import { mapBookListFromModelToApi } from '../book.mappers';
-+ import { paginateBookList } from '../book.helpers';
++ import { GraphQLResolveInfo } from 'graphql';
+import { bookRepository } from '#dals/index.js';
+import { Book } from '../book.api-model.js';
+import { mapBookListFromModelToApi } from '../book.mappers.js';
+
++ // TODO: Move to common/models/graphql.model.ts
++ // Pending to add Context type
++ type GraphQLResolver<Args, Context, ReturnType> = (
++   args: Args,
++   context: Context,
++   info: GraphQLResolveInfo
++ ) => Promise<ReturnType>;
 
 + interface BookResolvers {
-+   Query: {
-+     books: GraphQLFieldResolver<any, any, { page?: number; pageSize?: number }>;
-+   };
++   books: GraphQLResolver<{ page?: number; pageSize?: number }, unknown, Book[]>;
 + }
 
 - export const bookResolvers = {
 + export const bookResolvers: BookResolvers = {
-  Query: {
--   books: async (): Promise<Book[]> => {
-+   books: async (_, { page, pageSize }): Promise<Book[]> => {
-      const bookList = await bookRepository.getBookList();
--     return mapBookListFromModelToApi(bookList);
-+     const paginatedBookList = paginateBookList(bookList, page, pageSize);
-+     return mapBookListFromModelToApi(paginatedBookList);
-    },
-  },
-};
-
-```
-
-We could use this official types but it's somewhat limited because we cannot change the returned type:
-
-_./src/pods/book/graphql/book.resolvers.ts_
-
-```diff
-- import { GraphQLFieldResolver } from 'graphql';
-+ import { GraphQLResolveInfo } from 'graphql';
-+ import { IResolvers } from '@graphql-tools/utils';
-import { bookRepository } from 'dals';
-import { Book } from '../book.api-model';
-import { mapBookListFromModelToApi } from '../book.mappers';
-import { paginateBookList } from '../book.helpers';
-
-+ // TODO: Move to common/models/graphql.model.ts
-+ // Add more types when needed
-+ type GraphQLResolver<ReturnedType, Args = any> = (
-+   rootObject: any,
-+   args: Args,
-+   context: any,
-+   info: GraphQLResolveInfo
-+ ) => Promise<ReturnedType>;
-
-- interface BookResolvers {
-+ interface BookResolvers extends IResolvers {
-  Query: {
--   books: GraphQLFieldResolver<any, any, { page?: number; pageSize?: number }>;
-+   books: GraphQLResolver<Book[], { page?: number; pageSize?: number }>;
-  };
-}
-
-export const bookResolvers: BookResolvers = {
-  Query: {
--   books: async (_, { page, pageSize }): Promise<Book[]> => {
-+   books: async (_, { page, pageSize }) => {
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      return mapBookListFromModelToApi(paginatedBookList);
-    },
+- books: async (): Promise<Book[]> => {
++ books: async ({ page, pageSize }) => {
+-   const bookList = await bookRepository.getBookList();
++   const bookList = await bookRepository.getBookList(page, pageSize);
+    return mapBookListFromModelToApi(bookList);
   },
 };
 
@@ -126,7 +76,6 @@ query {
     author
   }
 }
-
 ```
 
 ```graphql
@@ -138,24 +87,14 @@ query {
     author
   }
 }
-
 ```
 
 Let's define get book details:
 
-_./src/pods/book/graphql/book.type-defs.ts_
+_./src/pods/book/graphql/book.schema.ts_
 
 ```diff
-import { gql } from 'apollo-server-express';
-
-export const bookTypeDefs = gql`
-  type Book {
-    id: String!
-    title: String!
-    releaseDate: String!
-    author: String!
-  }
-
+...
   type Query {
     books(page: Int, pageSize: Int): [Book!]!
 +   book(id: ID!): Book!
@@ -168,34 +107,30 @@ _./src/pods/book/graphql/book.resolvers.ts_
 
 ```diff
 ...
+
 import {
   mapBookListFromModelToApi,
 + mapBookFromModelToApi,
-} from '../book.mappers';
-import { paginateBookList } from '../book.helpers';
+} from '../book.mappers.js';
 
 ...
 
-interface BookResolvers extends IResolvers {
-  Query: {
-    books: GraphQLResolver<Book[], { page?: number; pageSize?: number }>;
-+   book: GraphQLResolver<Book, { id: string }>;
-  };
+interface BookResolvers {
+  books: GraphQLResolver<{ page?: number; pageSize?: number }, unknown, Book[]>;
++ book: GraphQLResolver<{ id: string }, unknown, Book>;
 }
 
 export const bookResolvers: BookResolvers = {
-  Query: {
-    books: async (_, { page, pageSize }) => {
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      return mapBookListFromModelToApi(paginatedBookList);
-    },
-+   book: async (_, { id }) => {
-+     const book = await bookRepository.getBook(id);
-+     return mapBookFromModelToApi(book);
-+   },
+  books: async ({ page, pageSize }) => {
+    const bookList = await bookRepository.getBookList(page, pageSize);
+    return mapBookListFromModelToApi(bookList);
   },
++ book: async ({ id }) => {
++   const book = await bookRepository.getBook(id);
++   return mapBookFromModelToApi(book);
++ },
 };
+
 
 ```
 
@@ -210,12 +145,11 @@ query {
     author
   }
 }
-
 ```
 
 Let's implement `saveBook` method:
 
-_./src/pods/book/graphql/book.type-defs.ts_
+_./src/pods/book/graphql/book.schema.ts_
 
 ```diff
 ...
@@ -242,56 +176,36 @@ _./src/pods/book/graphql/book.type-defs.ts_
 _./src/pods/book/graphql/book.resolvers.ts_
 
 ```diff
-import { GraphQLResolveInfo } from 'graphql';
-import { IResolvers } from '@graphql-tools/utils';
-import { bookRepository } from 'dals';
-import { Book } from '../book.api-model';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
 + mapBookFromApiToModel,
-} from '../book.mappers';
-import { paginateBookList } from '../book.helpers';
+} from '../book.mappers.js';
 
 ...
 
-interface BookResolvers extends IResolvers {
-  Query: {
-    books: GraphQLResolver<Book[], { page?: number; pageSize?: number }>;
-    book: GraphQLResolver<Book, { id: string }>;
-  };
-+ Mutation: {
-+   saveBook: GraphQLResolver<Book, { book: Book }>;
-+ };
+interface BookResolvers {
+  books: GraphQLResolver<{ page?: number; pageSize?: number }, unknown, Book[]>;
+  book: GraphQLResolver<{ id: string }, unknown, Book>;
++ saveBook: GraphQLResolver<{ book: Book }, unknown, Book>;
 }
 
+
 export const bookResolvers: BookResolvers = {
-  Query: {
-    books: async (_, { page, pageSize }) => {
-      const bookList = await bookRepository.getBookList();
-      const paginatedBookList = paginateBookList(bookList, page, pageSize);
-      return mapBookListFromModelToApi(paginatedBookList);
-    },
-    book: async (_, { id }) => {
-      const book = await bookRepository.getBook(id);
-      return mapBookFromModelToApi(book);
-    },
-  },
-+ Mutation: {
-+   saveBook: async (_, { book }) => {
-+     const modelBook = mapBookFromApiToModel(book);
-+     const newBook = await bookRepository.saveBook(modelBook);
-+     return mapBookFromModelToApi(newBook);
-+   },
+  ...
++ saveBook: async ({ book }) => {
++   const bookToSave = mapBookFromApiToModel(book);
++   const savedBook = await bookRepository.saveBook(bookToSave);
++   return mapBookFromModelToApi(savedBook);
 + },
 };
 
 ```
 
-Example insert query, we could use a [variable](https://graphql.org/learn/queries/#variables) here:
+Example insert mutation, we could use a [variable](https://graphql.org/learn/queries/#variables) here:
 
 ```graphql
-mutation($book: BookInput!) {
+mutation ($book: BookInput!) {
   saveBook(book: $book) {
     id
     title
@@ -299,7 +213,6 @@ mutation($book: BookInput!) {
     author
   }
 }
-
 ```
 
 Variable
@@ -314,10 +227,10 @@ Variable
 }
 ```
 
-Example update query:
+Example update mutation:
 
 ```graphql
-mutation($book: BookInput!) {
+mutation ($book: BookInput!) {
   saveBook(book: $book) {
     id
     title
@@ -325,7 +238,6 @@ mutation($book: BookInput!) {
     author
   }
 }
-
 ```
 
 Variable
@@ -333,21 +245,19 @@ Variable
 ```json
 {
   "book": {
-    "title": "my-book",
+    "id": "<id-value>",
+    "title": "Updated title",
     "releaseDate": "2021-07-14T12:30:00",
-    "author": "my-author"
+    "author": "Updated author"
   }
 }
 ```
 
 The delete is another `mutation` operation, where we could send an error if we could not find the resource:
 
-_./src/pods/book/graphql/book.type-defs.ts_
+_./src/pods/book/graphql/book.schema.ts_
 
 ```diff
-+ import { UserInputError } from 'apollo-server-express';
-import { GraphQLResolveInfo } from 'graphql';
-
 ...
 
   type Mutation {
@@ -361,46 +271,73 @@ import { GraphQLResolveInfo } from 'graphql';
 _./src/pods/book/graphql/book.resolvers.ts_
 
 ```diff
-+ import { UserInputError } from 'apollo-server-express';
 import { GraphQLResolveInfo } from 'graphql';
-import { IResolvers } from '@graphql-tools/utils';
-+ import { logger } from 'core/logger';
++ import { logger } from '#core/logger/index.js';
+import { bookRepository } from '#dals/index.js';
 ...
 
-interface BookResolvers extends IResolvers {
-  Query: {
-    books: GraphQLResolver<Book[], { page?: number; pageSize?: number }>;
-    book: GraphQLResolver<Book, { id: string }>;
-  };
-  Mutation: {
-    saveBook: GraphQLResolver<Book, { book: Book }>;
-+   deleteBook: GraphQLResolver<boolean, { id: string }>;
-  };
+interface BookResolvers {
+  ...
+  saveBook: GraphQLResolver<{ book: Book }, unknown, Book>;
++ deleteBook: GraphQLResolver<{ id: string }, unknown, boolean>;
 }
 
 export const bookResolvers: BookResolvers = {
   ...
-  Mutation: {
-    saveBook: async (_, { book }) => {
-      const modelBook = mapBookFromApiToModel(book);
-      const newBook = await bookRepository.saveBook(modelBook);
-      return mapBookFromModelToApi(newBook);
-    },
-+   deleteBook: async (_, { id }) => {
-+     const isDeleted = await bookRepository.deleteBook(id);
-+     if (!isDeleted) {
-+       const message = `Cannot delete book for id: ${id}`;
-+       logger.warn(message);
-+       throw new UserInputError(message);
-+     }
-+     return isDeleted;
-+   },
-  },
++ deleteBook: async ({ id }) => {
++   const isDeleted = await bookRepository.deleteBook(id);
++   if (!isDeleted) {
++     const message = `Cannot delete book with id: ${id}`;
++     logger.warn(message);
++     throw new Error(JSON.stringify({ message, statusCode: 404 }));
++   }
++   return true;
++ },
 };
 
 ```
 
-> [Apollo GraphQL Error handling](https://www.apollographql.com/docs/apollo-server/data/errors/)
+Format custom errors:
+
+_./src/index.ts_
+
+```diff
+...
+createGraphqlServer(restApiServer, {
+  schema: bookSchema,
+  rootValue: bookResolvers,
++ formatError: (error) => {
++   const { message, statusCode } = JSON.parse(error.message);
++   return {
++     ...error,
++     message,
++     extensions: {
++       statusCode,
++     },
++   };
++ },
+});
+...
+```
+
+Example delete mutation (getting error):
+
+```graphql
+mutation {
+  deleteBook(id: "invalid")
+}
+```
+
+> [Graphql Errors Shape](https://graphql.org/graphql-js/error/#graphqlerror)
+
+
+Example delete mutation (valid id):
+
+```graphql
+mutation {
+  deleteBook(id: "<id-value>")
+}
+```
 
 # ¿Con ganas de aprender Backend?
 
