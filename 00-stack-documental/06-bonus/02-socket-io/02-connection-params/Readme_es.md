@@ -2,11 +2,11 @@
 
 Vamos a ver como puedo pasarle parametros con información a la hora de conectarnos.
 
-# Pasos
+## Pasos
 
-- Copiamos el ejemplo anterior de Hello socket.
+- Partimos del ejercicio anterior, _01-hello-socket-io_
 
-- Entramos en el back, instalamos paquetes
+- Entramos en el back, instalamos las dependencias
 
 ```bash
 npm install
@@ -22,7 +22,7 @@ npm install
 
 - En el Front vamos a probar a informar de un parametro harcodeado en la conexión:
 
-_./frontend/src/api.ts_
+_./front/src/api.ts_:
 
 ```diff
 export const createSocket = (): globalThis.SocketIOClient.Socket => {
@@ -39,7 +39,7 @@ export const createSocket = (): globalThis.SocketIOClient.Socket => {
 
 - En el backend vamos a probar a recoger este valor y mostrarlo por consola.
 
-_./backend/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
 io.on('connection', function (socket: Socket) {
@@ -50,7 +50,7 @@ io.on('connection', function (socket: Socket) {
 
 - Si arrancamos podemos ver como aparece el id por la consola del servidor.
 
-_En front y back_
+_En front y back_:
 
 ```bash
 npm start
@@ -64,7 +64,7 @@ npm start
 - Primero nos vamos a crear un sitio donde guardar esa info (lo ponemos en memoria en una aplicación
   real podría por ejemplo ir a base de de datos).
 
-_./back/src/store.ts_
+_./back/src/store.ts_:
 
 ```ts
 interface UserSession {
@@ -96,21 +96,23 @@ export const getNickname = (connectionId: string) => {
 
 - Ahora lo guardamos.
 
-_./backend/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
-import { createApp } from './express.server';
-import { envConstants } from './env.constants';
-import { api } from './api';
-import express from 'express';
-import path from 'path';
-import * as http from 'http';
-import { Server, Socket } from 'socket.io';
+import './load-env.js';
 import cors from 'cors';
-+ import { addUserSession, getNickname, ConnectionConfig } from './store';
+import express from 'express';
+import http from 'http';
+import path from 'path';
+import { Server, Socket } from 'socket.io';
+import url from 'url';
+import { createApp } from './express.server.js';
+import { envConstants } from './env.constants.js';
+import { api } from './api.js';
++ import { addUserSession, ConnectionConfig, getNickname } from './store.js';
 ```
 
-_./backend/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
 io.on('connection', function (socket: Socket) {
@@ -138,7 +140,7 @@ io.on('connection', function (socket: Socket) {
 
 - En el Front ya lo podemos mostrar
 
-_./src/front/app.ts_
+_./front/src/app.tsx_:
 
 ```diff
     case "CHAT_MESSAGE":
@@ -151,7 +153,7 @@ _./src/front/app.ts_
 - ¡Oye! pero aquí sale siempre PEPE :D, nada vamos a añadir una caja de texto cuando un usuario se una
   para indicar el nickname
 
-_./src/app.tsx_
+_./front/src/app.tsx_:
 
 ```diff
 export const App = () => {
@@ -164,7 +166,7 @@ export const App = () => {
 +  const [nickname, setNickname] = React.useState("Pepe");
 ```
 
-_./src/app.tsx_
+_./front/src/app.tsx_:
 
 ```diff
   <>
@@ -179,7 +181,7 @@ _./src/app.tsx_
 
 ```
 
-_./src/app.tsx_
+_./front/src/app.tsx_:
 
 ```diff
   const establishConnection = () => {
@@ -187,7 +189,7 @@ _./src/app.tsx_
 +    const socketConnection = createSocket(nickname);
 ```
 
-_./src/api.ts_
+_./front/src/api.ts_:
 
 ```diff
 - export const createSocket = (): Socket => {
@@ -204,7 +206,7 @@ _./src/api.ts_
 
 - Vamos a probar:
 
-_en front y back_
+_en front y back_:
 
 ```bash
 npm start
