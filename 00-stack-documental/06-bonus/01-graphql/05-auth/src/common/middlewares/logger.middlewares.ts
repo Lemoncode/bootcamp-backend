@@ -11,6 +11,6 @@ export const logRequestMiddleware =
 export const logErrorRequestMiddleware =
   (logger: Logger): ErrorRequestHandler =>
   async (error, req, res, next) => {
-    logger.error(error.message);
+    logger.error(error.stack);
     res.sendStatus(500);
   };

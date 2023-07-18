@@ -15,108 +15,59 @@ npm install
 
 # Libraries
 
-We are going to install the main library to work with graphql and express, [apollo-server-express](https://www.npmjs.com/package/apollo-server-express). ([Documentation page](https://www.apollographql.com/docs/apollo-server/))
+We are going to install the main library to work with graphql and express, [graphql-http](https://github.com/graphql/graphql-http). ([Documentation page](https://graphql.org/graphql-js/))
 
 ```bash
-npm install apollo-server-express graphql --save
+npm install graphql-http graphql graphql-playground-middleware-express --save
 
 ```
-> It has `graphql` lib as peerDependency.
+
+> It has `graphql` lib as dependency.
+>
+> [Playground](https://github.com/graphql/graphql-playground/tree/main)
 
 # Config
 
 ApolloServer comes with types definitions and we don't need an extra package for TypeScript. We have to define a new `ApolloServer` instance to create a new `GraphQL Server`:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
+import '#core/load-env.js';
+import '#core/monitoring.js';
 import express from 'express';
 import path from 'path';
-+ import { ApolloServer } from 'apollo-server-express';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-import { logger } from 'core/logger';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from 'common/middlewares';
-import { booksApi } from 'pods/book';
-import { securityApi, authenticationMiddleware } from 'pods/security';
-import { userApi } from 'pods/user';
+import url from 'url';
++ import { createHandler } from 'graphql-http/lib/use/express';
++ import { buildSchema } from 'graphql';
++ import playground from 'graphql-playground-middleware-express';
++ const graphqlPlayground = playground.default;
 
-+ (async function () {
-    const restApiServer = createRestApiServer();
-+   const graphqlServer = new ApolloServer({});
-+   await graphqlServer.start();
-+   graphqlServer.applyMiddleware({ app: restApiServer as any });
-
-    const staticFilesPath = path.resolve(
-      __dirname,
-      envConstants.STATIC_FILES_PATH
-    );
-    restApiServer.use('/', express.static(staticFilesPath));
-
-    restApiServer.use(logRequestMiddleware(logger));
-
-    restApiServer.use('/api/security', securityApi);
-    restApiServer.use('/api/books', authenticationMiddleware, booksApi);
-    restApiServer.use('/api/users', authenticationMiddleware, userApi);
-
-    restApiServer.use(logErrorRequestMiddleware(logger));
-
-    restApiServer.listen(envConstants.PORT, async () => {
-      if (!envConstants.isApiMock) {
-        await connectToDBServer(envConstants.MONGODB_URI);
-        logger.info('Connected to DB');
-      } else {
-        logger.info('Running API mock');
-      }
-      logger.info(`Server ready at port ${envConstants.PORT}`);
-+     logger.info(
-+       `GraphQL server ready at http://localhost:${envConstants.PORT}${graphqlServer.graphqlPath}`
-+     );
-    });
-+ })();
-
-```
-
-> Since v3 we have to use `graphqlServer.start` method. [Reference](https://github.com/apollographql/apollo-server/blob/main/CHANGELOG.md#changes-to-nodejs-framework-integrations)
-
-Let's create a dummy endpoint to test it:
-
-_./src/app.ts_
-
-```diff
-import express from 'express';
-import path from 'path';
-- import { ApolloServer } from 'apollo-server-express';
-+ import { ApolloServer, gql } from 'apollo-server-express';
 ...
 
-+ const typeDefs = gql`
-+   type Query {
-+     hello: String!
-+   }
-+ `;
+restApiServer.use('/', express.static(staticFilesPath));
 
++ const schema = buildSchema(`
++   type Query {
++     hello: String
++   }
++ `);
 + const resolvers = {
-+   Query: {
-+     hello: () => {
-+       return 'Working endpoint!';
-+     },
++   hello: () => {
++     return 'Working endpoint!';
 +   },
 + };
++ restApiServer.use('/graphql', createHandler({ schema, rootValue: resolvers }));
++ if (!envConstants.isProduction) {
++   restApiServer.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
++ }
 
-(async function () {
-  const restApiServer = createRestApiServer();
-- const graphqlServer = new ApolloServer({});
-+ const graphqlServer = new ApolloServer({
-+   typeDefs,
-+   resolvers,
-+ });
-  await graphqlServer.start();
-  graphqlServer.applyMiddleware({ app: restApiServer as any });
 ...
+
+  logger.info(`Server ready at port ${envConstants.PORT}`);
++ logger.info(`GraphQL Server ready at port ${envConstants.PORT}/graphql`);
+});
+
 ```
 
 Let's run it:
@@ -128,30 +79,31 @@ npm start
 
 > Open GraphQL server at [http://localhost:3000/graphql](http://localhost:3000/graphql)
 >
-> Check grapql tool, only available at development mode
+> Open GraphQL playground at [http://localhost:3000/playground](http://localhost:3000/playground)
 >
 > Check docs
 >
 > All queries are stored in localStorage.
->
-> We could enable previous [GraphQL Playground](https://www.apollographql.com/docs/apollo-server/migration/#graphql-playground)
 
 Let's move GraphQL Server config to `core`:
 
 _./src/core/servers/graphql.server.ts_
 
 ```javascript
-import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express';
+import { Express } from 'express';
+import { createHandler, HandlerOptions } from 'graphql-http/lib/use/express';
+import playground from 'graphql-playground-middleware-express';
+const graphqlPlayground = playground.default;
+import { envConstants } from '#core/constants/index.js';
 
-export const createGraphQLServer = async (
-  expressApp,
-  config: ApolloServerExpressConfig
+export const createGraphqlServer = (
+  expressApp: Express,
+  options: HandlerOptions
 ) => {
-  const graphqlServer = new ApolloServer(config);
-  await graphqlServer.start();
-
-  graphqlServer.applyMiddleware({ app: expressApp });
-  return graphqlServer;
+  expressApp.use('/graphql', createHandler(options));
+  if (!envConstants.isProduction) {
+    expressApp.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
+  }
 };
 
 ```
@@ -161,67 +113,79 @@ Update barrel:
 _./src/core/servers/index.ts_
 
 ```diff
-export * from './rest-api.server';
-export * from './db.server';
-+ export * from './graphql.server';
+export * from './rest-api.server.js';
+export * from './db.server.js';
++ export * from './graphql.server.js';
 
 ```
 
 Update app:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
+import '#core/load-env.js';
+import '#core/monitoring.js';
 import express from 'express';
 import path from 'path';
-- import { ApolloServer, gql } from 'apollo-server-express';
+import url from 'url';
+- import { createHandler } from 'graphql-http/lib/use/express';
+- import { buildSchema } from 'graphql';
+- import playground from 'graphql-playground-middleware-express';
+- const graphqlPlayground = playground.default;
+import {
+  logRequestMiddleware,
+  logErrorRequestMiddleware,
+} from '#common/middlewares/index.js';
 import {
   createRestApiServer,
   connectToDBServer,
-+ createGraphQLServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
-...
++ createGraphqlServer,
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { logger } from '#core/logger/index.js';
+import { booksApi } from '#pods/book/index.js';
+import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
+import { userApi } from '#pods/user/index.js';
 
-- const typeDefs = gql`
+const restApiServer = createRestApiServer();
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
+restApiServer.use('/', express.static(staticFilesPath));
+
+- const schema = buildSchema(`
 -   type Query {
--     hello: String!
+-     hello: String
 -   }
-- `;
-
+- `);
 - const resolvers = {
--   Query: {
--     hello: () => {
--       return 'Working endpoint!';
--     },
+-   hello: () => {
+-     return 'Working endpoint!';
 -   },
 - };
+- restApiServer.use('/graphql', createHandler({ schema, rootValue: resolvers }));
+- if (!envConstants.isProduction) {
+-   restApiServer.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
+- }
++ createGraphqlServer(restApiServer, { schema: null, rootValue: null });
 
-(async function () {
-  const restApiServer = createRestApiServer();
-- const graphqlServer = new ApolloServer({
--   typeDefs,
--   resolvers,
-- });
-+ const graphqlServer = await createGraphQLServer(restApiServer, {
-+   typeDefs: null,
-+   resolvers: null,
-+ });
-- await graphqlServer.start();
-- graphqlServer.applyMiddleware({ app: restApiServer as any });
+restApiServer.use(logRequestMiddleware(logger));
 
 ...
 
 ```
 
+> Pending to add `schema` and `resolvers`.
+
 Now, we can start implementing `book` GraphQL Schema:
 
-_./src/pods/book/graphql/book.type-defs.ts_
+_./src/pods/book/graphql/book.schema.ts_
 
 ```javascript
-import { gql } from 'apollo-server-express';
+import { buildSchema as graphql } from 'graphql';
 
-export const bookTypeDefs = gql`
+export const bookSchema = graphql(`
   type Book {
     id: String!
     title: String!
@@ -232,11 +196,11 @@ export const bookTypeDefs = gql`
   type Query {
     books: [Book!]!
   }
-`;
+`);
 
 ```
 
-> Install [Apollo GraphQL VSCode extension](https://www.apollographql.com/docs/devtools/editor-plugins/).
+> Install > [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql-syntax).
 >
 > [Scalar Types](https://graphql.org/learn/schema/#scalar-types)
 
@@ -245,16 +209,14 @@ Implementing resolvers:
 _./src/pods/book/graphql/book.resolvers.ts_
 
 ```javascript
-import { bookRepository } from 'dals';
-import { Book } from '../book.api-model';
-import { mapBookListFromModelToApi } from '../book.mappers';
+import { bookRepository } from '#dals/index.js';
+import { Book } from '../book.api-model.js';
+import { mapBookListFromModelToApi } from '../book.mappers.js';
 
 export const bookResolvers = {
-  Query: {
-    books: async (): Promise<Book[]> => {
-      const bookList = await bookRepository.getBookList();
-      return mapBookListFromModelToApi(bookList);
-    },
+  books: async (): Promise<Book[]> => {
+    const bookList = await bookRepository.getBookList();
+    return mapBookListFromModelToApi(bookList);
   },
 };
 
@@ -265,8 +227,8 @@ Add barrel file:
 _./src/pods/book/graphql/index.ts_
 
 ```javascript
-export * from './book.type-defs';
-export * from './book.resolvers';
+export * from './book.resolvers.js';
+export * from './book.schema.js';
 
 ```
 
@@ -275,44 +237,35 @@ Update barrel file:
 _./src/pods/book/index.ts_
 
 ```diff
-export * from './book.rest-api';
-+ export * from './graphql';
+export * from "./book.rest-api.js";
++ export * from './graphql/index.js';
 
 ```
 
 Update app:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
-import {
-  createRestApiServer,
-  connectToDBServer,
-  createGraphQLServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
-import { logger } from 'core/logger';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from 'common/middlewares';
-- import { booksApi } from 'pods/book';
-+ import { booksApi, bookTypeDefs, bookResolvers } from 'pods/book';
-import { securityApi, authenticationMiddleware } from 'pods/security';
-import { userApi } from 'pods/user';
-
-(async function () {
-  const restApiServer = createRestApiServer();
-  const graphqlServer = createGraphQLServer(restApiServer, {
--   typeDefs: null,
-+   typeDefs: bookTypeDefs,
--   resolvers: null,
-+   resolvers: bookResolvers,
-  });
+...
+import { envConstants } from '#core/constants/index.js';
+import { logger } from '#core/logger/index.js';
+- import { booksApi } from '#pods/book/index.js';
++ import { booksApi, bookSchema, bookResolvers } from '#pods/book/index.js';
+import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
+import { userApi } from '#pods/user/index.js';
 
 ...
+restApiServer.use('/', express.static(staticFilesPath));
+createGraphqlServer(restApiServer, {
+- schema: null,
++ schema: bookSchema,
+- rootValue: null,
++ rootValue: bookResolvers,
+});
+
+...
+
 ```
 
 Now, we can run and check it:
@@ -332,7 +285,6 @@ query {
     author
   }
 }
-
 ```
 
 # ¿Con ganas de aprender Backend?

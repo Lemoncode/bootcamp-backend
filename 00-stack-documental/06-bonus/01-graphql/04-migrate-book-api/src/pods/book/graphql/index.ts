@@ -1,2 +1,2 @@
-export * from './book.type-defs';
-export * from './book.resolvers';
+export * from './book.resolvers.js';
+export * from './book.schema.js';

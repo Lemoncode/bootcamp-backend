@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { Book } from './book';
-import { User } from './user';
+import { Book } from './book/index.js';
+import { User } from './user/index.js';
 
 export interface DB {
   users: User[];
@@ -15,7 +15,7 @@ export const db: DB = {
       password: 'test',
       salt: '',
       role: 'admin',
-      avatar: '/admin-avatar.png',
+      avatar: 'admin-avatar-in-s3.png',
     },
     {
       _id: new ObjectId(),
@@ -23,7 +23,7 @@ export const db: DB = {
       password: 'test',
       salt: '',
       role: 'standard-user',
-      avatar: '/user-avatar.png',
+      avatar: 'user-avatar-in-s3.png',
     },
   ],
   books: [
