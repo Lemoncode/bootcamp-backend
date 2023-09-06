@@ -13,7 +13,7 @@ npm install
 
 ```
 
-The `console-runners` folder is related with nodejs processes that we want to execute outside the app. A nice library for interactive CLIs is [inquier](https://github.com/SBoudrias/Inquirer.js/)
+The `console-runners` folder is related with nodejs processes that we want to execute outside the app. A nice library for interactive CLIs is [inquirer](https://github.com/SBoudrias/Inquirer.js/)
 
 ```bash
 npm install inquirer @types/inquirer --save-dev
@@ -24,11 +24,11 @@ Let's create the `index` file:
 _./src/console-runners/index.ts_
 
 ```typescript
-import inquier from "inquirer";
+import inquirer from "inquirer";
 
 let exit = false;
 while (!exit) {
-  const answer = await inquier.prompt({
+  const answer = await inquirer.prompt({
     name: "consoleRunner",
     type: "list",
     message: "Which console-runner do you want to run?",
@@ -117,11 +117,11 @@ Update main file:
 _./src/console-runners/index.ts_
 
 ```diff
-import inquier from "inquirer";
+import inquirer from "inquirer";
 
 let exit = false;
 while (!exit) {
-  const answer = await inquier.prompt({
+  const answer = await inquirer.prompt({
     name: "consoleRunner",
     type: "list",
     message: "Which console-runner do you want to run?",
