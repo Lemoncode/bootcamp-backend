@@ -30,7 +30,7 @@ _./src/core/servers/db.server.ts_
 - import { MongoClient, Db } from "mongodb";
 + import { connect } from "mongoose";
 
-- let dbInstance: Db;
+- export let db: Db;
 
 export const connectToDBServer = async (connectionURI: string) => {
 - const client = new MongoClient(connectionURI);
@@ -138,7 +138,26 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```
 
+> It throws an error, `Unsupported BSON version, bson types must be from bson 5.0 or later`.
+>
+> Check [release notes](https://github.com/mongodb/node-mongodb-native/releases/)
+>
 > Try `_id: id,` on query. It works here but it doesn't on aggregations.
+>
+
+Downgrade mongodb driver version to 5:
+
+```bash
+npm install mongodb@5 --save
+
+```
+
+Try again the `get one` query:
+
+```bash
+npm start
+
+```
 
 Update `save book`:
 
@@ -147,20 +166,15 @@ _./src/dals/book/respositories/book.db-repository.ts_
 ```diff
 ...
   saveBook: async (book: Book) => {
--   const { value } = await getBookContext().findOneAndUpdate(
-+   return await bookContext
-+     .findOneAndUpdate(
-        {
-          _id: book._id,
-        },
-        {
-          $set: book,
-        },
-        { upsert: true, returnDocument: 'after' }
--   );
--   return value;
-+     )
-+     .lean();
+-   return await getBookContext().findOneAndUpdate(
++   return await bookContext.findOneAndUpdate(
+      {
+        _id: book._id,
+      },
+      { $set: book },
+      { upsert: true, returnDocument: 'after' }
+    )
++   .lean();
   },
 ...
 
