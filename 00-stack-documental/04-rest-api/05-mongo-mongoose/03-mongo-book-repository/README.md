@@ -356,18 +356,17 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ...
   saveBook: async (book: Book) => {
 -   const { insertedId } = await db.collection<Book>("books").insertOne(book);
-+   const { value } = await db.collection<Book>("books").findOneAndUpdate(
+-   return {
+-     ...book,
+-     _id: insertedId,
+-   };
++   return await db.collection<Book>("books").findOneAndUpdate(
 +     {
 +       _id: book._id,
 +     },
 +     { $set: book },
 +     { upsert: true, returnDocument: "after" }
 +   );
--   return {
--     ...book,
--     _id: insertedId,
--   };
-+   return value;
   },
 ...
 
@@ -426,17 +425,14 @@ export const dbRepository: BookRepository = {
   },
 ...
   saveBook: async (book: Book) => {
--   const { value } = await db.collection<Book>('books').findOneAndUpdate(
-+   const { value } = await getBookContext().findOneAndUpdate(
+-   return await db.collection<Book>('books').findOneAndUpdate(
++   return await getBookContext().findOneAndUpdate(
       {
         _id: book._id,
       },
-      {
-        $set: book,
-      },
+      { $set: book },
       { upsert: true, returnDocument: 'after' }
     );
-    return value;
   },
 ...
 ```
