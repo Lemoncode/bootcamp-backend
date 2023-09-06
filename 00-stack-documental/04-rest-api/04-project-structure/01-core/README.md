@@ -214,7 +214,7 @@ _./package.json_
   "scripts": {
     ...
 -   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
-+   "start:dev": "nodemon -r dotenv/config --esm src/index.ts",
++   "start:dev": "nodemon -r dotenv/config --transpileOnly --esm src/index.ts",
     ...
   },
 ```
@@ -235,7 +235,7 @@ _./package.json_
 ...
   "scripts": {
     ...
--   "start:dev": "nodemon -r dotenv/config --esm src/index.ts",
+-   "start:dev": "nodemon -r dotenv/config --transpileOnly --esm src/index.ts",
 +   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
     ...
   },
