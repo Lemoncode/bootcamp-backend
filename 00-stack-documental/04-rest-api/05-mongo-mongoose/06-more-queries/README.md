@@ -219,11 +219,11 @@ const runQueries = async () => {
     {
       $set: {
 -       'genres.$': 'Fantasy',
-+       'genres.$[genre]': 'Fantasy',
++       'genres.$[genre]': 'Thriller',
       },
     },
     {
-+     arrayFilters: [{ genre: 'Drama' }],
++     arrayFilters: [{ genre: 'Fantasy' }],
       returnDocument: 'after',
       projection: {
         _id: 1,
@@ -241,7 +241,7 @@ const runQueries = async () => {
 
 > [Reference](https://docs.mongodb.com/v5.0/reference/operator/update/positional-filtered/#mongodb-update-up.---identifier--)
 
-We want delete `Fantasy` genre in this document:
+We want delete `Thriller` genre in this document:
 
 _./src/console-runners/queries.runner.ts_
 
@@ -254,14 +254,14 @@ const runQueries = async () => {
     },
     {
 -     $set: {
--       'genres.$[genre]': 'Fantasy',
+-       'genres.$[genre]': 'Thriller',
 -     },
 +     $pull: {
-+       genres: 'Fantasy',
++       genres: 'Thriller',
 +     },
     },
     {
--     arrayFilters: [{ genre: 'Drama' }],
+-     arrayFilters: [{ genre: 'Fantasy' }],
       returnDocument: 'after',
       projection: {
         _id: 1,
@@ -281,7 +281,7 @@ const runQueries = async () => {
 >
 > $pull vs [$pullAll](https://www.mongodb.com/docs/manual/reference/operator/update/pullAll/#mongodb-update-up.-pullAll): $pull remove all elements that match condition or value, $pullAll remove all elements that match the listed values.
 >
-> `{ $pullAll: { genres: [ 'Fantasy', 'Drama' ] } }`
+> `{ $pullAll: { genres: [ 'Fantasy', 'Drama', 'Thriller' ] } }`
 
 Try same example with `{ _id: new ObjectId(), name: 'Drama' }`:
 

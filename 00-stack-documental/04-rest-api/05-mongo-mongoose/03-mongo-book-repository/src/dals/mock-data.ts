@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongodb';
-import { Book } from './book/index.js';
+import { ObjectId } from "mongodb";
+import { Book } from "./book/index.js";
 
 export interface DB {
   books: Book[];
@@ -9,45 +9,45 @@ export const db: DB = {
   books: [
     {
       _id: new ObjectId(),
-      title: 'Choque de reyes',
-      releaseDate: new Date('1998-11-16'),
-      author: 'George R. R. Martin',
+      title: "Choque de reyes",
+      releaseDate: new Date("1998-11-16"),
+      author: "George R. R. Martin",
     },
     {
       _id: new ObjectId(),
-      title: 'Harry Potter y el prisionero de Azkaban',
-      releaseDate: new Date('1999-07-21'),
-      author: 'J. K. Rowling',
+      title: "Harry Potter y el prisionero de Azkaban",
+      releaseDate: new Date("1999-07-21"),
+      author: "J. K. Rowling",
     },
     {
       _id: new ObjectId(),
-      title: 'The Witcher - The Last Wish',
-      releaseDate: new Date('1993-11-02'),
-      author: 'Andrzej Sapkowski',
+      title: "The Witcher - The Last Wish",
+      releaseDate: new Date("1993-11-02"),
+      author: "Andrzej Sapkowski",
     },
     {
       _id: new ObjectId(),
-      title: 'El Hobbit',
-      releaseDate: new Date('1937-09-21'),
-      author: 'J. R. R. Tolkien',
+      title: "El Hobbit",
+      releaseDate: new Date("1937-09-21"),
+      author: "J. R. R. Tolkien",
     },
     {
       _id: new ObjectId(),
       title: "Assassin's Quest",
-      releaseDate: new Date('1997-03-03'),
-      author: 'Robin Hobb',
+      releaseDate: new Date("1997-03-03"),
+      author: "Robin Hobb",
     },
     {
       _id: new ObjectId(),
-      title: 'Homeland',
-      releaseDate: new Date('1990-09-19'),
-      author: 'R. A. Salvatore',
+      title: "Homeland",
+      releaseDate: new Date("1990-09-19"),
+      author: "R. A. Salvatore",
     },
     {
       _id: new ObjectId(),
-      title: 'American Gods',
-      releaseDate: new Date('2001-06-19'),
-      author: 'Neil Gaiman',
+      title: "American Gods",
+      releaseDate: new Date("2001-06-19"),
+      author: "Neil Gaiman",
     },
   ],
 };

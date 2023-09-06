@@ -22,7 +22,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:6
+    image: mongo:7
     ports:
       - '27017:27017'
 
@@ -42,7 +42,7 @@ _./package.json_
 +   "start": "run-p -l type-check:watch start:dev start:local-db",
     "start:dev": "nodemon --transpileOnly --esm src/index.ts",
     "start:console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
-+   "start:local-db": "docker-compose up -d",
++   "start:local-db": "docker compose up -d",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
@@ -78,7 +78,7 @@ exit
 Remove local db:
 
 ```bash
-docker-compose down
+docker compose down
 
 npm run start:local-db
 
@@ -87,7 +87,7 @@ npm run start:local-db
 Let's add a Docker `volume`:
 
 ```bash
-docker-compose down
+docker compose down
 
 ```
 
@@ -98,7 +98,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:5.0.9
+    image: mongo:7
     ports:
       - '27017:27017'
 +     volumes:
