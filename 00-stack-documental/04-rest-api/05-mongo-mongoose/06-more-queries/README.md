@@ -13,7 +13,10 @@ npm install
 
 ```
 
-In this example, we will work with [Sample Mflix Dataset](https://docs.atlas.mongodb.com/sample-data/sample-mflix/#std-label-sample-mflix) from MongoDB docs.
+In this example, we will work with [Sample Mflix Dataset](https://github.com/Lemoncode/mongodb-sample-dbs-backup)
+
+> [More info in MongoDB docs](https://docs.atlas.mongodb.com/sample-data/sample-mflix/#std-label-sample-mflix).
+
 But in this case, we will load it using the `seed-data` console runner:
 
 ```bash
