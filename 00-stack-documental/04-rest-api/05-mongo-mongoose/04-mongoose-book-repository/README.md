@@ -65,7 +65,9 @@ import { Book } from './book.model.js';
 ```
 
 > [Connection buffering](https://mongoosejs.com/docs/connections.html#buffering)
+>
 > [Mongoose Schema](https://mongoosejs.com/docs/guide.html)
+>
 > Notice the Book model is defined as singular but it will be mapped to `books` collection, [reference](https://mongoosejs.com/docs/models.html#compiling)
 
 Now, we could update the `db repository`:
@@ -190,25 +192,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
 }
 ```
 
-Update `delete book`:
-
-_./src/dals/book/respositories/book.db-repository.ts_
-
-```diff
-...
-
-  deleteBook: async (id: string) => {
--   const { deletedCount } = await getBookContext().deleteOne({
-+   const { deletedCount } = await bookContext.deleteOne({
-      _id: new ObjectId(id),
--   });
-+   })
-+   .lean();
-    return deletedCount === 1;
-  },
-};
-
-```
+> NOTE: It is not necessary to update delete method.
 
 # ¿Con ganas de aprender Backend?
 

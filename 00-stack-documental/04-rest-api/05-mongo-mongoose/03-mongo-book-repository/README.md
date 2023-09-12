@@ -334,8 +334,11 @@ getBookList: async (page?: number, pageSize?: number) => {
 ```
 
 > [Skip](https://www.mongodb.com/docs/manual/reference/method/cursor.skip/)
+>
 > [Skip Nodejs API](https://mongodb.github.io/node-mongodb-native/4.8/classes/FindCursor.html#skip)
+>
 > [limit](https://www.mongodb.com/docs/manual/reference/method/cursor.limit/)
+>
 > [Limit Nodejs API](https://mongodb.github.io/node-mongodb-native/4.8/classes/FindCursor.html#limit)
 
 Try url:
@@ -373,7 +376,9 @@ _./src/dals/book/repositories/book.db-repository.ts_
 ```
 
 > NOTE: Show `updateOne` method.
+>
 > In the Mongo v4 does not exist `returnDocument`, but it does in >v5.
+>
 > [Mongo Console docs](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/) differs from [Mongo Driver docs](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate)
 
 Try url:

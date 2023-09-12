@@ -8,6 +8,7 @@
     "prestart": "sh ./create-dev-env.sh",
     "start": "run-p -l type-check:watch start:dev start:local-db",
     "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+    "prestart:console-runners": "npm run prestart",
     "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
     "console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
     "start:local-db": "docker compose up -d",
