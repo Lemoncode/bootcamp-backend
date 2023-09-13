@@ -10,7 +10,7 @@
     "start:dev": "nodemon --transpileOnly --esm src/index.ts",
     "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
     "console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
-    "start:local-db": "docker-compose up -d",
+    "start:local-db": "docker compose up -d",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
@@ -28,8 +28,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.0",
-    "mongodb": "^5.6.0"
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
