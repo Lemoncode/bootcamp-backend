@@ -29,7 +29,9 @@ npm run start:console-runners
 ```
 
 > Seed data path: path in your files system
+>
 > Docker container name: you can see this name in `docker-compose.yml` file.
+>
 > Database name: you can see this name in `.env.example` or `.env` files.
 
 We could check this data for example with `Mongo Compass`.
