@@ -125,6 +125,7 @@ METHOD: GET
 ```
 
 > We should install [Postman interceptor](https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo) to check cookies on postman.
+>
 > With cookies we could check it on browser too.
 
 Update `logout` method:

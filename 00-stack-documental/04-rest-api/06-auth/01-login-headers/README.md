@@ -409,6 +409,7 @@ booksApi
 ```
 
 > [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+>
 > `Authorization: Bearer my-token`
 
 ```md
@@ -509,7 +510,7 @@ export const authenticationMiddleware: RequestHandler = async (
 
 ```
 
-> We will have Typescript issues if we try to use `utils.promisify` from NodeJS.
+> We will have Typescript issues if we try to use `util.promisify` from NodeJS.
 >
 > import { promisify } from 'util';
 > const verify = promisify(jwt.verify);
@@ -798,12 +799,11 @@ import { envConstants } from '#core/constants/index.js';
 
 ...
 
-+ const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
-+   !Boolean(allowedRoles) ||
-+   (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
++ const isAuthorized = (currentRole: Role, allowedRoles: Role[]) =>
++   (Boolean(currentRole) && allowedRoles?.some((role) => currentRole === role));
 
 + export const authorizationMiddleware =
-+   (allowedRoles?: Role[]): RequestHandler =>
++   (allowedRoles: Role[]): RequestHandler =>
 +   async (req, res, next) => {
 +     if (isAuthorized(req.userSession?.role, allowedRoles)) {
 +       next();
@@ -830,28 +830,7 @@ import {
 
 export const booksApi = Router();
 
-booksApi
-- .get('/', async (req, res, next) => {
-+ .get('/', authorizationMiddleware(), async (req, res, next) => {
-    try {
-      const page = Number(req.query.page);
-      const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList(page, pageSize);
-      res.send(mapBookListFromModelToApi(bookList));
-    } catch (error) {
-      next(error);
-    }
-  })
-- .get('/:id', async (req, res, next) => {
-+ .get('/:id', authorizationMiddleware(), async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const book = await bookRepository.getBook(id);
-      res.send(mapBookFromModelToApi(book));
-    } catch (error) {
-      next(error);
-    }
-  })
+...
 - .post('/', async (req, res, next) => {
 + .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {

@@ -119,8 +119,10 @@ npm run test:watch book.rest-api
 As we see, we are running the app in `mock` mode. If we like to test our repository implementation with a MongoDB memory database, we need to install [jest-mongodb](https://github.com/shelfio/jest-mongodb) preset:
 
 ```bash
-npm install @shelf/jest-mongodb cross-env --save-dev
+npm install @shelf/jest-mongodb --save-dev
 ```
+
+> Use `-f` flag to force install the preset in a different version than peerDependencies.
 
 Add config file:
 
@@ -130,7 +132,7 @@ _./jest-mongodb-config.cjs_
 module.exports = {
   mongodbMemoryServerOptions: {
     binary: {
-      version: '6.0.3',
+      version: '6.0.10',
       skipMD5: true,
     },
     instance: {
@@ -224,7 +226,6 @@ import {
 + connectToDBServer,
 + disconnectFromDBServer,
 } from '#core/servers/index.js';
-+ import { envConstants } from '#core/constants/index.js';
 + import { getBookContext } from '#dals/book/book.context.js';
 import { booksApi } from './book.rest-api.js';
 
@@ -293,7 +294,6 @@ import {
   connectToDBServer,
   disconnectFromDBServer,
 } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
 import { getBookContext } from '#dals/book/book.context.js';
 + import { Book } from './book.api-model.js';
 import { booksApi } from './book.rest-api.js';
