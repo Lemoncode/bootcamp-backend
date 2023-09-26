@@ -19,7 +19,7 @@ Create specs file:
 _./src/pods/security/security.middlewares.spec.ts_
 
 ```typescript
-describe('pods/security/security.middlewares specs', () => {
+describe('security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('', () => {
       // Arrange
@@ -28,7 +28,6 @@ describe('pods/security/security.middlewares specs', () => {
     });
   });
 });
-
 ```
 
 Should send 401 status code if it feeds authorization cookie equals undefined:
@@ -60,7 +59,6 @@ describe('pods/security/security.middlewares specs', () => {
 +     authenticationMiddleware(req, res, next);
 
       // Assert
-+     expect(res.sendStatus).toHaveBeenCalled();
 +     expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
   });
@@ -276,7 +274,6 @@ export const verifyJWT = <T>(token: string, secret: string): Promise<T> =>
       }
     });
   });
-
 ```
 
 Update barrel file:

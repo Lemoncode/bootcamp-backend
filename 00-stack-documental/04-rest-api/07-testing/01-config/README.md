@@ -56,7 +56,7 @@ _./package.json_
   "scripts": {
     ...
 +   "test": "jest --verbose",
-+   "test:watch": "npm run test -- --watchAll -i"
++   "test:watch": "npm test -- --watchAll -i"
   },
   ...
 }

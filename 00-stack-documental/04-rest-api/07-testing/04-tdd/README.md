@@ -30,7 +30,7 @@ Let's add a new mapper function to `books.mappers`, but this time, we will start
 _./src/pods/book/book.mappers.spec.ts_
 
 ```typescript
-describe('pods/book/book.mappers spec', () => {
+describe('book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
     it('', () => {
       // Arrange
@@ -59,10 +59,11 @@ describe('pods/book/book.mappers spec', () => {
 +     const bookList: apiModel.Book[] = undefined;
 
       // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     const result = mapBookListFromApiToModel(bookList);
 
       // Assert
-+     expect(result).toEqual([]);
++     const expectedResult: model.Book[] = [];
++     expect(result).toEqual(expectedResult);
     });
   });
 });
