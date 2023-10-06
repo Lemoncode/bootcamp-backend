@@ -15,14 +15,13 @@ export const dbRepository: BookRepository = {
     });
   },
   saveBook: async (book: Book) => {
-    const { value } = await getBookContext().findOneAndUpdate(
+    return await getBookContext().findOneAndUpdate(
       {
         _id: book._id,
       },
       { $set: book },
       { upsert: true, returnDocument: 'after' }
     );
-    return value;
   },
   deleteBook: async (id: string) => {
     const { deletedCount } = await getBookContext().deleteOne({

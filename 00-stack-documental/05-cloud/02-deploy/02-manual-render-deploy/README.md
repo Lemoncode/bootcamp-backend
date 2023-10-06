@@ -99,7 +99,7 @@ _./package.json_
 -   "build": "npm run clean && tsc --project tsconfig.prod.json",
 -   "type-check": "tsc --noEmit --preserveWatchOutput",
 -   "type-check:watch": "npm run type-check -- --watch",
--   "test": "cross-env MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs jest -c ./config/test/jest.js",
+-   "test": "jest -c ./config/test/jest.js",
 -   "test:watch": "npm run test -- --watchAll -i"
 +   "start": "node index.js"
   },
@@ -130,7 +130,6 @@ _./package.json_
 - },
 + }
 - "devDependencies": {
--   "@shelf/jest-mongodb": "^4.1.7",
 -   "@types/cookie-parser": "^1.4.3",
 -   "@types/cors": "^2.8.13",
 -   "@types/express": "^4.17.17",
@@ -138,7 +137,6 @@ _./package.json_
 -   "@types/jest": "^29.5.2",
 -   "@types/jsonwebtoken": "^9.0.2",
 -   "@types/supertest": "^2.0.12",
--   "cross-env": "^7.0.3",
 -   "inquirer": "^9.2.7",
 -   "jest": "^29.5.0",
 -   "nodemon": "^2.0.22",
