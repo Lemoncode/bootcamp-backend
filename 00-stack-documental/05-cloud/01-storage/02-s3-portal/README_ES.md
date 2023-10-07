@@ -85,7 +85,7 @@ Aquí nos saldrá un mensaje del tipo ¿Estás seguro? Y nos hará meter un text
 
 Y en el _bucket-policy_ (política del bucket) le damos permisos de sólo lectura:
 
-** OJO PON AQUI EL NOMBRE DE TU BUCKET, cambia `DOC-EXAMPLE-BUCKET` por el tuyo**
+** OJO PON AQUI EL NOMBRE DE TU BUCKET, cambia `NOMBRE-DEL-BUCKET` por el tuyo**
 
 ```json
 {
@@ -96,7 +96,7 @@ Y en el _bucket-policy_ (política del bucket) le damos permisos de sólo lectur
       "Effect": "Allow",
       "Principal": "*",
       "Action": ["s3:GetObject", "s3:GetObjectVersion"],
-      "Resource": ["arn:aws:s3:::DOC-EXAMPLE-BUCKET/*"]
+      "Resource": ["arn:aws:s3:::NOMBRE-DEL-BUCKET/*"]
     }
   ]
 }

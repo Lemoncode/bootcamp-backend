@@ -90,13 +90,27 @@ Le indicamos el nombre de usuario y el tipo de acceso (en este caso no marcamos 
 
 Vamos a elegir _adjuntar políticas directamente_, y le damos a ese usuario S3 Full Access.
 
-Le damos a ese usuario permisos de `S3 Full Access` (si queremos ir a grano fino con la seguridad, podríamos haber creado un usuario para lectura y otro para lectura / escritura):
+Podríamos darle a ese usuario permisos de `S3 Full Access`, PEEROO, no lo vamos a hacer:
+
+- Por un lado en una app real podríasmo tener un usuario para lectura y otro para escritura (menor superficie de ataque).
+- Y por otro si damos ese permiso es sobre todos los buckets que tengamos en nuestro S3, y no queremos eso, queremos que sólo tenga acceso a nuestro bucket.
 
 ![Set S3 Full Access permissions](./readme-resources/04-set-permissions.png)
 
-La regla que vamos a crear es _S3BucketTemporalPermiso_
-
 Antes de seguir, esto de darle permiso a todos los buckets te puede abrir una brecha de seguridad, mejor creamos una política y le decimos que sólo tenga ese acceso al bucket que acabamos de crear:
+
+Para ello vamos a crear una regla custom, hay un botón a la izquierda arriba que pone _agregar permisos_, en inglés "create policy", y lo que haremo será crear una politica custom (esto nos abrirá un nuevo tab, trabajaremos en él hasta que tengamos la regla creada y entonces volveremos al tab de usuario para asignarselo)
+
+![Create custom policy](./readme-resources/4_1_crearpolitica.png)
+
+Para definirla, vamos a hacerlo en formato JSON:
+
+![Cambiamos a formato JSON](./readme-resources/4_2_pinchamos_json.png)
+
+Vamos a definirla (contenido del JSON):
+
+> OJO PON AQUI EL NOMBRE DE TU BUCKET
+> REEMPLAZA `nombre-del-bucket` por el nombre de tu bucket.
 
 ```json
 {
@@ -114,13 +128,33 @@ Antes de seguir, esto de darle permiso a todos los buckets te puede abrir una br
 }
 ```
 
-Ahora podemos ver que está asignada (si elegimos en filtro, "Administrada por el cliente").
+Le damos a siguiente.
 
-Volvemos al usuario, desmarcamos AmazonS3FullAccess y marcamos la política que acabamos de crear (Ojo tnemos que darle al boton de refresh):
+Y vamos a dar el siguiente nombre: `S3BucketTemporalPermiso`
 
+![Le damos nombre a la política](./readme-resources/4_3_nombre_politica.png)
 
+Y le damos a crear política.
 
+![Le damos nombre a la política](./readme-resources/4_4_crear_politica_boton.png)
 
+Una vez que nos vuelve a mostrar la lista de políticas, podemos ver que está existe (si elegimos en filtro , "Administrada por el cliente").
+
+![Filtro administrada por cliente](./readme-resources/4_5_administrada_cliente.png)
+
+Volvemos al usuario, desmarcamos AmazonS3FullAccess y marcamos la política que acabamos de crear (Ojo, de primeras no aparece tenemos que darle al boton de refresh):
+
+Botón refresh:
+
+![Botón refresh](./readme-resources/4_6_refresh_en_usuario.png)
+
+En usuairo / politica de permisos, filtramos por _Administrada por el cliente_:
+
+![Filtramos por administrada por el cliente](./readme-resources/4_7_filtro_usuario_administrada_cliente.png)
+
+Elegimos la política que acabamos de crear:
+
+![Elegimos la policy en el tab de usuario](./readme-resources/4_8_elegir_policy.png)
 
 Ya lo tenemos casí listo, en el paso 3 `step 3` lo revisamos y creamos, ahora tenemos que crear unas credenciales para poder usarlo en nuestra aplicación (y va a ser un access key, para usarlo desde código).
 
@@ -132,7 +166,6 @@ Hacemos scroll para abajo y clicamos en `Create access key`:
 
 ![Clicks on create access key button](./readme-resources/06-create-access-key.png)
 
-
 Seleccionamos el caso de uso (aplicación corriendo fuera de AWS):
 
 ![Select the use case](./readme-resources/07-use-case.png)
@@ -141,11 +174,9 @@ Nos saltamos el paso opcional (description tag).
 
 En el paso final (`final step`), Amazon nos proporciona el `Access key ID` y el `Secret access key`. guardamos las credenciales para usarlas en la aplicación:
 
-
 ![IAM user crendetials](./readme-resources/08-copy-credentials.png)
 
 En nodejs tenemos varias formas de [configurar credenciales](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html), por ejemplo usando [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html) o [env variables](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html), vamos a implementar esta última:
-
 
 _./back/.env.example_
 
@@ -177,6 +208,7 @@ AUTH_SECRET=MY_AUTH_SECRET
 + AWS_SECRET_ACCESS_KEY=<use-real-values>
 
 ```
+
 > NOTA: Reemplaza <use-real-values> con los valores proporcionados por Amazon.
 >
 > Al ponerle estos nombres, el SDK de AWS automáticamente los detecta y los usa para las peticiones (no tenemos que ir poniéndolos en código), aunque si tenemos más de un access key también se puede informar cuando levantamos los objetos del SDK.
@@ -259,7 +291,6 @@ export const run = async () => {
 > [fs createWriteStream](https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_createwritestream_path_options)
 >
 > Mirae el `back/test.png` la imagen.
-
 
 Y vamos a subir una imagen, por ejemplo vamos a copiar dentro de `root path` (justo debajo de la carpeta _back_) la imagen `99-resources/user-avatar-in-s3.png`:
 
