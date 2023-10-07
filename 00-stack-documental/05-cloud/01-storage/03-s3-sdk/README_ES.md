@@ -50,6 +50,8 @@ Ya que estamos con acceso desde código, es hora de hacer privado nuestro bucket
 
 Así pues vamos a por la aproximación 2 que comentamos en `02-s3-portal`
 
+En la consola de administración del bucket, nos vamos al tab de permisos y hacemos una vuelta atrás :).
+
 Vamos a eliminar la policy que hacía el bucket público y desactivar el check de público, y después crearemos unas credenciales custom para que pueda acceder un usuario.
 
 **Bucket policy**
@@ -82,13 +84,43 @@ Y ahora vamos a crear un usuarios con permisos en ese bucket, usaremos el [IAM s
 
 ![IAM users page](./readme-resources/02-iam-users-page.png)
 
-Le indicamos el nombre de usuario y el tipo de acceso:
+Le indicamos el nombre de usuario y el tipo de acceso (en este caso no marcamos para que tenga acceso a la consola de AWS, ya que lo usaremos para acceder desde código):
 
 ![Creating user](./readme-resources/03-creating-user.png)
+
+Vamos a elegir _adjuntar políticas directamente_, y le damos a ese usuario S3 Full Access.
 
 Le damos a ese usuario permisos de `S3 Full Access` (si queremos ir a grano fino con la seguridad, podríamos haber creado un usuario para lectura y otro para lectura / escritura):
 
 ![Set S3 Full Access permissions](./readme-resources/04-set-permissions.png)
+
+La regla que vamos a crear es _S3BucketTemporalPermiso_
+
+Antes de seguir, esto de darle permiso a todos los buckets te puede abrir una brecha de seguridad, mejor creamos una política y le decimos que sólo tenga ese acceso al bucket que acabamos de crear:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::nombre-del-bucket",
+        "arn:aws:s3:::nombre-del-bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+Ahora podemos ver que está asignada (si elegimos en filtro, "Administrada por el cliente").
+
+Volvemos al usuario, desmarcamos AmazonS3FullAccess y marcamos la política que acabamos de crear (Ojo tnemos que darle al boton de refresh):
+
+
+
+
 
 Ya lo tenemos casí listo, en el paso 3 `step 3` lo revisamos y creamos, ahora tenemos que crear unas credenciales para poder usarlo en nuestra aplicación (y va a ser un access key, para usarlo desde código).
 
@@ -168,6 +200,10 @@ export const run = async () => {
 +   });
 +   const data = await client.send(command);
 +   console.log({ data });
++   // Poner Breakpoint aquí y ver lo que vale data.Contents
++   // Sale el fichero que subimos
++   console.log('**** contenido del bucket ****');
++   console.log(data.Contents);
 + } catch (error) {
 +   console.error(error);
 + }
@@ -222,10 +258,10 @@ export const run = async () => {
 
 > [fs createWriteStream](https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_createwritestream_path_options)
 >
-> Check `back/test.png` file.
+> Mirae el `back/test.png` la imagen.
 
 
-Y vamos a subir una imagen, por ejemplo vamos a copiar dentro de `root path` la imagen `99-resources/user-avatar-in-s3.png`:
+Y vamos a subir una imagen, por ejemplo vamos a copiar dentro de `root path` (justo debajo de la carpeta _back_) la imagen `99-resources/user-avatar-in-s3.png`:
 
 _./back/src/console-runners/s3.runner.ts_
 
