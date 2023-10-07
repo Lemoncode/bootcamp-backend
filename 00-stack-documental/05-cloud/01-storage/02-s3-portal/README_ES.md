@@ -81,7 +81,11 @@ Lo primero, desmarcamos `Block all public access`:
 
 **Bucket policy**
 
-Y en el _bucket-policy_ le damos permisos de sólo lectura:
+Aquí nos saldrá un mensaje del tipo ¿Estás seguro? Y nos hará meter un texto de confirmación.
+
+Y en el _bucket-policy_ (política del bucket) le damos permisos de sólo lectura:
+
+** OJO PON AQUI EL NOMBRE DE TU BUCKET, cambia `DOC-EXAMPLE-BUCKET` por el tuyo**
 
 ```json
 {
@@ -101,6 +105,8 @@ Y en el _bucket-policy_ le damos permisos de sólo lectura:
 > [Granting read-only S3 permission](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-use-case-2)
 
 Ahora si la url del objeto está disponible, incluso la podemos pasar desde el back para consumirla en la aplicación Front (`client-side`):
+
+OJO CAMBIA LOS DATOS DEL LA URL por tu bucket name, y region en el nombre del fichero (copia la url que habías pegado antes en el navegador):
 
 _./back/src/dals/mock-data.ts_
 
@@ -131,8 +137,9 @@ _back terminal_
 
 ```bash
 npm start
-
 ```
+
+> Acuérdate que para entrar en el login la combinación es _email: 'admin@email.com'_ y _password: 'test'_.
 
 Abrimos el navegador `http://localhost:8080` y... Taaachaaan :)
 
