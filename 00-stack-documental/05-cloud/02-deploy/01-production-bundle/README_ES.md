@@ -38,9 +38,13 @@ npm start
 
 ```
 
+> Si el back te da un error, del tipo _bind source path does not exist:_ acuérdate de crear la carpeta _mongo-data_ debajo de la carpeta _back_.
+
 Abrimos el navegador en `http://localhost:8080`
 
 Vamos a aprovechar que la ruta raíz de `restApiServer` está apuntando a `staticFilesPath` (`restApiServer.use('/', express.static(staticFilesPath));`) copiar allí los resultados de del build del front a dicha carpeta, de esta manera tenemos sólo un servidor y no tenemos problemas de CORS (esta solución depende de lo que quieras hacer, si es un desarrollo pequeño o mediano puede ser buena solución, si por ejemplo es una API REST para multiples frontales no sería el camino adecuado).
+
+Para el server de front y ejecutamos:
 
 _front terminal_
 
@@ -48,7 +52,11 @@ _front terminal_
 npm run build
 ```
 
-Copiamos los ficheros de `front/dist` en `back/public`.
+Se vuelva el contenido de producción a la carpeta _dist_
+
+Copiamos los ficheros de `front/dist` en `back/public` (de momento lo hacemos manualmente, ya veremos más adelante como automatizar esto).
+
+** IMPORTANTE COPIAMOS LOS FICHRO AL RAIZ DE PUBLIC, NO LA CARPETA `dist`**
 
 Y para evitar que se suba ese build al repo, lo añadimos al `.gitignore` (ignorar carpeta `public`):
 
@@ -85,13 +93,14 @@ Ahora toca preparar el paquete de producción del back, aquí tenemos que hacer 
 
 Veamos esto paso a paso:
 
+- Seguimos en la carpeta `back` en el terminal y vamos a seguir ejecutando comandos y modificando ficheros.
+
 - Borrar carpetas en Windows y Linux, no se hace de la misma manera, existe una librería de npm que nos ayuda a hacerlo de manera cross-platform, se llama `rimraf`:
 
 La instalamos:
 
 ```bash
 npm install rimraf --save-dev
-
 ```
 
 Nos creamos dos comandos:
@@ -127,7 +136,7 @@ Al hacer el build se nos han transpilado ficheros que no queremos en producción
 - Ficheros de test (_spec_).
 - Ficheros de consola (_console-runners_).
 
-Vamos a crearnos un _tsconfig_ de producción y le diremos que ignore estos ficheros:
+Vamos a crearnos un _tsconfig_ de producción y le diremos que ignore estos ficheros, aprovechamos y le indicamos también que vuelque a la carpeta dist:
 
 _./back/tsconfig.prod.json_
 
@@ -176,7 +185,6 @@ _back terminal_
 
 ```bash
 node dist
-
 ```
 
 _¿Por qué nos falla?_ Porque estamos usando `alias imports` de Node.js apuntando a la carpeta `src`, vamos a crear manualmente un `package.json` dentro de la carpeta `dist`, para que node sepa como resolver estos imports (en vez de tirar de _src_ que tire directamente del raiz):
