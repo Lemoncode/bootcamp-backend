@@ -78,9 +78,17 @@ docker container prune
 
 Docker run `pulls` se trae las imágenes de forma automática si no están ya en local, Vamos a eliminar la imagen actual:
 
-```bash
+```js
+// Lista las imagenes que tenemos en local
+docker images
+
+// Sirve para eliminar una imagen
 docker image rm <IMAGE ID>:<tag>
+
+// comando corto
 docker rmi <IMAGE ID>:<tag>
+
+// Elimina todas las imágenes fantasma
 docker image prune
 ```
 
@@ -95,10 +103,12 @@ docker run -it ubuntu sh
 
 > Descarga la imagen `ubuntu` sin usar el comando `pull`.
 >
+> Abre el terminal de ese `ubuntu`, prueba: a ejecutar el comando `ls`.
 > NOTA: Abre un nuevo terminal y escribe `docker ps`.
 >
 > sh: bash terminal
 >
+> Para salir del terminal de ubuntu: `exit`
 > En los siguientes ejemplos veremos como conectarnos a un container en ejecución usando `docker exec -it <Container ID> sh
 
 # ¿Con ganas de aprender Backend?
