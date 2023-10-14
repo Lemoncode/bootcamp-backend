@@ -4,22 +4,7 @@ En este ejemplo vamos a subir una imagin de Docker a `Dockerhub` (el registry of
 
 Tomamos como punto de partida `06-docker-image`.
 
-# Steps to build it
-
-Si no lo hemos hecho antes vamos a hacer un install de front y back.
-
-```bash
-cd front
-npm install
-
-```
-
-En otro terminal:
-
-```bash
-cd back
-npm install
-```
+# Pasos
 
 Lo primero, necesitamos hacer login en el registry de Docker Hub:
 
@@ -27,8 +12,6 @@ Lo primero, necesitamos hacer login en el registry de Docker Hub:
 docker login
 docker login <registry>
 ```
-
-> Si hemos instalado `Docker desktop seguramente ya estemos logados`
 
 > `<registry>`: Por defecto el registry al que apunta es `docker.io`
 > pues usar el comando `docker info` para ver entre otra información a que registry estamos conectados.
@@ -99,7 +82,7 @@ _./Dockerfile_
 Hacemos un build y subimos de nuevo
 
 ```bash
-docker build -t <user-name>/<app-name>:3 .
+docker build -t brauliodiez/book-store:3 .
 docker images
 docker push <user-name>/<app-name>:3
 ```
@@ -123,8 +106,6 @@ docker images
 ```
 
 Y crear un contenedor desde la imagen de Dockerhub:
-
-And create a container from Dockerhub's image:
 
 ```bash
 docker run --name book-container --rm -d -p 3001:3001 <user-name>/<app-name>:3
