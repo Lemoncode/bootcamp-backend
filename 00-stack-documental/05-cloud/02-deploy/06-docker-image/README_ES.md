@@ -2,24 +2,67 @@
 
 En este ejemplo vamos a crear y ejecutar imágenes Docker.
 
-Tomamos como punto de partida el ejemplo `04-manual-aws-deploy`.
+Tomamos como punto de partida el ejemplo `00-boiler-plate`.
+
+¿Os acordáis de todo el proceso manual que seguimos para poder desplegar el front y el back? Pues vamos a automatizarlo con Docker y generar una imagen con el resultado.
+
+De esta manera evitamos errores humanos, desplegar consiste en _darle a un botón_ y podemos fácilmente reproducir entornos.
 
 # Pasos
 
-Ejecutamos `npm install` para instalar los paquetes de los ejemplos anteriores:
+## Previo
+
+Como partimos del boilerplate, tenemos que hacer alguna configuración adicional (lo hicimos el último día cuando desplegamos manualmente):
 
 ```bash
-cd front
-npm install
+cd ./back
 ```
 
-Abrimos un segundo terminal:
+- Creamos un tsconfig de producción:
+
+tsconfig.prod.json
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "exclude": ["**/*.spec.ts", "./src/console-runners"]
+}
+```
+
+- Instalamos rimraf para borrar las carpetas de buid:
 
 ```bash
-cd back
-npm install
-
+cd ./back
+npm install rimraf --save-dev
 ```
+
+> Volver después al raíz con toque hacer el build de la imagen :)
+
+- Añadimos un comando de clean y otro de build:
+
+_./package.json_
+
+```diff
+  "scripts": {
+    "prestart": "sh ./create-dev-env.sh",
+    "start": "run-p -l type-check:watch start:dev start:local-db",
+    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+    "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
+    "console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
+    "start:local-db": "docker-compose up -d",
++    "clean": "rimraf dist",
++    "build": "npm run clean && tsc --project tsconfig.prod.json",
+    "type-check": "tsc --noEmit --preserveWatchOutput",
+    "type-check:watch": "npm run type-check -- --watch",
+    "test": "jest -c ./config/test/jest.js",
+    "test:watch": "npm run test -- --watchAll -i"
+  },
+```
+
+## Imagen
 
 Ahora podemos crear nuestra imagen custom, en este caso vamos a usar [la imagen de node](https://hub.docker.com/_/node), en concreto la versión la versión alpine de linux como base para crear la nuestra:
 
@@ -39,6 +82,7 @@ _./Dockerfile_
 
 ```diff
 FROM node:18-alpine
++ # Crear app directory y usarlo como working directory
 + RUN mkdir -p /usr/app
 + WORKDIR /usr/app
 
@@ -71,7 +115,6 @@ front/node_modules
 front/dist
 front/.editorconfig
 front/.gitignore
-
 ```
 
 Vamos a copiar los ficheros de nuestra aplicación (fijate que _COPY_ copia desde el disco duro de nuestra máquina al contenedor).
@@ -85,6 +128,7 @@ FROM node:18-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
++ # Copiar backend al raíz workdir (/usr/app)
 + COPY ./back ./
 
 ```
@@ -100,7 +144,9 @@ FROM node:18-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
+# Copiar backend al raíz workdir (/usr/app)
 COPY ./back ./
++ # Hacemos el install y el build
 + RUN npm ci
 + RUN npm run build
 ```
@@ -113,6 +159,7 @@ docker build -t book-store-app:1 .
 
 > -t: Le damos un nombre a la imagen. Podemos usar `-t nombre:tag`
 > Cómo tag le indicamos que es la versión 1 de esta aplicación.
+> El . es para que trabaje desde el directorio actual.
 
 Vamos a ejecutar esta imagen para ver como va:
 
@@ -128,6 +175,8 @@ docker run --name book-container -it book-store-app:1 sh
 
 > Podemos los ficheros del build dentro del contenedor: `cd ./dist && ls`
 
+> Para salir del shell teclea `exit`y enter.
+
 Ya que tenemos el build, podemos probar a ejecutar el servidor:
 
 _./Dockerfile_
@@ -141,13 +190,16 @@ COPY ./back ./
 RUN npm ci
 RUN npm run build
 
++ # Le indicamos variables de entorno (ojo sensibles NO)
 + ENV PORT=3000
 + ENV STATIC_FILES_PATH=./public
 + ENV API_MOCK=true
 + ENV AUTH_SECRET=MY_AUTH_SECRET
 
++ # Actualizamos las rutas del package.json para que apunten a dist
 + RUN apk update && apk add jq
 + RUN updatedImports="$(jq '.imports[]|=sub("./src"; "./dist")' ./package.json)" && echo "${updatedImports}" > ./package.json
++ # Ejecutamos la aplicación (ojo CMD no RUN)
 + CMD node dist/index
 
 ```
@@ -164,6 +216,8 @@ RUN npm run build
 _¡Ala que de lío ! Pero si esto lo hacíamos de forma manual... Todos los pasos manuales que podamos automatizar mejor, menos errores y más tiempo para tomar café ;)._
 
 Fíjate que en el último comando no hacemos un _RUN_ sino `CMD node dist/index`, aquí le estamos diciendo, este comando no lo ejecutes ahora (tiempo de creación de imagen), ejecútalo cuando arranque el contenedor.
+
+Ojo aquí en vez de CMD podemos usar ENTRYPOINT (Esto lo veremos más adelante), la diferencia es que con ENTRYPOINT si creamos una imagen a partir de esta podemos cambiar el comando que se ejecuta al arrancar el contenedor, con CMD no.
 
 [CMD VS ENTRYPOINT](https://docs.doppler.com/docs/dockerfile)
 
@@ -188,12 +242,21 @@ Vamos a ejecutar el nuevo container:
 ```bash
 docker ps -a
 docker run --name book-container book-store-app:1
-docker exec -it book-container sh
 ```
+En otra consola:
+
+```bash
+docker exec -it book-container sh
+cat package.json
+```
+
+> Fíjate que en _package.json_ los imports apuntan a `./dist` y no a `./src`.
+
+
 
 Vamos a abrir el navegador y probar con las URL `http://localhost:3000` y `http://localhost:3000/api/books`. ¡¡ EY, ESTO NO FUNCIONA !! ¿Porque no podemos ver estas URLS? Porque este proceso se está ejecuando dentro del contenedor, tenemos que exponerlos puertos del contenedor a nuestras máquinas.
 
-Vamos a hacer esto primero por línea de comandos, le pondremos el puerto 3001 de nuestra máquina para ver que se pueden poner puertos distintos ¿Para que sirve esto? Imagínate que necesitas correr Mongo 5 y Mongo 7... pues puedes tener dos contenedores con Mongo corriendo en puertos distintos.
+Vamos a hacer esto por línea de comandos, le pondremos el puerto 3001 de nuestra máquina para ver que se pueden poner puertos distintos ¿Para que sirve esto? Imagínate que necesitas correr Mongo 5 y Mongo 7... pues puedes tener dos contenedores con Mongo corriendo en puertos distintos.
 
 ```bash
 docker ps
@@ -221,7 +284,7 @@ _./Dockerfile_
 
 ```diff
 ...
-
++ # Ojo esto es informativo,no expone ningún puerto
 + EXPOSE 3000
 ENV PORT=3000
 ...
@@ -238,11 +301,19 @@ docker rm book-container
 docker image prune
 ```
 
-Por otro lado, si echamos un vistazo podemos ver que nuestra imagen pesa mucho `~326MB`, es buena idea poner a dieta nuestra imagenes ya que menos peso significa:
+> Puede que el contenedor no esté parado, a pararlo por comando o VSCode.
+
+Por otro lado, si echamos un vistazo podemos ver que nuestra imagen pesa mucho `~326MB`: 
+
+```bash
+docker images
+```
+
+Es buena idea poner a dieta nuestra imágenes ya que menos peso significa:
 
 - Menos tiempo de descarga.
 - Menos espacio en disco.
-- Menos tiempo de despliegue (acuerdate que nos cobran por minuto de build).
+- Menos tiempo de despliegue (acuérdate que nos cobran por minuto de build).
 - Menos que nos cobrarían en un servicio cloud.
 
 Para ello vamos a utilizar [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/), así podemos tener imágenes más pequeñas, ya que sólo incluiremos lo necesario para ejecutar nuestra aplicación.
@@ -264,24 +335,25 @@ Así pues nos quitamos un montón de ficheros temporales y dependencias que no n
 _./Dockerfile_
 
 ```diff
++ # ** Partimos de esta Base
 - FROM node:18-alpine
 + FROM node:18-alpine AS base
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
-+ # Build front app
++ # **Build de Front partimos de base pero fase front-build
 + FROM base AS front-build
 + COPY ./front ./
 + RUN npm ci
 + RUN npm run build
 
-+ # Build back app
++ # **Build back app partimos de base pero fase back-build
 + FROM base AS back-build
 COPY ./back ./
 RUN npm ci
 RUN npm run build
 
-+ # Release
++ # ** Fase Release, juntamos las piezas de las distintas fases
 + FROM base AS release
 + COPY --from=front-build /usr/app/dist ./public
 + COPY --from=back-build /usr/app/dist ./
