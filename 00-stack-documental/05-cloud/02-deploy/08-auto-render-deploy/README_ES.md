@@ -37,6 +37,8 @@ Añadimos las variables de entorno (Advanced settings):
 
 ![06-add-env-vars](./readme-resources/06-add-env-vars.png)
 
+> Mirar STATIC_FILES_PATH=./public
+
 Acualizamos los docker settings:
 
 ![07-docker-settings](./readme-resources/07-docker-settings.png)
