@@ -28,7 +28,7 @@ _./src/core/servers/rest-api.server.ts_
 import express from 'express';
 import cors from 'cors';
 + import cookieParser from 'cookie-parser';
-import { envConstants } from '../constants';
+import { envConstants } from "../constants/index.js";
 
 export const createRestApiServer = () => {
   const restApiServer = express();
@@ -79,7 +79,7 @@ _./src/pods/security/security.rest-api.ts_
 
 Now, we will update the `authentication` middleware:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.middlewares.ts_
 
 ```diff
 ...
@@ -110,19 +110,22 @@ npm start
 ```
 
 ```md
-POST http://localhost:3000/api/security/login
+URL: http://localhost:3000/api/security/login
+METHOD: POST
 
-### Body
+BODY:
 {
 	"email": "admin@email.com",
 	"password": "test"
 }
 
-GET http://localhost:3000/api/books
+URL: http://localhost:3000/api/books
+METHOD: GET
 
 ```
 
 > We should install [Postman interceptor](https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo) to check cookies on postman.
+>
 > With cookies we could check it on browser too.
 
 Update `logout` method:
@@ -143,7 +146,8 @@ _./src/pods/security/security.rest-api.ts_
 ```
 
 ```md
-POST http://localhost:3000/api/security/logout
+URL: http://localhost:3000/api/security/logout
+METHOD: POST
 
 ```
 

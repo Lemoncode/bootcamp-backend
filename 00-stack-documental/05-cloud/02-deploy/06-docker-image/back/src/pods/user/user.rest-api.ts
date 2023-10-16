@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { userRepository } from 'dals';
-import { mapUserFromModelToApi } from './user.mappers';
+import { userRepository } from '#dals/index.js';
+import { mapUserFromModelToApi } from './user.mappers.js';
 
 export const userApi = Router();
 

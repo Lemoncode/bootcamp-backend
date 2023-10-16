@@ -24,9 +24,11 @@ We are going to install the main library which we base all our unit tests, [Jest
 npm install jest @types/jest --save-dev
 ```
 
-> If we are using `@babel/preset-typescript` it is not necessary install [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
+> [NodeJS 18 has a test runner](https://nodejs.org/dist/latest-v18.x/docs/api/test.html) tool but it's experimental.
+>
+> [Since Jest v24 is TypeScript-friendly](https://jestjs.io/blog/2019/01/25/jest-24-refreshing-polished-typescript-friendly), it is not necessary install [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
+>
 > [Official docs](https://jestjs.io/docs/getting-started)
-> NOTE: [Since jest v26.x it drops support for Node 8](https://github.com/facebook/jest/releases/tag/v26.0.0)
 
 # Config
 
@@ -54,7 +56,7 @@ _./package.json_
   "scripts": {
     ...
 +   "test": "jest --verbose",
-+   "test:watch": "npm run test -- --watchAll -i"
++   "test:watch": "npm test -- --watchAll -i"
   },
   ...
 }
@@ -122,7 +124,7 @@ We could create a jest config outside `package.json` to improve maintainability.
 _./config/test/jest.js_
 
 ```js
-module.exports = {
+export default {
   rootDir: '../../',
   verbose: true,
 };

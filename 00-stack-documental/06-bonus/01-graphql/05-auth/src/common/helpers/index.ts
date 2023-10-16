@@ -1,2 +1,2 @@
-export * from './hash-password.helpers';
-export * from './jwt.helpers';
+export * from './hash-password.helpers.js';
+export * from './jwt.helpers.js';

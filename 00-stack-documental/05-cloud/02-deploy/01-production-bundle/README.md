@@ -45,7 +45,7 @@ Since we are using `restApiServer.use('/', express.static(staticFilesPath));` we
 _front terminal_
 
 ```bash
-npm run build:prod
+npm run build
 
 ```
 
@@ -57,11 +57,11 @@ _back/.gitignore_
 
 ```diff
 node_modules
+dist
 .env
 mongo-data
 globalConfig.json
 + public
-+ dist
 
 ```
 
@@ -76,12 +76,10 @@ npm start
 
 Open browser in `http://localhost:3000`
 
-The second step is create a new `npm command` in `back` project to compile `ts` into `js` files, in this case, we will use babel, but first, we will install `rimraf` library to clean `dist` folder before run a new build and `cross-env` to create inline env variable:
-
-_back terminal_
+The second step is create a new `npm command` in `back` project to compile `ts` into `js` files, in this case, we will use `tsc`(the TypeScript Compiler):
 
 ```bash
-npm install rimraf cross-env --save-dev
+npm install rimraf --save-dev
 
 ```
 
@@ -91,10 +89,11 @@ _./back/package.json_
 ...
   "scripts": {
     ...
-    "test:watch": "npm run test -- --watchAll -i",
+    "start:local-db": "docker-compose up -d",
 +   "clean": "rimraf dist",
-+   "build": "npm run type-check && npm run clean && npm run build:prod",
-+   "build:prod": "cross-env NODE_ENV=production babel src -d dist --extensions \".ts\""
++   "build": "npm run clean && tsc --outDir dist",
+    "type-check": "tsc --noEmit --preserveWatchOutput",
+    ...
   },
 ...
 ```
@@ -110,19 +109,29 @@ npm run build
 
 A nice improvement is ignore not necessary files for production:
 
-_./back/.babelrc_
+_./back/tsconfig.prod.json_
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "exclude": ["**/*.spec.ts", "./src/console-runners"]
+}
+```
+
+Update script command:
+
+_./back/package.json_
 
 ```diff
-...
-  "env": {
-    "development": {
-      "sourceMaps": "inline"
-    },
-+   "production": {
-+     "ignore": ["**/*.spec.ts", "./src/console-runners"]
-+   }
-  }
-}
+"scripts": {
+  ...
+- "build": "npm run clean && tsc --outDir dist",
++ "build": "npm run clean && tsc --project tsconfig.prod.json",
+  ...
+},
 
 ```
 
@@ -136,6 +145,33 @@ npm run build
 ```
 
 We could run this `production` version using node:
+
+_back terminal_
+
+```bash
+node dist
+
+```
+
+Why is it failing? Because we are using Node.js `alias imports` targetting `src` folder, let's manually create a package.json inside `dist` folder:
+
+_./dist/package.json_
+
+```json
+{
+  "type": "module",
+  "imports": {
+    "#common/*": "./common/*",
+    "#common-app/*": "./common-app/*",
+    "#core/*": "./core/*",
+    "#dals/*": "./dals/*",
+    "#pods/*": "./pods/*"
+  }
+}
+
+```
+
+Run it again:
 
 _back terminal_
 

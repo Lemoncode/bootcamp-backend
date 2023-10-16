@@ -2,7 +2,7 @@
 
 In this example we are going to user serverless framework.
 
-We will start from `05-serverless`.
+We will start from `05-topics`.
 
 # Steps to build it
 
@@ -26,6 +26,8 @@ npm install -g serverless
 
 ```
 
+> Install serverless as global dependency because it's like a CLI tool.
+>
 > It has a [cli](https://github.com/serverless/serverless) to create a serverless template project.
 >
 > [Cloud providers](https://www.serverless.com/framework/docs/providers)
@@ -41,7 +43,7 @@ frameworkVersion: '3'
 provider:
   name: aws
   region: eu-west-3
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   memorySize: 128
 
 functions:
@@ -54,6 +56,8 @@ functions:
 
 ```
 
+> [Serverless.yml](https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml)
+>
 > [AWS Lambda pricings](https://aws.amazon.com/lambda/pricing/)
 
 Create `simple-api` file:
@@ -61,7 +65,7 @@ Create `simple-api` file:
 _./back/src/simple-api.js_
 
 ```javascript
-module.exports.handler = async (event) => {
+export const handler = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify({
@@ -86,13 +90,13 @@ Update `package.json`:
 ...
   "scripts": {
     "prestart": "sh ./create-dev-env.sh",
-    "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --exec babel-node --extensions \".ts\" src/index.ts",
-    "prestart:console-runners": "npm run prestart",
-    "start:console-runners": "run-p type-check:watch console-runners",
-    "console-runners": "npm run type-check && nodemon --no-stdin --exec babel-node -r dotenv/config --extensions \".ts\" src/console-runners/index.ts",
+    "start": "run-p -l type-check:watch start:dev start:local-db",
+    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+    "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
+    "console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
+    "start:local-db": "docker-compose up -d",
 +   "start:serverless": "serverless offline",
-    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
 ...
   },
 ...
@@ -126,6 +130,8 @@ functions:
 
 ```
 
+> [Using plugins](https://www.serverless.com/framework/docs/guides/plugins)
+
 Run it:
 
 ```bash
@@ -133,28 +139,25 @@ npm run start:serverless
 
 ```
 
+> Open `http://localhost:3000`
+
 Let's use `typescript with serverless`:
 
-> There are a [serverless plugin](https://www.serverless.com/plugins/serverless-plugin-typescript) but it has its own builder outside babel.
+> There is a [serverless plugin](https://www.serverless.com/plugins/serverless-plugin-typescript) but it's doesn't provide any watch mode, it always compiles all the files and you need to restart the serverless process.
 
-Rename file to `.ts`:
+Rename file to `simple-api.ts`.
 
-_./back/src/simple-api.ts_
+Update `package.json`:
+
+_./back/package.json_
 
 ```diff
-- module.exports.handler = async (event) => {
-+ export const handler = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Hello from function',
-    }),
-  };
-};
-
+-   "start:serverless": "serverless offline",
++   "start:serverless": "run-p -l \"build -- --watch\" serverless",
++   "serverless": "serverless offline --reloadHandler",
 ```
 
-Using plugin in config:
+Update serverless config:
 
 _./back/serverless.yml_
 
@@ -173,7 +176,6 @@ functions:
 Run it:
 
 ```bash
-npm run build
 npm run start:serverless
 
 ```
@@ -209,6 +211,20 @@ serverless package
 ```
 
 > With `serverless deploy` creates the package and deploy it to AWS.
+
+Ignore the `.serverless` folder:
+
+_./back/.gitignore_
+
+```diff
+node_modules
+dist
+.env
+mongo-data
+globalConfig.json
+public
++ .serverless
+```
 
 There is available [serverless-http](https://github.com/dougmoscrop/serverless-http) plugin to work with express and serverless.
 

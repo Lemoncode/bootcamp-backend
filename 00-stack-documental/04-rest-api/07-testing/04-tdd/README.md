@@ -30,7 +30,7 @@ Let's add a new mapper function to `books.mappers`, but this time, we will start
 _./src/pods/book/book.mappers.spec.ts_
 
 ```typescript
-describe('pods/book/book.mappers spec', () => {
+describe('book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
     it('', () => {
       // Arrange
@@ -47,9 +47,9 @@ Should return empty array when it feeds undefined:
 _./src/pods/book/book.mappers.spec.ts_
 
 ```diff
-+ import * as model from 'dals';
-+ import * as apiModel from './book.api-model';
-+ import {} from './book.mappers';
++ import * as model from '#dals/index.js';
++ import * as apiModel from './book.api-model.js';
++ import {} from './book.mappers.js';
 
 describe('pods/book/book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
@@ -59,10 +59,11 @@ describe('pods/book/book.mappers spec', () => {
 +     const bookList: apiModel.Book[] = undefined;
 
       // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     const result = mapBookListFromApiToModel(bookList);
 
       // Assert
-+     expect(result).toEqual([]);
++     const expectedResult: model.Book[] = [];
++     expect(result).toEqual(expectedResult);
     });
   });
 });
@@ -87,10 +88,10 @@ Let's update the spec:
 _./src/pods/book/book.mappers.spec.ts_
 
 ```diff
-import * as model from 'dals';
-import * as apiModel from './book.api-model';
-- import {} from './book.mappers';
-+ import { mapBookListFromApiToModel } from './book.mappers';
+import * as model from '#dals/index.js';
+import * as apiModel from './book.api-model.js';
+- import {} from './book.mappers.js';
++ import { mapBookListFromApiToModel } from './book.mappers.js';
 
 ...
 
@@ -146,9 +147,9 @@ _./src/pods/book/book.mappers.spec.ts_
 
 ```diff
 + import { ObjectId } from 'mongodb';
-import * as model from 'dals';
-import * as apiModel from './book.api-model';
-import { mapBookListFromApiToModel } from './book.mappers';
+import * as model from '#dals/index.js';
+import * as apiModel from './book.api-model.js';
+import { mapBookListFromApiToModel } from './book.mappers.js';
 
 ...
 

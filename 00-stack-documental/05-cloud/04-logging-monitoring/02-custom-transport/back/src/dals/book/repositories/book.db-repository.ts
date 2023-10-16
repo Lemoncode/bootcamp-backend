@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-import { getBookContext } from '../book.context';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+import { getBookContext } from '../book.context.js';
 
 export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
@@ -15,16 +15,13 @@ export const dbRepository: BookRepository = {
     });
   },
   saveBook: async (book: Book) => {
-    const { value } = await getBookContext().findOneAndUpdate(
+    return await getBookContext().findOneAndUpdate(
       {
         _id: book._id,
       },
-      {
-        $set: book,
-      },
+      { $set: book },
       { upsert: true, returnDocument: 'after' }
     );
-    return value;
   },
   deleteBook: async (id: string) => {
     const { deletedCount } = await getBookContext().deleteOne({

@@ -19,7 +19,7 @@ Create specs file:
 _./src/pods/security/security.middlewares.spec.ts_
 
 ```typescript
-describe('pods/security/security.middlewares specs', () => {
+describe('security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('', () => {
       // Arrange
@@ -28,7 +28,6 @@ describe('pods/security/security.middlewares specs', () => {
     });
   });
 });
-
 ```
 
 Should send 401 status code if it feeds authorization cookie equals undefined:
@@ -37,7 +36,7 @@ _./src/pods/security/security.middlewares.spec.ts_
 
 ```diff
 + import { Request, Response } from 'express';
-+ import { authenticationMiddleware } from './security.middlewares';
++ import { authenticationMiddleware } from './security.middlewares.js';
 
 describe('pods/security/security.middlewares specs', () => {
   describe('authorizationMiddleware', () => {
@@ -60,7 +59,6 @@ describe('pods/security/security.middlewares specs', () => {
 +     authenticationMiddleware(req, res, next);
 
       // Assert
-+     expect(res.sendStatus).toHaveBeenCalled();
 +     expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
   });
@@ -74,29 +72,30 @@ Run specs:
 npm run test:watch security.middlewares.spec
 
 ```
-> If we have some conflicts with import alias
-> _./config/test/jest.js_
+
+If we have some conflicts with import alias
+
+_./config/test/jest.js_
 
 ```diff
-module.exports = {
-  rootDir: '../../',
-  preset: 'ts-jest',
-  restoreMocks: true,
-+ moduleDirectories: ['<rootDir>/src', 'node_modules'],
+...
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
++   '#(.*)\\.js$': '<rootDir>/src/$1',
+  },
 };
 
 ```
-> [moduleDirectories default value](https://jestjs.io/docs/configuration#moduledirectories-arraystring)
->
+
 > [More info](https://www.basefactor.com/configuring-aliases-in-webpack-vs-code-typescript-jest)
 
- Why is it failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
+Why is it failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
 
 _./src/pods/security/security.middlewares.spec.ts_
 
 ```diff
 import { Request, Response } from 'express';
-import { authenticationMiddleware } from './security.middlewares';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 describe('pods/security/security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
@@ -139,8 +138,8 @@ _./src/pods/security/security.middlewares.ts_
 - import { RequestHandler } from 'express';
 + import { RequestHandler, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-import { UserSession, Role } from 'common-app/models';
+import { envConstants } from '#core/constants/index.js';
+import { UserSession, Role } from '#common-app/models/index.js'
 
 ...
 
@@ -213,8 +212,8 @@ _./src/pods/security/security.middlewares.spec.ts_
 ```diff
 import { Request, Response } from 'express';
 + import jwt from 'jsonwebtoken';
-+ import { UserSession } from 'common-app/models';
-import { authenticationMiddleware } from './security.middlewares';
++ import { UserSession } from '#common-app/models/index.js';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 ...
 
@@ -275,7 +274,6 @@ export const verifyJWT = <T>(token: string, secret: string): Promise<T> =>
       }
     });
   });
-
 ```
 
 Update barrel file:
@@ -283,8 +281,8 @@ Update barrel file:
 _./src/common/helpers/index.ts_
 
 ```diff
-export * from './hash-password.helpers';
-+ export * from './jwt.helpers';
+export * from './hash-password.helpers.js';
++ export * from './jwt.helpers.js';
 
 ```
 
@@ -295,9 +293,9 @@ _./src/pods/security/security.middlewares.ts_
 ```diff
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 - import jwt from 'jsonwebtoken';
-+ import { verifyJWT } from 'common/helpers';
-import { envConstants } from 'core/constants';
-import { UserSession, Role } from 'common-app/models';
++ import { verifyJWT } from '#common/helpers/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { UserSession, Role } from '#common-app/models/index.js';
 
 - const verify = (token: string, secret: string): Promise<UserSession> =>
 -   new Promise((resolve, reject) => {
@@ -341,9 +339,9 @@ _./src/pods/security/security.middlewares.spec.ts_
 ```diff
 import { Request, Response } from 'express';
 - import jwt from 'jsonwebtoken';
-+ import * as helpers from 'common/helpers/jwt.helpers';
-import { UserSession } from 'common-app/models';
-import { authenticationMiddleware } from './security.middlewares';
++ import * as helpers from '#common/helpers/jwt.helpers.js';
+import { UserSession } from '#common-app/models/index.js';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 describe('pods/security/security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-import { db } from '../../mock-data';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+import { db } from '../../mock-data.js';
 
 const insertBook = (book: Book) => {
   const _id = new ObjectId();
@@ -42,9 +42,12 @@ export const mockRepository: BookRepository = {
   getBook: async (id: string) =>
     db.books.find((b) => b._id.toHexString() === id),
   saveBook: async (book: Book) =>
-    Boolean(book._id) ? updateBook(book) : insertBook(book),
+    db.books.some((b) => b._id.toHexString() === book._id.toHexString())
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
+    const exists = db.books.some((b) => b._id.toHexString() === id);
     db.books = db.books.filter((b) => b._id.toHexString() !== id);
-    return true;
+    return exists;
   },
 };

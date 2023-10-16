@@ -20,6 +20,8 @@ npm install mongodb --save
 
 ```
 
+> [MongoDB's driver compatibility with MongoDB version](https://www.mongodb.com/docs/drivers/node/current/compatibility/)
+>
 > It includes typings.
 
 Create the connection URI as env variable:
@@ -91,26 +93,21 @@ Update barrel file:
 _./src/core/servers/index.ts_
 
 ```diff
-export * from "./rest-api.server";
-+ export * from "./db.server";
+export * from "./rest-api.server.js";
++ export * from "./db.server.js";
 
 ```
 
-Let's update `app` and connect it to db:
+Let's update `index` and connect it to db:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
-import express from "express";
-import path from "path";
-- import { createRestApiServer } from "core/servers";
-+ import { createRestApiServer, connectToDBServer, db } from 'core/servers';
-import { envConstants } from "core/constants";
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from "common/middlewares";
-import { booksApi } from "pods/book";
+...
+- import { createRestApiServer } from #core/servers/index.js;
++ import { createRestApiServer, connectToDBServer, db } from "#core/servers/index.js";
+import { envConstants } from "#core/constants/index.js";
+import { booksApi } from "#pods/book/index.js";
 ...
 
 - restApiServer.listen(envConstants.PORT, () => {
@@ -126,11 +123,15 @@ import { booksApi } from "pods/book";
 
 ```
 
+```bash
+npm start
+```
+
 > Check results in Mongo Compass
 
 Now we can execute same methods like in mongo console, for example, the find method:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
 ...
@@ -147,6 +148,8 @@ restApiServer.listen(envConstants.PORT, async () => {
 });
 
 ```
+
+> Delete the previous inserted document, for example using Mongo Compass
 
 # ¿Con ganas de aprender Backend?
 

@@ -42,22 +42,13 @@ const sendBookToArchive = async (book: Book) => {
 
 Update consumers:
 
-_./consumers/src/app.ts_
+_./consumers/src/index.ts_
 
 ```diff
 ...
 
 + const exchangeName = 'price-archive';
 + const routingKey = 'price-key';
-
-const run = async () => {
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-  const channel = await messageBroker.channel(2);
-  channel.prefetch(1);
-+ channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
-  const queueName = 'price-archive-queue';
-...
-};
 
 const priceArchiveConsumerOne = async (
   channel: AMQPChannel,
@@ -98,7 +89,30 @@ const priceArchiveConsumerTwo = async (
     await queue.subscribe(
 ...
 
+  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+  const channel = await messageBroker.channel(2);
+  channel.prefetch(1);
++ channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+  const queueName = 'price-archive-queue';
+...
+
 ```
+
+Run POST method again:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
+{
+    "title": "My new book",
+    "releaseDate": "2022-09-10T00:00:00.000Z",
+    "author": "John Doe",
+    "price": 20
+}
+```
+
+> NOTE: We expect the same behaviour as before (like worker mode).
 
 The `routingKey`s are usefull if we want to route messages, for example, route by max price:
 
@@ -121,7 +135,7 @@ const sendBookToArchive = async (book: Book) => {
 
 ```
 
-_./consumers/src/app.ts_
+_./consumers/src/index.ts_
 
 ```diff
 - import { AMQPChannel, QueueParams } from '@cloudamqp/amqp-client';
@@ -132,19 +146,6 @@ import { envConstants } from 'core/constants';
 
 const exchangeName = 'price-archive';
 - const routingKey = 'price-key';
-
-const run = async () => {
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-  const channel = await messageBroker.channel(2);
-  channel.prefetch(1);
-  channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
-- const queueName = 'price-archive-queue';
-- const queueParams: QueueParams = { durable: true };
-- await priceArchiveConsumerOne(channel, queueName, queueParams);
-+ await priceArchiveConsumerOne(channel);
-- await priceArchiveConsumerTwo(channel, queueName, queueParams);
-+ await priceArchiveConsumerTwo(channel);
-};
 
 const priceArchiveConsumerOne = async (
   channel: AMQPChannel,
@@ -168,25 +169,21 @@ const priceArchiveConsumerTwo = async (
 +   const queue = await channel.queue('high-prices-queue', { durable: true });
 -   await queue.bind(exchangeName, routingKey);
 +   await queue.bind(exchangeName, 'high-prices');
-    await queue.subscribe(
-      {
-        noAck: false,
-      },
-      (message) => {
-        console.log('Worker 2 message received');
-        const book = JSON.parse(message.bodyToString());
-        console.log(
-          `Saving book with title "${book.title}" and price ${book.price}`
-        );
-        message.ack();
-      }
-    );
-    console.log('Price archive consumer 2 configured');
-  } catch (error) {
-    console.error(error);
-  }
+    ...
 };
 ...
+
+await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+const channel = await messageBroker.channel(2);
+channel.prefetch(1);
+channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+- const queueName = 'price-archive-queue';
+- const queueParams: QueueParams = { durable: true };
+- await priceArchiveConsumerOne(channel, queueName, queueParams);
++ await priceArchiveConsumerOne(channel);
+- await priceArchiveConsumerTwo(channel, queueName, queueParams);
++ await priceArchiveConsumerTwo(channel)
+
 ```
 
 Run app and send some message:

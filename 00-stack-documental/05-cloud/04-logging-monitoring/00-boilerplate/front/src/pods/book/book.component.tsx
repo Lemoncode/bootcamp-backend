@@ -1,8 +1,8 @@
 import React from 'react';
 import { cx } from '@emotion/css';
 import { useForm, Controller } from 'react-hook-form';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { Book } from './book.vm';
 import * as classes from './book.styles';
 

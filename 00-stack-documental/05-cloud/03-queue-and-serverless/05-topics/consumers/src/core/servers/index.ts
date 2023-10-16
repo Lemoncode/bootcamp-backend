@@ -1,1 +1,1 @@
-export * from './message-broker.server';
+export * from './message-broker.server.js';

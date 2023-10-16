@@ -1,7 +1,7 @@
 import { createLogger } from 'winston';
 import Transport from 'winston-transport';
-import { envConstants } from 'core/constants';
-import { console, file, rollbar } from './transports';
+import { envConstants } from '#core/constants/index.js';
+import { console, file, rollbar } from './transports/index.js';
 
 let transports: Transport[] = [console, file];
 if (envConstants.isProduction) {
@@ -10,5 +10,4 @@ if (envConstants.isProduction) {
 
 export const logger = createLogger({
   transports,
-  exitOnError: false,
 });

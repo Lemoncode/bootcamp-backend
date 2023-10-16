@@ -58,7 +58,7 @@ Now, we can use docker `push` to upload it:
 docker push <user-name>/<app-name>
 ```
 
-We can use same image to tag `DockerHub` versions:
+We can use same image to tag `DockerHub` versions with tag equals `2`:
 
 ```bash
 docker tag <app-name>:<tag> <registry>/<path-to-repository>:<tag>
@@ -100,9 +100,9 @@ docker push <user-name>/<app-name>:3
 We should update the `latest` version to tag equals `3`:
 
 ```bash
-docker tag <user-name>/<app-name>:3 <user-name>/<app-name>
+docker tag <user-name>/<app-name>:3 <user-name>/<app-name>:latest
 docker images
-docker push <user-name>/<app-name>
+docker push <user-name>/<app-name>:latest
 ```
 
 > `latest` version doesn't upload automatically

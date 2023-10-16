@@ -1,12 +1,12 @@
 import React from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 import {
   RowRendererProps,
   RowComponent,
   CellComponent,
-} from 'common/components';
+} from '@/common/components';
 import { Book } from '../book-list.vm';
 
 type Props = RowRendererProps<Book>;

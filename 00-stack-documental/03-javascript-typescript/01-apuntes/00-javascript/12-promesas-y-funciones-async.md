@@ -65,7 +65,7 @@ const db = {
 };
 
 // Usamos la API pasándole un callback que recibirá los datos
-db.getUsers((users) => {
+db.getUsers(users => {
   console.log("Received users", users);
 });
 ```
@@ -128,6 +128,13 @@ const db = {
       }, Math.random() * 2_000 + 1_000);
     });
   },
+  // Alternativamente, podriamos haberlo implementado llamando a su vez
+  // a getUsers
+  getUsersPromisifiedAlt() {
+    return new Promise((resolve, reject) => {
+      db.getUsers(resolve);
+    });
+  },
 };
 ```
 
@@ -160,8 +167,8 @@ También podemos registrar el callback de un `catch` como segundo argumento de `
 
 ```ts
 promise.then(
-  (users) => console.log("Received users", users),
-  (error) => console.log("Received error", error.message)
+  users => console.log("Received users", users),
+  error => console.log("Received error", error.message)
 );
 ```
 
@@ -185,10 +192,9 @@ palabras clave que surgieron para simpificar el manejo de las promesas.
 Son azúcar sinctáctico para reducir el anidamiento y manejar código
 asíncrono como si de código síncrono se tratara.
 
-Vamos a modificar el ejemplo de `db` para que use funciones asíncrona:
+Vamos a modificar el ejemplo de `db` para incorporar un método `async`:
 
 ```js
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const db = {
   getUsers(callback) {
     setTimeout(() => {
@@ -199,25 +205,14 @@ const db = {
     }, Math.random() * 2_000 + 1_000);
   },
   getUsersPromisified() {
-    // Devolvemos una promesa que se resolverá eventualmente
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          // throw new Error('Connection closed');
-
-          // Resolvemos la promesa con los datos
-          resolve([{ name: "fjcalzado" }, { name: "crsanti" }]);
-        } catch (error) {
-          reject(error);
-        }
-        // Esperamos entre 1 y 3 segundos para responder
-      }, Math.random() * 2_000 + 1_000);
+      db.getUsers(resolve);
     });
   },
   async getUsersAsync() {
     // throw new Error('Connection closed');
-    await wait(Math.random() * 2_000 + 1_000);
-    return [{ name: "fjcalzado" }, { name: "crsanti" }];
+    const users = await db.getUsersPromisified();
+    return users;
   },
 };
 ```
@@ -233,19 +228,4 @@ const promise = db.getUsersAsync();
 promise
   .then((users) => console.log("Received users", users))
   .catch((error) => console.log("Received error", error.message));
-```
-
-Si estamos en otra función asíncrona podremos utilizar `await` para obtener el resultado:
-
-```js
-const getUsers = async () => {
-  try {
-    const users = await db.getUsersAsync();
-    console.log("Received users", users);
-  } catch (error) {
-    console.log("Received error", error.message);
-  }
-};
-
-getUsers();
 ```

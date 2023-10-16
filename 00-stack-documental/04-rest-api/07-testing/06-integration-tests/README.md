@@ -45,16 +45,19 @@ config({
 
 ```
 
+> NOTE: Jest is still running in CommonJS
+
 Update jest config:
 
 _./config/test/jest.js_
 
 ```diff
-module.exports = {
+export default {
   rootDir: '../../',
-  preset: 'ts-jest',
+  verbose: true,
   restoreMocks: true,
 + setupFiles: ['<rootDir>/config/test/env.config.js'],
+  ...
 };
 
 ```
@@ -82,8 +85,8 @@ _./src/pods/book/book.rest-api.spec.ts_
 
 ```diff
 + import supertest from 'supertest';
-+ import { createRestApiServer } from 'core/servers';
-+ import { booksApi } from './book.rest-api';
++ import { createRestApiServer } from '#core/servers/index.js';
++ import { booksApi } from './book.rest-api.js';
 
 + const app = createRestApiServer();
 + app.use(booksApi);
@@ -119,20 +122,21 @@ As we see, we are running the app in `mock` mode. If we like to test our reposit
 npm install @shelf/jest-mongodb --save-dev
 ```
 
+> Use `-f` flag to force install the preset in a different version than peerDependencies.
+
 Add config file:
 
-_./jest-mongodb-config.js_
+_./jest-mongodb-config.cjs_
 
 ```javascript
 module.exports = {
   mongodbMemoryServerOptions: {
     binary: {
-      version: '5.3.2',
+      version: '6.0.10',
       skipMD5: true,
     },
     instance: {
       dbName: 'test-book-store',
-      port: 27017,
     },
     autoStart: false,
   },
@@ -147,13 +151,14 @@ Update jest config:
 _./config/test/jest.js_
 
 ```diff
-module.exports = {
+export default {
   rootDir: '../../',
   verbose: true,
   restoreMocks: true,
   setupFiles: ['<rootDir>/config/test/env.config.js'],
 + preset: '@shelf/jest-mongodb',
 + watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
+  ...
 };
 
 ```
@@ -166,6 +171,7 @@ _./.gitignore_
 
 ```diff
 node_modules
+dist
 .env
 mongo-data
 + globalConfig.json
@@ -185,9 +191,27 @@ CORS_METHODS=GET,POST,PUT,DELETE
 - API_MOCK=true
 + API_MOCK=false
 - MONGODB_URI=mongodb://localhost:27017/book-store
-+ MONGODB_URI=mongodb://localhost:27017/test-book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
+```
+
+> NOTE: we will use the MONGODB_URI provided by jest-mongodb because it will be created in a different port each time.
+
+Install `cross-env` to feed config file (due to `.cjs` extension) and update `package.json`:
+
+```bash
+npm install cross-env --save-dev
+```
+
+```diff
+...
+  "scripts": {
+    ...
+-   "test": "jest -c ./config/test/jest.js",
++   "test": "cross-env MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs jest -c ./config/test/jest.js",
+    "test:watch": "npm run test -- --watchAll -i"
+  }
+...
 ```
 
 Update spec to init MongoDB connection:
@@ -201,18 +225,20 @@ import {
   createRestApiServer,
 + connectToDBServer,
 + disconnectFromDBServer,
-} from 'core/servers';
-+ import { envConstants } from 'core/constants';
-+ import { getBookContext } from 'dals/book/book.context';
-import { booksApi } from './book.rest-api';
+} from '#core/servers/index.js';
++ import { getBookContext } from '#dals/book/book.context.js';
+import { booksApi } from './book.rest-api.js';
 
 const app = createRestApiServer();
 app.use(booksApi);
 
++   const MONGODB_URI = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
+
 describe('pods/book/book.rest-api specs', () => {
 + beforeAll(async () => {
-+   await connectToDBServer(envConstants.MONGODB_URI);
++   await connectToDBServer(MONGODB_URI);
 + });
+
 + beforeEach(async () => {
 +   await getBookContext().insertOne({
 +     _id: new ObjectId(),
@@ -225,6 +251,7 @@ describe('pods/book/book.rest-api specs', () => {
 + afterEach(async () => {
 +   await getBookContext().deleteMany({});
 + });
+
 + afterAll(async () => {
 +   await disconnectFromDBServer();
 + });
@@ -247,6 +274,14 @@ describe('pods/book/book.rest-api specs', () => {
 
 ```
 
+> [More info](https://jestjs.io/docs/mongodb)
+
+Run specs:
+
+```bash
+npm run test:watch book.rest-api
+```
+
 If we want insert new book:
 
 _./src/pods/book/book.rest-api.spec.ts_
@@ -258,11 +293,10 @@ import {
   createRestApiServer,
   connectToDBServer,
   disconnectFromDBServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
-import { getBookContext } from 'dals/book/book.context';
-+ import { Book } from './book.api-model';
-import { booksApi } from './book.rest-api';
+} from '#core/servers/index.js';
+import { getBookContext } from '#dals/book/book.context.js';
++ import { Book } from './book.api-model.js';
+import { booksApi } from './book.rest-api.js';
 
 const app = createRestApiServer();
 + app.use((req, res, next) => {

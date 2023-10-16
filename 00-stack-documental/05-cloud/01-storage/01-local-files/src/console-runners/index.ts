@@ -1,20 +1,19 @@
-import { prompt } from 'inquirer';
+import '#core/load-env.js';
+import inquier from 'inquirer';
 
-(async () => {
-  let exit = false;
-  while (!exit) {
-    const answer = await prompt({
-      name: 'consoleRunner',
-      type: 'list',
-      message: 'Which console-runner do you want to run?',
-      choices: ['s3', 'seed-data', 'exit'],
-    });
+let exit = false;
+while (!exit) {
+  const answer = await inquier.prompt({
+    name: 'consoleRunner',
+    type: 'list',
+    message: 'Which console-runner do you want to run?',
+    choices: ['s3', 'seed-data', 'exit'],
+  });
 
-    if (answer.consoleRunner !== 'exit') {
-      const { run } = require(`./${answer.consoleRunner}.runner`);
-      await run();
-    } else {
-      exit = true;
-    }
+  if (answer.consoleRunner !== 'exit') {
+    const { run } = await import(`./${answer.consoleRunner}.runner.js`);
+    await run();
+  } else {
+    exit = true;
   }
-})();
+}

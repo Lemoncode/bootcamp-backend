@@ -1,8 +1,8 @@
 import React from 'react';
-import Snackbar, { SnackbarOrigin } from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import { SnackbarContext } from './snackbar.context';
 import * as classes from './snackbar.styles';
 
@@ -17,10 +17,10 @@ Global snack bar (use one to rule them all :))
 Initialize on app provider:
 
 ```typescript
-import { RouterComponent } from 'core/router';
-import { SnackbarComponent, SnackbarProvider } from 'common/components';
+import { RouterComponent } from '@/core/router';
+import { SnackbarComponent, SnackbarProvider } from '@/common/components';
 
-const App: React.FunctionComponent = () => {
+const App: React.FC = () => {
   return (
     <SnackbarProvider>
       <RouterComponent />
@@ -31,16 +31,16 @@ const App: React.FunctionComponent = () => {
 ```
 ```typescript
 import { LoginComponent } from './login.component';
-import { useSnackbarContext } from 'common/components';
+import { useSnackbarContext } from '@/common/components';
 
-export const LoginContainer: React.FunctionComponent = () => {
+export const LoginContainer: React.FC = () => {
   const { showMessage } = useSnackbarContext();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleLogin = (login: Login) => {
     trackPromise(isValidLogin(login.user, login.password)).then(isValid =>
       isValid
-        ? history.push(routes.submoduleList)
+        ? navigate(routes.submoduleList)
         : showMessage('text',
           'error')
     );
@@ -51,7 +51,7 @@ export const LoginContainer: React.FunctionComponent = () => {
 ```
 
 */
-export const SnackbarComponent: React.FunctionComponent<Props> = (props) => {
+export const SnackbarComponent: React.FC<Props> = (props) => {
   const { position, autoHideDuration } = props;
   const { open, onClose, options } = React.useContext(SnackbarContext);
 

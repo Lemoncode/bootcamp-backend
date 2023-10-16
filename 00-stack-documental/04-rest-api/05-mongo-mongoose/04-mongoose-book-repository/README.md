@@ -30,7 +30,7 @@ _./src/core/servers/db.server.ts_
 - import { MongoClient, Db } from "mongodb";
 + import { connect } from "mongoose";
 
-- let dbInstance: Db;
+- export let db: Db;
 
 export const connectToDBServer = async (connectionURI: string) => {
 - const client = new MongoClient(connectionURI);
@@ -48,9 +48,9 @@ Update `book context` with mongoose schema:
 _./src/dals/book/book.context.ts_
 
 ```diff
-- import { db } from 'core/servers';
+- import { db } from '#core/servers/index.js';
 + import { model, Schema } from 'mongoose';
-import { Book } from './book.model';
+import { Book } from './book.model.js';
 
 + const bookSchema = new Schema<Book>({
 +   title: { type: Schema.Types.String, required: true },
@@ -65,7 +65,9 @@ import { Book } from './book.model';
 ```
 
 > [Connection buffering](https://mongoosejs.com/docs/connections.html#buffering)
+>
 > [Mongoose Schema](https://mongoosejs.com/docs/guide.html)
+>
 > Notice the Book model is defined as singular but it will be mapped to `books` collection, [reference](https://mongoosejs.com/docs/models.html#compiling)
 
 Now, we could update the `db repository`:
@@ -74,10 +76,10 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-import { BookRepository } from './book.repository';
-import { Book } from '../book.model';
-- import { getBookContext } from '../book.context';
-+ import { bookContext } from '../book.context';
+import { BookRepository } from './book.repository.js';
+import { Book } from '../book.model.js';
+- import { getBookContext } from '../book.context.js';
++ import { bookContext } from '../book.context.js';
 
 export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
@@ -92,6 +94,15 @@ export const dbRepository: BookRepository = {
 ```
 
 > Set breakpoints to check returned array
+>
+> Comment build errors.
+
+Try url:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
+```
 
 Due to [Mongoose models](https://mongoosejs.com/docs/queries.html) provide several static helper functions, each of these functions returns mongoose query objects. Getting a better performance, we should use `lean` method:
 
@@ -129,7 +140,26 @@ _./src/dals/book/respositories/book.db-repository.ts_
 
 ```
 
+> It throws an error, `Unsupported BSON version, bson types must be from bson 5.0 or later`.
+>
+> Check [release notes](https://github.com/mongodb/node-mongodb-native/releases/)
+>
 > Try `_id: id,` on query. It works here but it doesn't on aggregations.
+>
+
+Downgrade mongodb driver version to 5:
+
+```bash
+npm install mongodb@5 --save
+
+```
+
+Try again the `get one` query:
+
+```bash
+npm start
+
+```
 
 Update `save book`:
 
@@ -138,20 +168,15 @@ _./src/dals/book/respositories/book.db-repository.ts_
 ```diff
 ...
   saveBook: async (book: Book) => {
--   const { value } = await getBookContext().findOneAndUpdate(
-+   return await bookContext
-+     .findOneAndUpdate(
-        {
-          _id: book._id,
-        },
-        {
-          $set: book,
-        },
-        { upsert: true, returnDocument: 'after' }
--   );
--   return value;
-+     )
-+     .lean();
+-   return await getBookContext().findOneAndUpdate(
++   return await bookContext.findOneAndUpdate(
+      {
+        _id: book._id,
+      },
+      { $set: book },
+      { upsert: true, returnDocument: 'after' }
+    )
++   .lean();
   },
 ...
 
@@ -167,25 +192,7 @@ _./src/dals/book/respositories/book.db-repository.ts_
 }
 ```
 
-Update `delete book`:
-
-_./src/dals/book/respositories/book.db-repository.ts_
-
-```diff
-...
-
-  deleteBook: async (id: string) => {
--   const { deletedCount } = await getBookContext().deleteOne({
-+   const { deletedCount } = await bookContext.deleteOne({
-      _id: new ObjectId(id),
--   });
-+   })
-+   .lean();
-    return deletedCount === 1;
-  },
-};
-
-```
+> NOTE: It is not necessary to update delete method.
 
 # ¿Con ganas de aprender Backend?
 

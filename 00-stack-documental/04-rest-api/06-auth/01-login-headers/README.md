@@ -40,7 +40,7 @@ Add barrel file:
 _./src/dals/user/index.ts_
 
 ```typescript
-export * from './user.model';
+export * from './user.model.js';
 
 ```
 
@@ -49,9 +49,9 @@ We will start working on `mock` mode, so let's create mock data:
 _./src/dals/mock-data.ts_
 
 ```diff
-import { ObjectId } from 'mongodb';
-import { Book } from './book';
-+ import { User } from './user';
+import { ObjectId } from "mongodb";
+import { Book } from "./book/index.js";
++ import { User } from './user/index.js';
 
 export interface DB {
 + users: User[];
@@ -82,8 +82,8 @@ Update barrel file:
 _./src/dals/index.ts_
 
 ```diff
-export * from './book';
-+ export * from './user';
+export * from "./book/index.js";
++ export * from './user/index.js';
 
 ```
 
@@ -92,7 +92,7 @@ And create `repository structrure`:
 _./src/dals/user/repositories/user.repository.ts_
 
 ```typescript
-import { User } from '../user.model';
+import { User } from '../user.model.js';
 
 export interface UserRepository {
 
@@ -103,7 +103,7 @@ export interface UserRepository {
 _./src/dals/user/repositories/user.mock-repository.ts_
 
 ```typescript
-import { UserRepository } from './user.repository';
+import { UserRepository } from './user.repository.js';
 
 export const mockRepository: UserRepository = {
 
@@ -114,7 +114,7 @@ export const mockRepository: UserRepository = {
 _./src/dals/user/repositories/user.db-repository.ts_
 
 ```typescript
-import { UserRepository } from './user.repository';
+import { UserRepository } from './user.repository.js';
 
 export const dbRepository: UserRepository = {
 
@@ -125,9 +125,9 @@ export const dbRepository: UserRepository = {
 _./src/dals/user/repositories/index.ts_
 
 ```typescript
-import { mockRepository } from './user.mock-repository';
-import { dbRepository } from './user.db-repository';
-import { envConstants } from 'core/constants';
+import { mockRepository } from './user.mock-repository.js';
+import { dbRepository } from './user.db-repository.js';
+import { envConstants } from '#core/constants/index.js';
 
 export const userRepository = envConstants.isApiMock
   ? mockRepository
@@ -140,8 +140,8 @@ Update barrel file:
 _./src/dals/user/index.ts_
 
 ```diff
-export * from './user.model';
-+ export * from './repositories';
+export * from './user.model.js';
++ export * from './repositories/index.js';
 
 ```
 
@@ -168,6 +168,7 @@ securityApi.post('/login', async (req, res, next) => {
 ```
 
 > We cannot use `GET` method because browsers could save URL/Query Parameters as plain text in the history.
+>
 > POST vs PUT: `PUT` method is idempotent (same input same output) and a login method could return different token value for same inputs.
 
 Add barrel file:
@@ -175,7 +176,7 @@ Add barrel file:
 _./src/pods/security/index.ts_
 
 ```typescript
-export * from './security.rest-api';
+export * from './security.rest-api.js';
 
 ```
 
@@ -195,8 +196,8 @@ export interface UserRepository {
 _./src/dals/user/repositories/user.mock-repository.ts_
 
 ```diff
-import { UserRepository } from './user.repository';
-+ import { db } from '../../mock-data';
+import { UserRepository } from './user.repository.js';
++ import { db } from '../../mock-data.js';
 
 export const mockRepository: UserRepository = {
 + getUserByEmailAndPassword: async (email: string, password: string) =>
@@ -208,7 +209,7 @@ export const mockRepository: UserRepository = {
 _./src/dals/user/repositories/user.db-repository.ts_
 
 ```diff
-import { UserRepository } from './user.repository';
+import { UserRepository } from './user.repository.js';
 
 export const dbRepository: UserRepository = {
 + getUserByEmailAndPassword: async (email: string, password: string) => null,
@@ -224,7 +225,7 @@ _./src/pods/security/security.rest-api.ts_
 
 ```diff
 import { Router } from 'express';
-+ import { userRepository } from 'dals';
++ import { userRepository } from '#dals/index.js';
 
 export const securityApi = Router();
 
@@ -266,7 +267,7 @@ _./src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 + import jwt from 'jsonwebtoken';
-import { userRepository } from 'dals';
+import { userRepository } from '#dals/index.js';
 
 ...
 
@@ -294,7 +295,7 @@ Add barrel file:
 _./src/common-app/models/index.ts_
 
 ```typescript
-export * from './user-session';
+export * from './user-session.js';
 
 ```
 
@@ -305,8 +306,8 @@ _./src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-+ import { UserSession } from 'common-app/models';
-import { userRepository } from 'dals';} from 'dals';
++ import { UserSession } from '#common-app/models/index.js';
+import { userRepository } from '#dals/index.js';
 
 ...
 
@@ -332,21 +333,14 @@ import { userRepository } from 'dals';} from 'dals';
 >
 > [Authentication schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
 
-Let's update the app with this new API:
+Let's update the index with this new API:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from 'common/middlewares';
-import { booksApi } from 'pods/book';
-+ import { securityApi } from 'pods/security';
+...
+import { booksApi } from '#pods/book/index.js';
++ import { securityApi } from '#pods/security/index.js';
 
 ...
 restApiServer.use(logRequestMiddleware);
@@ -365,9 +359,9 @@ npm start
 ```
 
 ```md
-POST http://localhost:3000/api/security/login
-
-### Body
+URL:http://localhost:3000/api/security/login
+METHOD: POST
+BODY:
 {
 	"email": "admin@email.com",
 	"password": "test"
@@ -383,12 +377,12 @@ _./src/pods/book/book.rest-api.ts_
 ```diff
 import { Router } from 'express';
 + import jwt from 'jsonwebtoken';
-import { bookRepository } from 'dals';
+import { bookRepository } from '#dals/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from './book.mappers';
+} from './book.mappers.js';
 
 ...
 
@@ -415,12 +409,14 @@ booksApi
 ```
 
 > [Authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+>
 > `Authorization: Bearer my-token`
 
 ```md
-GET http://localhost:3000/api/books
+URL:http://localhost:3000/api/books
+METHOD: GET
 
-## Headers
+HEADERS:
 Authorization: Bearer my-token
 ```
 
@@ -479,8 +475,8 @@ _./src/pods/security/security.middlewares.ts_
 ```typescript
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-import { UserSession } from 'common-app/models';
+import { envConstants } from '#core/constants/index.js';
+import { UserSession } from '#common-app/models/index.js';
 
 const verify = (token: string, secret: string): Promise<UserSession> =>
   new Promise((resolve, reject) => {
@@ -514,7 +510,7 @@ export const authenticationMiddleware: RequestHandler = async (
 
 ```
 
-> We will have Typescript issues if we try to use `utils.promisify` from NodeJS.
+> We will have Typescript issues if we try to use `util.promisify` from NodeJS.
 >
 > import { promisify } from 'util';
 > const verify = promisify(jwt.verify);
@@ -541,18 +537,7 @@ _./tsconfig.json_
 ```diff
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "moduleResolution": "node",
-    "declaration": false,
-    "noImplicitAny": false,
-    "sourceMap": true,
-    "noLib": false,
-    "allowJs": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "baseUrl": "./src"
+    ...
   },
 - "include": ["src/**/*"]
 + "include": ["src/**/*", "./global-types.d.ts"]
@@ -567,9 +552,9 @@ _./src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-+ import { envConstants } from 'core/constants';
-import { UserSession } from 'common-app/models';
-import { userRepository } from 'dals';
+import { UserSession } from '#common-app/models/index.js';
++ import { envConstants } from '#core/constants/index.js';
+import { userRepository } from '#dals/index.js';
 
 ...
     if (user) {
@@ -590,8 +575,8 @@ Update barrel file:
 _./src/pods/security/index.ts_
 
 ```diff
-export * from './security.rest-api';
-+ export * from './security.middlewares';
+export * from './security.rest-api.js';
++ export * from './security.middlewares.js';
 
 ```
 
@@ -602,8 +587,6 @@ _./src/pods/book/book.rest-api.ts_
 ```diff
 import { Router } from 'express';
 - import jwt from 'jsonwebtoken';
-import { bookRepository } from 'dals';
-
 ...
 
 booksApi
@@ -631,20 +614,13 @@ booksApi
 
 Secure all book API:
 
-_./src/app.ts_
+_./src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
-import { createRestApiServer, connectToDBServer } from 'core/servers';
-import { envConstants } from 'core/constants';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from 'common/middlewares';
-import { booksApi } from 'pods/book';
-- import { securityApi } from 'pods/security';
-+ import { securityApi, authenticationMiddleware } from 'pods/security';
+...
+import { booksApi } from '#pods/book/index.js';
+- import { securityApi } from '#pods/security/index.js';
++ import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
 
 ...
 
@@ -661,9 +637,10 @@ Let's try now `/api/books`:
 > Stop and run again to read new env variable
 
 ```md
-POST http://localhost:3000/api/security/login
+URL: http://localhost:3000/api/security/login
+METHOD: POST
 
-### Body
+BODY:
 {
 	"email": "admin@email.com",
 	"password": "test"
@@ -673,9 +650,10 @@ POST http://localhost:3000/api/security/login
 > Sign jwt with new env variable
 
 ```md
-GET http://localhost:3000/api/books
+URL: http://localhost:3000/api/books
+METHOD: GET
 
-## Headers
+HEADERS:
 Authorization: Bearer my-token
 ```
 
@@ -691,7 +669,7 @@ export type Role = 'admin' | 'standard-user';
 _./src/common-app/models/user-session.ts_
 
 ```diff
-+ import { Role } from './role';
++ import { Role } from './role.js';
 
 export interface UserSession {
   id: string;
@@ -705,8 +683,8 @@ Update barrel file:
 _./src/common-app/models/index.ts_
 
 ```diff
-export * from './user-session';
-+ export * from './role';
+export * from './user-session.js';
++ export * from './role.js';
 
 ```
 
@@ -716,7 +694,7 @@ _./src/dals/user/user.model.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-+ import { Role } from 'common-app/models';
++ import { Role } from '#common-app/models/index.js';
 
 export interface User {
   _id: ObjectId;
@@ -798,9 +776,10 @@ npm start
 ```
 
 ```md
-POST http://localhost:3000/api/security/login
+URL: http://localhost:3000/api/security/login
+METHOD: POST
 
-### Body
+BODY:
 {
 	"email": "admin@email.com",
 	"password": "test"
@@ -814,18 +793,17 @@ _./src/pods/security/security.middlewares.ts_
 ```diff
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-- import { UserSession } from 'common-app/models';
-+ import { UserSession, Role } from 'common-app/models';
+import { envConstants } from '#core/constants/index.js';
+- import { UserSession } from '#common-app/models/index.js';
++ import { UserSession, Role } from '#common-app/models/index.js';
 
 ...
 
-+ const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
-+   !Boolean(allowedRoles) ||
-+   (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
++ const isAuthorized = (currentRole: Role, allowedRoles: Role[]) =>
++   (Boolean(currentRole) && allowedRoles?.some((role) => currentRole === role));
 
 + export const authorizationMiddleware =
-+   (allowedRoles?: Role[]): RequestHandler =>
++   (allowedRoles: Role[]): RequestHandler =>
 +   async (req, res, next) => {
 +     if (isAuthorized(req.userSession?.role, allowedRoles)) {
 +       next();
@@ -842,38 +820,17 @@ _./src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from 'express';
-import { bookRepository } from 'dals';
-+ import { authorizationMiddleware } from 'pods/security';
+import { bookRepository } from '#dals/index.js';
++ import { authorizationMiddleware } from '#pods/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
-} from './book.mappers';
+} from './book.mappers.js';
 
 export const booksApi = Router();
 
-booksApi
-- .get('/', async (req, res, next) => {
-+ .get('/', authorizationMiddleware(), async (req, res, next) => {
-    try {
-      const page = Number(req.query.page);
-      const pageSize = Number(req.query.pageSize);
-      const bookList = await bookRepository.getBookList(page, pageSize);
-      res.send(mapBookListFromModelToApi(bookList));
-    } catch (error) {
-      next(error);
-    }
-  })
-- .get('/:id', async (req, res, next) => {
-+ .get('/:id', authorizationMiddleware(), async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const book = await bookRepository.getBook(id);
-      res.send(mapBookFromModelToApi(book));
-    } catch (error) {
-      next(error);
-    }
-  })
+...
 - .post('/', async (req, res, next) => {
 + .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
@@ -924,9 +881,10 @@ npm start
 ```
 
 ```md
-POST http://localhost:3000/api/security/login
+URL: http://localhost:3000/api/security/login
+METHOD: POST
 
-### Body
+BODY:
 {
 	"email": "user@email.com",
 	"password": "test"
@@ -940,10 +898,10 @@ _./src/pods/security/security.rest-api.ts_
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from 'core/constants';
-import { UserSession } from 'common-app/models';
-import { userRepository } from 'dals';
-+ import { authenticationMiddleware } from './security.middlewares';
+import { UserSession } from '#common-app/models/index.js';
+import { envConstants } from '#core/constants/index.js';
+import { userRepository } from '#dals/index.js';
++ import { authenticationMiddleware } from './security.middlewares.js';
 
 ...
 

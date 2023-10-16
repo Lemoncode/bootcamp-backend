@@ -1,2 +1,2 @@
-export * from './movie';
-export * from './comment';
+export * from './movie/index.js';
+export * from './comment/index.js';

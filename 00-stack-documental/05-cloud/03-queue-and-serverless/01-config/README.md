@@ -26,7 +26,7 @@ version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:5.0.9
+    image: mongo:6
     ports:
       - '27017:27017'
     volumes:
@@ -35,7 +35,7 @@ services:
         target: /data/db
 + message-broker:
 +   container_name: message-broker
-+   image: rabbitmq:3.10-management-alpine
++   image: rabbitmq:3.12-management-alpine
 +   ports:
 +     - '5672:5672'
 +     - '15672:15672'
@@ -44,9 +44,9 @@ volumes:
 
 ```
 
-> `3.10-management-alpine`: RabbitMQ server and Management UI (for development purpose)
+> `x.y-management-alpine`: RabbitMQ server and Management UI (for development purpose)
 >
-> `3.10-alpine`: only with RabbitMQ server.
+> `x.y-alpine`: only with RabbitMQ server.
 
 Run both services (mongo and rabbitmq):
 
@@ -54,6 +54,8 @@ Run both services (mongo and rabbitmq):
 docker-compose up -d
 
 ```
+
+> Open http://localhost:15672 with guest/guest credentials
 
 We are going to install an official recommended library which implements AMQP 0-9-1 protocol, [amqp-client](https://github.com/cloudamqp/amqp-client.js).
 
@@ -74,7 +76,7 @@ Create the connection URI as env variable:
 _./back/.env.example_
 
 ```diff
-
+NODE_ENV=development
 PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
@@ -143,30 +145,49 @@ export const connectToMessageBrokerServer = async (connectionURI: string) => {
 
 ```
 
+> [Related Github issue](https://github.com/cloudamqp/amqp-client.js/issues/63)
+
+With the current TS configuration it cannot resolve the `AMQPBaseClient` type, we need to add the following to `tsconfig.json`:
+
+_./back/tsconfig.json_
+
+```diff
+{
+  "compilerOptions": {
+    ...
+    "baseUrl": "./src",
+    "paths": {
+      "#*": ["*"],
++     "@cloudamqp/amqp-client/types/amqp-base-client": [
++       "../node_modules/@cloudamqp/amqp-client/types/amqp-base-client.d.ts"
++     ]
+    }
+...
+```
+
 Update barrel file:
 
 _./back/src/core/servers/index.ts_
 
 ```diff
-export * from './rest-api.server';
-export * from './db.server';
-+ export * from './message-broker.server';
+export * from './rest-api.server.js';
+export * from './db.server.js';
++ export * from './message-broker.server.js';
 
 ```
 
 Let's update `app` and connect it:
 
-_./back/src/app.ts_
+_./back/src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
+...
 import {
   createRestApiServer,
   connectToDBServer,
 + connectToMessageBrokerServer,
-} from 'core/servers';
-import { envConstants } from 'core/constants';
+} from '#core/servers/index.js';
+import { envConstants } from '#core/constants/index.js';
 ...
 
 restApiServer.listen(envConstants.PORT, async () => {
@@ -176,9 +197,7 @@ restApiServer.listen(envConstants.PORT, async () => {
   } else {
     console.log('Running API mock');
   }
-
-+ await connectToMessageBrokerServer(envConstants.RABBITMQ_URI)
-
++ await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
   console.log(`Server ready at port ${envConstants.PORT}`);
 });
 
@@ -186,17 +205,16 @@ restApiServer.listen(envConstants.PORT, async () => {
 
 Let's create a `dummy publisher` to check if it's working:
 
-_./back/src/app.ts_
+_./back/src/index.ts_
 
 ```diff
-import express from 'express';
-import path from 'path';
+...
 import {
   createRestApiServer,
   connectToDBServer,
   connectToMessageBrokerServer,
 + messageBroker,
-} from 'core/servers';
+} from '#core/servers/index.js';
 
 ...
 
@@ -217,6 +235,18 @@ restApiServer.listen(envConstants.PORT, async () => {
 });
 
 ```
+
+> `durable`: the queue will survive a broker restart.
+
+Let's run the app:
+
+```bash
+cd back
+npm start
+
+```
+
+> Open http://localhost:15672
 
 Apply same configuration in `consumers` project:
 
@@ -252,6 +282,24 @@ export const envConstants = {
 
 ```
 
+Update `tsconfig.json`:
+
+_./consumers/tsconfig.json_
+
+```diff
+{
+  "compilerOptions": {
+    ...
+    "baseUrl": "./src",
+    "paths": {
+      "#*": ["*"],
++     "@cloudamqp/amqp-client/types/amqp-base-client": [
++       "../node_modules/@cloudamqp/amqp-client/types/amqp-base-client.d.ts"
++     ]
+    }
+...
+```
+
 _./consumers/src/core/servers/message-broker.server.ts_
 
 ```typescript
@@ -269,45 +317,46 @@ export const connectToMessageBrokerServer = async (connectionURI: string) => {
 
 _./consumers/src/core/servers/index.ts_
 
-```diff
-+ export * from './message-broker.server';
+```typescript
+export * from './message-broker.server.js';
 
 ```
 
 Let's create a consumer:
 
-_./consumers/src/app.ts_
+_./consumers/src/index.ts_
 
-```typescript
-import { envConstants } from 'core/constants';
-import { connectToMessageBrokerServer, messageBroker } from 'core/servers';
+```diff
+import '#core/load-env.js';
++ import { envConstants } from '#core/constants/index.js';
++ import {
++   connectToMessageBrokerServer,
++   messageBroker,
++ } from '#core/servers/index.js';
 
-const helloConsumer = async () => {
-  try {
-    await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-    const channel = await messageBroker.channel();
-    const queue = await channel.queue('hello-queue', { durable: false });
-    await queue.subscribe(
-      {
-        noAck: true,
-      },
-      (message) => {
-        console.log(message.bodyToString());
-      }
-    );
-    console.log('Hello consumer configured');
-  } catch (error) {
-    console.error(error);
-  }
-};
++ try {
++   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
++   const channel = await messageBroker.channel();
++   const queue = await channel.queue('hello-queue', { durable: false });
++   await queue.subscribe(
++     {
++       noAck: true,
++     },
++     (message) => {
++       console.log(message.bodyToString());
++     }
++   );
++   console.log('Hello consumer configured');
++ } catch (error) {
++   console.error(error);
++ }
 
-helloConsumer();
 
 ```
 
 > We have to define the `queue` with the same configuration `name` and `durable`.
 >
-> This configuration with noAck could be usefull with a sensor app
+> This configuration with noAck could be usefull in a sensor app
 
 Run consumers:
 

@@ -1,12 +1,10 @@
-import { bookRepository } from 'dals';
-import { Book } from '../book.api-model';
-import { mapBookListFromModelToApi } from '../book.mappers';
+import { bookRepository } from '#dals/index.js';
+import { Book } from '../book.api-model.js';
+import { mapBookListFromModelToApi } from '../book.mappers.js';
 
 export const bookResolvers = {
-  Query: {
-    books: async (): Promise<Book[]> => {
-      const bookList = await bookRepository.getBookList();
-      return mapBookListFromModelToApi(bookList);
-    },
+  books: async (): Promise<Book[]> => {
+    const bookList = await bookRepository.getBookList();
+    return mapBookListFromModelToApi(bookList);
   },
 };

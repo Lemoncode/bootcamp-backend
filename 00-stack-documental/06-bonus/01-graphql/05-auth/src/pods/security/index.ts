@@ -1,3 +1,3 @@
-export * from './security.rest-api';
-export * from './security.middlewares';
-export * from './graphql';
+export * from './security.rest-api.js';
+export * from './security.middlewares.js';
+export * from './graphql/index.js';

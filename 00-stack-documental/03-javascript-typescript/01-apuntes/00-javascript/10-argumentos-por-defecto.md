@@ -16,21 +16,21 @@ greet(null); // "Hello, null"
 Es muy frecuente utilizar los valores por defecto en conjunción con el destructuring:
 
 ```js
-const logName = ({ name = "Unknown" }) => console.log(name);
-logName({ age: 24 }); // "Unknown"
-logName({ name: "Carl" }); // "Carl"
-logName({}); // "Unknown"
+const greet = ({ name = "Unknown" }) => console.log("Hello, " + name);
+greet({ age: 24 }); // "Hello, Unknown"
+greet({ name: "Carl" }); // "Hello, Carl"
+greet({}); // "Hello, Unknown"
 
 // Pero ¿qué pasaría si llamo a la función sin argumento? ¿o con argumento null?
 
-logName(); // [!] Si no inicializamos el parametro a {} esto daría TypeError.
+greet(); // [!] Si no inicializamos el parametro a {} esto daría TypeError.
 // No se puede hacer destructuring sobre null o undefined
 
 // Para cubrirnos con el caso de undefined podemos asignar valor por defecto a todo el argumento completo.
-const logName = ({ name = "Unknown" } = {}) => console.log(name);
+const greet = ({ name = "Unknown" } = {}) => console.log("Hello, " + name);
 
-logName(); // Unknown. Ahora si!
+greet(); // Hello, Unknown. Ahora si!
 
 // Sin embargo null seguría siendo el único caso problemático.
-logName(null); // [!] Uncaught TypeError.
+greet(null); // [!] Uncaught TypeError.
 ```

@@ -24,13 +24,18 @@ npm install
 
 In this example, we will create a custom logger transport, in this case, we will send the logs to [rollbar](https://rollbar.com/).
 
-First, let's create a new account and select the SDK language:
+First, let's create a new account and create a new rollbar project:
 
-![01-select-rollbar-language](./readme-resources/01-select-rollbar-language.png)
+![01-create-new-project](./readme-resources/01-create-new-project.png)
+
+
+Select the SDK language:
+
+![02-select-rollbar-language](./readme-resources/02-select-rollbar-language.png)
 
 Now, rollbar is waiting for data from our app:
 
-![02-waiting-to-send-messages](./readme-resources/02-waiting-to-send-messages.png)
+![03-waiting-to-send-messages](./readme-resources/03-waiting-to-send-messages.png)
 
 Let's install rollbar:
 
@@ -87,25 +92,25 @@ export class RollbarTransport extends Transport {
 
 We need to access `info[MESSAGE]` if we want to log the formatted message instead the raw one:
 
-![03-winston-symbol-message](./readme-resources/03-winston-symbol-message.png)
+![04-winston-symbol-message](./readme-resources/04-winston-symbol-message.png)
 
 Add barrel file
 
 _./back/src/common/logger-transports/index.ts_
 
 ```javascript
-export * from './rollbar.transport';
+export * from './rollbar.transport.js';
 
 ```
 
-Add rollbar transport instance (NOTE: Pending to add constants):
+Add rollbar transport instance (NOTE: Pending to add `envConstants`):
 
 _./back/src/core/logger/transports/rollbar.transport.ts_
 
 ```javascript
 import { format } from 'winston';
-import { RollbarTransport } from 'common/logger-transports';
-import { envConstants } from 'core/constants';
+import { RollbarTransport } from '#common/logger-transports/index.js';
+import { envConstants } from '#core/constants/index.js';
 
 const { combine, timestamp, prettyPrint } = format;
 
@@ -127,9 +132,9 @@ Update barrel file:
 _./back/src/core/logger/transports/index.ts_
 
 ```diff
-export * from './console.transport';
-export * from './file.transport';
-+ export * from './rollbar.transport';
+export * from './console.transport.js';
+export * from './file.transport.js';
++ export * from './rollbar.transport.js';
 
 ```
 
@@ -169,20 +174,19 @@ _./back/src/core/logger/logger.ts_
 
 ```diff
 import { createLogger } from 'winston';
-- import { console, file } from './transports';
-+ import { console, file, rollbar } from './transports';
+- import { console, file } from './transports/index.js';
++ import { console, file, rollbar } from './transports/index.js';
 
 export const logger = createLogger({
 - transports: [console, file],
 + transports: [console, file, rollbar],
-  exitOnError: false,
 });
 
 ```
 
 Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in rollbar.
 
-![04-rollbar-dashboard](./readme-resources/04-rollbar-dashboard.png)
+![05-rollbar-dashboard](./readme-resources/05-rollbar-dashboard.png)
 
 Another features supported by Rollbar:
 
