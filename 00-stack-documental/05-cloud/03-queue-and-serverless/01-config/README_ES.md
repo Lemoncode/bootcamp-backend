@@ -234,7 +234,7 @@ restApiServer.listen(envConstants.PORT, async () => {
 
 ```
 
-> `durable`: la cola sobrevivirá a un reinicio del broker.
+> `durable`: la cola sobrevivirá a un reinicio del broker (los mensajes que van entrando se guardan en el disco duro hasta que son procesados).
 
 Ejecutamos el back:
 
