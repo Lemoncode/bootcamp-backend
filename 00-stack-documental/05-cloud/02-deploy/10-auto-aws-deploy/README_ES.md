@@ -43,7 +43,7 @@ Dejamos los valores por defecto y IMPORTANTE añadimos las variables de entorno 
 > Por curiosidad, además de la aproximación que hemos visto, podemos usar una segunda [`docker-compose` para ser ejecutado por Amazon](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/single-container-docker-configuration.html)
 > Esto no lo vamos a cubrir.
 
-Vamos a definir el `docker-compose` para que lo use `Elastic Beanstalk`:
+Podría ser (no lo ponemos):
 
 _./docker-compose.yml_
 
