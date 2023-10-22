@@ -85,6 +85,8 @@ await priceArchiveConsumerTwo(channel);
 
 ```
 
+> Update 'fanout' in exchange delcara book.rest.api --> sendBookToArchive
+
 Run POST method again:
 
 ```
