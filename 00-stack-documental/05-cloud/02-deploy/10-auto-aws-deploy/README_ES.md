@@ -156,9 +156,78 @@ Tenemos que crear un usuario con permisos de `Elastic Beanstalk` en [IAM service
 
 ![10-creating-user](./readme-resources/10-creating-user.png)
 
-Darle permisos de `Admin Elastic Beanstalk`:
+Podríajos darle permisos de `Admin Elastic Beanstalk`:
 
 ![11-set-permissions](./readme-resources/11-set-permissions.png)
+
+PEEEROOOO... mejor aquí le estamos dando permisos a este usuario a que pueda administrar cualquier sitio EBS en nuestra subscripción, mejor crear una política restringida a justo el sitio que hemos creado y así reducimos el area de ataque [Mineros y robo de cuentas](https://news.ycombinator.com/item?id=29550809).
+
+Así que le damos a `crear politica`:
+
+![11-a-crearpolitica](./readme-resources/11-a-crearpolitica.png)
+
+- Nos lleva a la ventana de políticas, buscamos y elegimos el servicio "Elastic Beanstalk":
+
+![11-b-servicio-ebs.png](./readme-resources/11-b-servicio-ebs.png)
+
+Y vamos a definir la política en JSON:
+
+![11-c-politica-json.png](./readme-resources/11-c-politica-json.png)
+
+Y definimos la politica:
+
+**IMPORTANTE** Aquí tenemos que definir:
+
+`"arn:aws:elasticbeanstalk:REGION:ACCOUNT-ID:environment/``
+
+- La REGION en que se encuentra `eu-west-3` Esto lo podemos sacar en el listado del nombre el dominio
+- El ACCOUNT-ID lo podemos encontrar en la menú de arriba a la izquierda de [IAM service](https://aws.amazon.com/iam/).
+
+![11-d-id-cuenta.png](./readme-resources/11-d-id-cuenta.png)
+
+`Your-Environment-ID/\*"``
+
+![11-e-environment-id.png](./readme-resources/11-e-environment-id.png)
+
+Por otro lado tenemos que darle permiso al bucket de S3 que EBS crea para almacenar el código zipeado de la app ¿Cómo sabemos cual es?
+
+- En los eventos podemos ver que se ha creado un bucket.
+- Nos podemos ir a S3 y buscar el bucket también.
+
+Acuerdate de poner el nombre completo del bucket
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticbeanstalk:CreateApplicationVersion",
+        "elasticbeanstalk:UpdateEnvironment",
+        "elasticbeanstalk:DescribeEnvironmentResources",
+        "elasticbeanstalk:DescribeEnvironments"
+      ],
+      "Resource": [
+        "arn:aws:elasticbeanstalk:REGION:ACCOUNT-ID:environment/Your-Environment-ID",
+        "arn:aws:elasticbeanstalk:REGION:ACCOUNT-ID:environment/Your-Environment-ID/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::nombre-de-tu-bucket",
+        "arn:aws:s3:::nombre-de-tu-bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+Le damos un nombre a la política (por ejemplo: _borrarpolitica_)
+
+Volvamos al usuario, refrescamos las políticas, vaciamos la busqueda y elegimos por ejemplo filtrar por tipo: _administrada por el cliente_ y elegimos _borrarpermiso_:
 
 Creamos el usuario en el `paso 3` (Review and create). Casi lo tenemos, solo nos falta crear unas credenciales para usar en nuestra app.
 
