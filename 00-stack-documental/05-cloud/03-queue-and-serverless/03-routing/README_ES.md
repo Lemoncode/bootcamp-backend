@@ -32,6 +32,7 @@ const sendBookToArchive = async (book: Book) => {
   const channel = await messageBroker.channel(1);
 - const queue = await channel.queue(queueName, { durable: true });
 - await queue.publish(JSON.stringify(book), { deliveryMode: 2 });
++ await channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
 + await channel.basicPublish(exchangeName, routingKey, JSON.stringify(book), {
 +   deliveryMode: 2,
 + });
@@ -93,7 +94,7 @@ const priceArchiveConsumerTwo = async (
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
   const channel = await messageBroker.channel(2);
   channel.prefetch(1);
-+ channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
++ await channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
   const queueName = 'price-archive-queue';
 ...
 
@@ -181,7 +182,7 @@ const priceArchiveConsumerTwo = async (
 await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
 const channel = await messageBroker.channel(2);
 channel.prefetch(1);
-channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+await channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
 - const queueName = 'price-archive-queue';
 - const queueParams: QueueParams = { durable: true };
 - await priceArchiveConsumerOne(channel, queueName, queueParams);
