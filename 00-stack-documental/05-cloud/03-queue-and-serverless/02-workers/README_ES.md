@@ -50,7 +50,7 @@ restApiServer.listen(envConstants.PORT, async () => {
 
 En el endpoint de insertar y editar un libro, vamos a crear un método de ayuda para enviar información de precios de un libro a una cola `book price archive`
 
-_./back/src/pods/books/book.rest-api.ts_
+_./back/src/pods/book/book.rest-api.ts_
 
 ```diff
 import { Router } from 'express';
@@ -233,6 +233,16 @@ import {
 
 > Por defecto RabbitMQ enviará cada mensaje al siguiente consumidor, en secuencia. En promedio cada consumidor recibirá el mismo número de mensajes. Esta forma de distribuir mensajes se llama round-robin.
 
+Arrancamos el consumer en otro terminal:
+
+```bash
+cd consumer
+
+npm start
+```
+
+Vamos a insertar una par de libros y vemos la consola (repetimos el post varias veces):
+
 ¿Qué pasa si nos olvidamos de enviar el `ack`?
 
 _./consumers/src/index.ts_
@@ -345,10 +355,9 @@ Y ejecutamos de nuevo
 
 ```bash
 docker-compose up -d
-
 ```
 
-Probamos a enviar nuevos mensajes a la cola, ahora podríamos parar el servidor y levantarlo de nuevo y tanto cola como mensajes estarán disponibles.
+Y podemos probar a tirarlo y levantarlo de nuevo, los mensajes estarán disponibles (si enviamos).
 
 # ¿Con ganas de aprender Backend?
 
