@@ -1,12 +1,14 @@
 # 03 Deploy Render
 
-In this example we are going to deploy app to `Render`.
+En este ejemplo vamos a desplegar la aplicación en `Render`.
 
-We will start from `02-custom-transport`.
+Tomamos como punto de partida el ejemplo `02-custom-transport`.
 
 # Steps to build it
 
-`npm install` to install previous sample packages:
+Si no lo hemos hecho antes, instalamos las dependencias de back y front.
+
+En un terminal:
 
 ```bash
 cd front
@@ -14,7 +16,7 @@ npm install
 
 ```
 
-In a second terminal:
+Abrimos un segundo terminal:
 
 ```bash
 cd back
@@ -22,7 +24,7 @@ npm install
 
 ```
 
-Let's update the code for production:
+Esto de `Rollbar` esta muy bien, pero para que nos envíe y almacen logs de producción o de entornos pre, pero en nuestro local es un poco rollo ir metiendo trallazos desde localhost, así que vamos a configurarlo de forma que solo se envíen los logs a `Rollbar` cuando estemos en producción.
 
 _./back/src/core/logger/logger.ts_
 
@@ -44,7 +46,7 @@ export const logger = createLogger({
 
 ```
 
-Update Dockerfile to works with api mock, only for demo purpose:
+Acualizamos el docker file para usar de momento al API_MOCK (más adelante lo actualizarekos, o incluso en el propio `Render`)
 
 _./Dockerfile_
 
@@ -60,7 +62,7 @@ ENV CORS_ORIGIN=false
 ...
 ```
 
-Create new repository and upload files:
+Creamos un nuevo repositorio y subimos los ficheros (aquí podemos hacerlo por comando, o usar el método sucio y rápido que vimos antes :)):
 
 ![01-create-repo](./readme-resources/01-create-repo.png)
 
@@ -73,37 +75,37 @@ git push -u origin main
 
 ```
 
-Create a new _Render_ app:
+Creamos una nueva app en `Render`:
 
 ![02-create-render-app](./readme-resources/02-create-render-app.png)
 
-Configure account to get access to the new repository:
+Configuramos la cuenta para tener acceso al nuevo repositorio:
 
 ![03-configure-account](./readme-resources/03-configure-account.png)
 
-Configure web service:
+Configuramos el web service:
 
 ![04-configure-web-service](./readme-resources/04-configure-web-service.png)
 
 ![05-configure-runtime](./readme-resources/05-configure-runtime.png)
 
-Add environment variables (Advanced settings):
+Añadimos la variables de entorno (Advanced settings):
 
 ![06-add-env-vars](./readme-resources/06-add-env-vars.png)
 
-Update docker settings:
+Actualizamos los docker settings:
 
 ![07-docker-settings](./readme-resources/07-docker-settings.png)
 
-Clicks on `Create Web Service` button.
+Clicamos en el botón `Create Web Service`:
 
-Open browser at `https://<app-name>.onrender.com` and run `info`, `warn` and `error` logs.
+Abrimos el navegador en la url: `https://<app-name>.onrender.com` y le damos caña para que genera eventos de `info`, `warn` y `error` logs.
 
-Check results in rollbar, remember filter by environment:
+Vamos a ver si han llegado los logs a `Rollbar`, IMPORTANTE acuérdate de filtrar por entorno (seguramente no esté `producción` seleccionado y te salga en blanco)
 
 ![09-rollbar-env-filter](./readme-resources/09-rollbar-env-filter.png)
 
-Checks logs in `Render`:
+Vamos a ver los logs en `Render`:
 
 ![10-render-logs](./readme-resources/10-render-logs.png)
 
