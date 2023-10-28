@@ -93,6 +93,18 @@ Añadimos la variables de entorno (Advanced settings):
 
 ![06-add-env-vars](./readme-resources/06-add-env-vars.png)
 
+OJO, comprobar si tenemos que poner node_env a production (se supone que en `Render` lo hace por nosotros), en nuestro index podemos comprobarlo:
+
+_./back/src/index.ts_
+
+```diff
+  logger.info(`Server ready at port ${envConstants.PORT}`);
++  console.log('******Is Production', envConstants.isProduction);
+});
+```
+
+> Nos puede tardar en que se muestren los errores en rollbar
+
 Actualizamos los docker settings:
 
 ![07-docker-settings](./readme-resources/07-docker-settings.png)
