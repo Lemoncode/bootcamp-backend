@@ -27,7 +27,8 @@ Existen muchas librerías de logging para Nodejs como [Winston](https://github.c
 npm install winston
 ```
 
-Vamosa configurar una instancia de `logger`:
+Vamos a configurar una instancia de `logger`:
+  - Definimos un transporte (en este caso la consola), podemos añadir más transporte (fichero, un proveedor de terceros etc...)
 
 _./back/src/core/logger/logger.ts_
 
@@ -128,6 +129,9 @@ admin@email.com
 ```
 
 Vamos ahora a actualizar los `logger.middlewares`:
+  - Aquí podríamos importar directamente _logger_ y usarlo dentro de la función, pero estamos atando una implementación concreta a nuestro middleware.
+  - Los middleware los tenemos en _common_ y no queremos que dependan de una implementación concreta de logger, ya que podríamos promocionarlos a librería en un futuro.
+  - ¿Qué hacemos? Una opción sería pasarlos como parámetro a cada función, pero quien la consume (_.src/index.ts_) tiene una firma específica para esa función y no admite más parámetros ¿ Qué podemos hacer? Curry al rescate :).
 
 _./back/src/common/middlewares/logger.middlewares.ts_
 
@@ -231,13 +235,13 @@ export const logger = createLogger({
 
 ```
 
-> `combine`: method to combine multiple formats
+> `combine`: método para combinar varios formatos.
 >
-> `colorize`: add color by log level
+> `colorize`: pone un coloro distinto por cada tipo de log
 >
-> `timestamp`: add a timestamp to log
+> `timestamp`: le añade el timestamp al log
 >
-> `printf`: create custom message
+> `printf`: crea un mensaje custom
 
 Una de las características más potentes de este tipo de librerías es que podemos guardar los logs en diferentes transportes a la vez. Vamos a mover el transporte `console` a su propio archivo:
 
@@ -259,9 +263,42 @@ export const console = new transports.Console({
 });
 ```
 
+Creamos el barrel:
+
+_./back/src/core/logger/transports/index.ts_
+
+```typescript
+export * from "./console.transport.js";
+```
+
+Y refactorizamos el logger, se nos queda más limpio:
+
+_./back/src/core/logger/logger.ts_
+
+```diff
+import { createLogger, transports, format } from 'winston';
++ import { console } from './transports/console.transport.js';
+
+const { combine, colorize, timestamp, printf } = format;
+- const console = new transports.Console({
+-  format: combine(
+-    colorize(),
+-    timestamp(),
+-    printf(({ level, message, timestamp }) => {
+-      return `[${level}] [${timestamp}] message: ${message}`;
+-    })
+-  ),
+- });
+
+export const logger = createLogger({
+  transports: [console],
+});
+```
+
+
 Abrimos el navegador en `http://localhost:8080/` y forzamos errores de `info`, `warn` y `error` logs.
 
-Añadimos un nuevo transporte `File` en el que, por ejemplo, guardaremos solo `warnings` y `errors` en este archivo:
+Vamos a añadir un nuevo transporte: `File` en el que, por ejemplo, guardaremos solo `warnings` y `errors` en este archivo:
 
 _./back/src/core/logger/transports/file.transport.ts_
 
