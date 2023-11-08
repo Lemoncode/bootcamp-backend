@@ -2,11 +2,11 @@
 
 Vamos a trabajar con un concepto muy interesante, las "salas"
 
-# Pasos
+## Pasos
 
-- Copiamos el ejemplo anterior.
+- Partimos del ejercicio anterior, _02-connection-params_
 
-- Entramos en el back, instalamos paquetes
+- Entramos en el back, instalamos las dependencias
 
 ```bash
 npm install
@@ -22,7 +22,7 @@ npm install
 
 - En el lado cliente vamos a crear la fontaneria de interfaz de usuario:
 
-_./src/app.tsx_
+_./front/src/app.tsx_:
 
 ```diff
 export const App = () => {
@@ -36,32 +36,32 @@ export const App = () => {
 + const [room, setRoom] = React.useState("Front End");
 ```
 
-_./src/app.tsx_
+_.front/src/app.tsx_:
 
 ```diff
     <>
       <label>Enter Nickname: </label>
       <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
-+      <label>Room: </label>
-+      <select value={room} onChange={e => setRoom(e.target.value)}>
-+        <option value="Front End">Front End</option>
-+        <option value="Back End">Back End</option>
-+        <option value="Devops">Devops</option>
-+        <option value="Random">Random</option>
-+      </select>
++     <label>Room: </label>
++     <select value={room} onChange={e => setRoom(e.target.value)}>
++       <option value="Front End">Front End</option>
++       <option value="Back End">Back End</option>
++       <option value="Devops">Devops</option>
++       <option value="Random">Random</option>
++     </select>
 ```
 
 - Bien, vamos a pasarle el nombre de la habitacion en nuestra conexión (aquí sería buena idea agrupar esto en un objeto)
 
-_./src/app.tsx_
+_./front/src/app.tsx_:
 
 ```diff
   const establishConnection = () => {
--    const socketConnection = createSocket(nickname);
-+    const socketConnection = createSocket(nickname, room);
+-   const socketConnection = createSocket(nickname);
++   const socketConnection = createSocket(nickname, room);
 ```
 
-_./src/api.tsx_
+_./front/src/api.ts_:
 
 ```diff
 export const createSocket = (
@@ -71,24 +71,25 @@ export const createSocket = (
   const url = baseSocketUrl;
 
   const options: SocketIOClient.ConnectOpts = {
--    query: { nickname },
-+    query: { nickname, room },
+-   query: { nickname },
++   query: { nickname, room },
     timeout: 60000,
 ```
 
 - Vamos al servidor, vamos a añadir al store la informacíon de la habitación en la que estamos:
 
-_./back/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
 io.on('connection', function (socket: Socket) {
   console.log('** connection recieved');
   const config: ConnectionConfig = {
     nickname: socket.handshake.query['nickname'] as string,
-+    room: socket.handshake.query['room'] as string
++   room: socket.handshake.query['room'] as string,
   }
   addUserSession(socket.conn.id, config);
-+  socket.join(socket.handshake.query['room']);
++ socket.join(socket.handshake.query['room']);
+  socket.emit('message', { type: 'CONNECTION_SUCCEEDED' });
 ```
 
 Bueno hacemos un _addUserSession_ para almacenarlo en nuestra _base de datos_ (memoria) pero... tenemos que decirle a _socket.io_
@@ -96,12 +97,12 @@ que ese usuario se registra en la habitación que indica, esto lo hacemos de la 
 
 ```diff
   addUserSession(socket.conn.id, config);
-+  socket.join(socket.handshake.query['room']);
++ socket.join(socket.handshake.query['room']);
 ```
 
 Añadimos
 
-_./back/src/store.ts_
+_./back/src/store.ts_:
 
 ```diff
 interface UserSession {
@@ -124,11 +125,9 @@ export const addUserSession = (connectionId: string, config: ConnectionConfig) =
 
 Y el getter...
 
-_./back/src/store.ts_
+_./back/src/store.ts_:
 
 ```diff
-
-
 - export const getNickname = (connectionId: string) => {
 + export const getUserInfo = (connectionId: string) : UserSession => {
   const session = userSession.find(
@@ -148,24 +147,24 @@ _./back/src/store.ts_
 
 - Y Vamos a recogerla a la hora de enviar el mensaje que solo se envíe a los que estén en esa habitación:
 
-_./backend/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
-- import { addUserSession, getNickname } from './store';
-+ import { addUserSession, getUserInfo } from './store';
+- import { addUserSession, ConnectionConfig, getNickname } from './store';
++ import { addUserSession, ConnectionConfig, getUserInfo } from './store';
 
 // (...)
 
   socket.on('message', function (body: any) {
     console.log(body);
 +   const userInfo = getUserInfo(socket.id);
--    socket.broadcast.emit('message', {
-+    io.to(userInfo.room).emit('message',{
+-   socket.broadcast.emit('message', {
++   io.to(userInfo.room).emit('message',{
       ...body,
       payload: {
         ...body.payload,
--        nickname: getNickname(socket.conn.id),
-+        nickname: userInfo.nickname,
+-       nickname: getNickname(socket.conn.id),
++       nickname: userInfo.nickname,
       },
     });
   });
@@ -178,7 +177,7 @@ _./backend/src/app.ts_
 npm start
 ```
 
-_./backend/src/app.ts_
+_./back/src/index.ts_:
 
 ```diff
   socket.on('message', function (body: any) {

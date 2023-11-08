@@ -2,7 +2,7 @@
 
 Vamos a montar un ejemplo mínimo con sockets
 
-# Pasos
+## Pasos
 
 - Copiamos el ejemplo anterior de boiler plate.
 
@@ -29,18 +29,19 @@ npm install socket.io --save
 
 - Vamos a por el fichero principal y levantar nuestro websocket.
 
-_./src/app.ts_
+_./src/index.ts_:
 
 ```diff
-import { createApp } from './express.server';
-import { envConstants } from './env.constants';
-import { api } from './api';
-import express from 'express';
-import path from 'path';
-+ import * as http from 'http';
-+ import { Server, Socket } from 'socket.io';
+import './load-env.js';
 + import cors from 'cors';
-
+import express from 'express';
++ import http from 'http';
+import path from 'path';
++ import { Server, Socket } from 'socket.io';
+import url from 'url';
+import { createApp } from './express.server.js';
+import { envConstants } from './env.constants.js';
+import { api } from './api.js';
 
 const app = createApp();
 
@@ -73,7 +74,9 @@ const app = createApp();
 +  },
 + });
 
-app.use('/', express.static(path.join(__dirname, 'static')));
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
+app.use('/', express.static(staticFilesPath));
 
 app.use('/api', api);
 
@@ -83,9 +86,9 @@ app.listen(envConstants.PORT, () => {
 ```
 
 Vamos ahora quedarnos escuchando en el puerto 3000 (esto podría ir a variables
-de entorno), añadir al final de app.ts
+de entorno), añadir al final de index.ts
 
-_./src/app.ts_
+_./src/index.ts_:
 
 ```typescript
 const server = socketapp.listen(3000, function () {
@@ -94,9 +97,9 @@ const server = socketapp.listen(3000, function () {
 ```
 
 Y vamos a quedarnos atentos a que un usuario se conecte, en cuanto se
-conecte le indicamos que la conexión ha tenido éxito (añadir al final de _app.ts_):
+conecte le indicamos que la conexión ha tenido éxito (añadir al final de _index.ts_):
 
-_./src/app.ts_
+_./src/index.ts_:
 
 ```typescript
 // whenever a user connects on port 3000 via
@@ -132,13 +135,13 @@ socket.emit("message", { type: "CONNECTION_SUCCEEDED" });
 
 Vamos a probar con esta tool (importante contact, y pestaña emit y message, despues payload y como json)
 
-```
+```text
 https://amritb.github.io/socketio-client-tool/
 ```
 
 Y el proyecto:
 
-```
+```text
 https://github.com/amritb/socketio-client-tool/tree/master/react-client-tool
 ```
 
@@ -155,7 +158,7 @@ darle al botón de add para que envie MESSAGE y no socket io client).
 - Miramos que este deshabilitado _json data_
 - Añadimos el siguiente body del mensaje
 
-```
+```text
 {type: 'CHAT_MESSAGE', payload: 'Hola desde socket client tool'}
 ```
 
@@ -173,7 +176,7 @@ npm install socket.io-client --save
 
 - Vamos a hacernos una función de ayuda para crear la conexión.
 
-_./src/api.ts_
+_./src/api.ts_:
 
 ```typescript
 import { io, SocketOptions, Socket, ManagerOptions } from "socket.io-client";
