@@ -67,7 +67,7 @@ Normalmente, esto no se hace así, sino que tenemos la cadena de conexión a la 
 dotnet add package Microsoft.EntityFrameworkCore.Design
 ```
 
- Ya lo ha agregado, ahora utilizaremos la herramienta para crear nuestra migración inicial. Pero... ¿Qué es una migración? Una migración es un conjunto de cambios que se guardan en un fichero cs, que define las diferencia de existen en el modelo desde una etapa anterior hasta la etapa actual. Es decir, ahora mismo no tenemos una migración creada anterior, por lo que nuestra migración inicial va a contener todo el modelo de nuestra base de datos. Es decir, la tabla _Authors_ y la tabla _Books_. Vamos a crearla con el siguiente comando:
+Ya lo ha agregado, ahora utilizaremos la herramienta para crear nuestra migración inicial. Pero... ¿Qué es una migración? Una migración es un conjunto de cambios que se guardan en un fichero cs, que define las diferencia de existen en el modelo desde una etapa anterior hasta la etapa actual. Es decir, ahora mismo no tenemos una migración creada anterior, por lo que nuestra migración inicial va a contener todo el modelo de nuestra base de datos. Es decir, la tabla _Authors_ y la tabla _Books_. Vamos a crearla con el siguiente comando:
 
 ```console
 dotnet ef migrations add InitialMigration
