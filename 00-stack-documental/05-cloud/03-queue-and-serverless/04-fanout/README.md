@@ -85,6 +85,8 @@ await priceArchiveConsumerTwo(channel);
 
 ```
 
+> Update 'fanout' in exchange declared book.rest.api --> sendBookToArchive
+
 Run POST method again:
 
 ```
