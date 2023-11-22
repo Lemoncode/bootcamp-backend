@@ -60,35 +60,30 @@ Algunas excepciones más comunes:
   Ejemplo:
 
 ```csharp
- internal class Program
+ Console.WriteLine("División de 100 entre 2 = {0}", DividirPorDos(100));
+
+try
+{
+    // Aquí la excepción ArgumentException es lanzada debido a que el
+    // dividendo es un número impar:
+    Console.WriteLine("13 dividido por 2 = {0}", DividirPorDos(13));
+}
+catch (ArgumentException ae)
+{
+    Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+}
+
+static int DividirPorDos(int numero)
+{
+    // Si el número no es par, entonces
+    // se lanzará la excepción `ArgumentException`:
+    if ((numero % 2) == 1)
     {
-        private static int DividirPorDos(int numero)
-        {
-            // Si el número no es par, entonces
-            // se lanzará la excepción `ArgumentException`:
-            if ((numero % 2) == 1)
-            {
-                throw new ArgumentException("El número debe ser par.", "numero");
-            }
-
-            return numero / 2;
-        }
-        static void Main(string[] args)
-        {
-            Console.WriteLine("División de 100 entre 2 = {0}", DividirPorDos(100));
-
-            try
-            {
-                // Aquí la excepción ArgumentException es lanzada debido a que el
-                // dividendo es un número impar:
-                Console.WriteLine("13 dividido por 2 = {0}", DividirPorDos(13));
-            }
-            catch (ArgumentException ae)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
-            }
-        }
+        throw new ArgumentException("El número debe ser par.", "numero");
     }
+
+    return numero / 2;
+}
 ```
 
 De esta excepción derivan otras dos:
@@ -96,74 +91,61 @@ De esta excepción derivan otras dos:
 - ArgumentNullException: se lanza cuando una referencia `null` es pasada a un método que no acepta este valor:
 
   ```csharp
-   internal class Program
-  {
-      private static void ImprimirMensaje(string mensaje)
-      {
-          if (mensaje == null)
-          {
-              throw new ArgumentNullException("mensaje","El mensaje no puede ser nulo");
-          }
-
-          Console.WriteLine(mensaje);
-      }
-      static void Main(string[] args)
-      {
-
-          try
-          {
-              string mensaje = "Hola mundo";
-              ImprimirMensaje(mensaje);
-
-              string mensaje2 = null;
-              ImprimirMensaje(mensaje2);
-          }
-          catch (ArgumentNullException ae)
-          {
-              Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
-          }
-      }
-  }
+   try
+    {
+        string mensaje = "Hola mundo";
+        ImprimirMensaje(mensaje);
+    
+        string mensaje2 = null;
+        ImprimirMensaje(mensaje2);
+    }
+    catch (ArgumentNullException ae)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+    }
+    
+    static void ImprimirMensaje(string mensaje)
+    {
+        if (mensaje == null)
+        {
+            throw new ArgumentNullException("mensaje", "El mensaje no puede ser nulo");
+        }
+    
+        Console.WriteLine(mensaje);
+    }
   ```
 
 - ArgumentOutOfRangeException: se lanza cuando el valor de un argumento está fuera de los límites inferior y superior:
 
 ```csharp
-internal class Program
+    try
     {
-        public class Votante
+        var votante1 = new Votante("Maria", 25);
+        Console.WriteLine($"Votante 1: Maria");
+        var votante2 = new Votante("Antonio", 7);
+        Console.WriteLine($"Votante 2: Antonio");
+    }
+    catch (ArgumentOutOfRangeException ae)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+    }
+    
+    class Votante
+    {
+        private string _nombre;
+        private int _edad;
+    
+        public Votante(string nombre, int edad)
         {
-            private string _nombre;
-            private int _edad;
-
-            public Votante(string nombre, int edad)
+            _nombre = nombre;
+    
+            if (edad <= 18)
             {
-                _nombre = nombre;
-
-                if(edad <= 18)
-                {
-                    throw new ArgumentOutOfRangeException("edad", "El votante no puede ser menor de edad");
-                }
-                else
-                {
-                    _edad = edad;
-                }
+                throw new ArgumentOutOfRangeException("edad", "El votante no puede ser menor de edad");
             }
-        }
-
-        static void Main(string[] args)
-        {
-
-            try
+            else
             {
-                var votante1 = new Votante("Maria", 25);
-                Console.WriteLine($"Votante 1: Maria");
-                var votante2 = new Votante("Antonio", 7);
-                Console.WriteLine($"Votante 2: Antonio");
-            }
-            catch (ArgumentOutOfRangeException ae)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
+                _edad = edad;
             }
         }
     }
@@ -172,99 +154,77 @@ internal class Program
 - DivideByZeroException: se lanza cuando intentamos dividir por cero
 
 ```csharp
-internal class Program
+    try
     {
-        static void Main(string[] args)
-        {
-
-            try
-            {
-                Console.WriteLine("Añade el primer número: ");
-                var numero1 = int.Parse(Console.ReadLine());
-                Console.WriteLine("Añade el segundo número: ");
-                var numero2 = int.Parse(Console.ReadLine());
-
-                var resultado = numero1 / numero2;
-            }
-            catch(FormatException ce)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ce.Message);
-
-            }
-            catch (DivideByZeroException ae)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
-            }
-        }
+        Console.WriteLine("Añade el primer número: ");
+        var numero1 = int.Parse(Console.ReadLine());
+        Console.WriteLine("Añade el segundo número: ");
+        var numero2 = int.Parse(Console.ReadLine());
+    
+        var resultado = numero1 / numero2;
+    }
+    catch (FormatException ce)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ce.Message);
+    
+    }
+    catch (DivideByZeroException ae)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ae.Message);
     }
 ```
 
 - NullReferenceException: se lanza cuando se intenta acceder o manipular el estado de una variable que tiene asignada la referencia null:
 
 ```csharp
-  internal class Program
+  
+    try
     {
-        static void Main(string[] args)
-        {
-            try
-            {
-                ArrayList array = null;
+        ArrayList array = null;
 
-                array.Add("hola");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
-
-            }
-        }
+        array.Add("hola");
     }
+    catch(Exception ex)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+    }
+      
 ```
 
 - OverflowException: se lanza cuando operaciones aritméticas o de conversiones sobrepasan los límites de memoria de tipos de datos:
 
 ```csharp
-    internal class Program
+   
+    try
     {
-        static void Main(string[] args)
+        checked
         {
-            try
-            {
-                checked
-                {
-                    int suma = Int32.MaxValue + Int32.Parse("1");
-                    Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
-                }
-            }
-            catch(OverflowException ex)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
-
-            }
+            int suma = Int32.MaxValue + Int32.Parse("1");
+            Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
         }
     }
+    catch(OverflowException ex)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+    }
+
 ```
 
 Para que la operación aritmética o de conversión produzca una `OverflowException` la operación tiene que producirse en un contexto comprobado: `checked`. En caso contrario el resultado se trunca descartando los bits mayores que no caben el tipo de destino.
 
 ```csharp
- internal class Program
+
+    try
     {
-        static void Main(string[] args)
-        {
-            try
-            {
-            int suma = Int32.MaxValue + Int32.Parse("1");
-            Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
-
-            }
-            catch(OverflowException ex)
-            {
-                Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
-
-            }
-        }
+        int suma = Int32.MaxValue + Int32.Parse("1");
+        Console.WriteLine($"El resultado de sumar {Int32.MaxValue} más 1 es: {suma}");
+    
     }
+    catch(OverflowException ex)
+    {
+        Console.WriteLine("Mensaje de error: `{0}`", ex.Message);
+    }
+  
 ```
 
 También se pueden crear excepciones personalizadas. Para ello sólo hay que crear una clase que herede de la clase `Exception` y añadir un constructor. Ejemplo:
@@ -280,46 +240,44 @@ public class DniInvalidoException: Exception {
 
 Para utilizar esta excepción que hemos creado hay que instanciarla manualmente:
 
-```csharp
-public class Program
+```diff
++ try
++ {
++     Console.WriteLine("Añada DNI:");
++     var dni = Console.ReadLine();+ 
++     if (!string.IsNullOrEmpty(dni) && ValidateDNI(dni))
++     {
++         Console.WriteLine($"DNI: {dni} es válido");
++     }
++     else
++     {
++         throw new DniInvalidoException($"Error!! DNI: {dni} no es válido");
++     }
++ }
++ catch (DniInvalidoException ex)
++ {
++     Console.ReadLine();
++ }
++ static bool ValidateDNI(string dni)
++ {
++     string pattern = @"^((\d{8})|(\d{8}([A-Z]|[a-z])))$";
+
++     Regex r = new Regex(pattern);
+
++     if ((r.IsMatch(dni)))
++     {
++         return true;
++     }
++     else
++     {
++         return false;
++     }
++ }
++ public class DniInvalidoException : Exception
+{
+    public DniInvalidoException(string message) : base(message)
     {
-        public static void Main(string[] args)
-        {
-            try
-            {
-                Console.WriteLine("Añada DNI:");
-                var dni = Console.ReadLine();
-                if (!string.IsNullOrEmpty(dni) && ValidateDNI(dni))
-                {
-                    Console.WriteLine($"DNI: {dni} es válido");
-                }
-                else
-                {
-                    throw new DniInvalidoException($"Error!! DNI: {dni} no es válido");
-                }
-
-            }
-            catch (DniInvalidoException ex)
-            {
-                Console.ReadLine();
-
-            }
-        }
-
-        private static bool ValidateDNI(string dni)
-        {
-            string pattern = @"^((\d{8})|(\d{8}([A-Z]|[a-z])))$";
-
-            Regex r = new Regex(pattern);
-
-            if ((r.IsMatch(dni)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        Console.WriteLine(message);
     }
+}
 ```
