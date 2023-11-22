@@ -17,21 +17,19 @@ Podemos usar la licencia de la versión community si cumplimos las siguientes re
 
 ## Tipos de proyectos de Visual Studio
 
-Una vez instalado, vamos a iniciar la herramienta y nos aparecen diferentes instalaciones que podemos realizar. 
+Una vez instalado, vamos a iniciar la herramienta y nos aparecen diferentes instalaciones que podemos realizar.
 
 Vamos a seleccionar _Desarrollo de ASP.NET y web_ en _Cargas de Trabajo_:
 
 <img src="./content/install-option1.png" style="zoom:67%;"  >
 
+En _Componentes individuales_, en _Buscar componentes_, comprobamos que _.NET 8.0 Runtime_ está seleccionado:
 
-
-En _Componentes individuales_, en _Buscar componentes_, escribimos _.NET 5.0_ seleccionamos la opción como podemos ver en la siguiente imagen e instalamos:
-
-<img src="./content/install-option2.png" style="zoom:67%;"  > 
+<img src="./content/install-option2.png" style="zoom:67%;"  >
 
 Una vez que tenemos todo instalado, vamos a arrancar Visual Studio y nos aparece la siguiente pantalla, si queremos registrarnos podemos hacerlo, o _omitirlo por el momento_, y por último seleccionamos el tema que queremos elegir e iniciamos la aplicación.
 
-<img src="./content/omit-register.png" style="zoom:67%;"  > 
+<img src="./content/omit-register.png" style="zoom:67%;"  >
 
 Vamos ya a empezar a trabajar con _Visual Studio_ y seleccionamos crear un nuevo proyecto.
 
@@ -55,9 +53,7 @@ Vamos a seleccionar como tipo de proyecto "Aplicación de consola" (versión net
 
 <img src="./content/basic_data_project.png" style="zoom:67%;"  >
 
-Ahora seleccionamos _*.NET 5.0*_ y aunque nos diga _Out of support_ seleccionamos la opción. Vamos a utilizar esta versión de _.NET_ porque el código es más intuitivo y fácil de entender. Para ver más información sobre esto podemos consultar el siguiente [enlace](https://learn.microsoft.com/es-es/dotnet/core/tutorials/top-level-templates). 
-
-Y ya podemos crear nuestro primer proyecto:
+Ahora seleccionamos _*.NET 8.0*_. Y ya podemos crear nuestro primer proyecto:
 
 <img src="./content/basic_data_project2.png" style="zoom:67%;"  >
 
@@ -67,7 +63,7 @@ Una solución es un conjunto de proyectos. Cada proyecto de una solución dará 
 
 Sería conveniente dar un nombre diferente a la solución y al proyecto.
 
-El último paso es seleccionar el *framework* con el que vamos a crear nuestro proyecto.
+El último paso es seleccionar el _framework_ con el que vamos a crear nuestro proyecto.
 
 ## Analizando la creación base de nuestra aplicación
 
@@ -81,7 +77,7 @@ Vemos que se ha creado una carpeta con el nombre de la solución donde dentro te
 
 - .vs: Carpeta oculta para la gestión del visual studio code.
 - carpeta del proyecto.
-- fichero de la solución (extensión *.sln)
+- fichero de la solución (extensión \*.sln)
 
 Dentro de la carpeta del proyecto vemos los ficheros que se han creado de forma automática. Vamos a destacar varios ficheros/carpetas:
 
@@ -90,8 +86,7 @@ Dentro de la carpeta del proyecto vemos los ficheros que se han creado de forma 
 - bin: Donde se generará el ensamblado de nuestro proyecto.
 - obj: Donde se generará los ficheros compilados. (Dos fases: Compile y Link)
 - Properties: Propiedades de nuestro proyecto (definiciones de ejecución, información del ensamblado, etc...)
-- fichero de definición del proyecto (extensión *.csproj).
-- App.config: Fichero de configuración del proyecto.
+- fichero de definición del proyecto (extensión \*.csproj).
 
 ### A nivel de código
 
@@ -101,10 +96,10 @@ Vamos a ver el código generado:
 
 Antes de meternos a explicar conceptos como clases, métodos, vamos a ver conceptos básicos que se pueden observar en este código inicial:
 
-- El lenguaje *C#* es *case-sensitive*. Cuando creamos una variable, clase, método... el identificador que asignamos diferencia entre las mayúsculas y minúsculas.
-- Para limitar bloques de código utilizamos *{ y }*.
+- El lenguaje _C#_ es _case-sensitive_. Cuando creamos una variable, clase, método... el identificador que asignamos diferencia entre las mayúsculas y minúsculas.
+- Para limitar bloques de código utilizamos _{ y }_.
 - Las instrucciones terminan con ;
-- Si necesitamos incluir comentarios en nuestro código podemos utilizar // o /* y */.
+- Si necesitamos incluir comentarios en nuestro código podemos utilizar // o /_ y _/.
 - Con _namespace_ podemos organizar las clases que vamos a ir creando.
 - Si necesitamos una clase que no está en nuestro _namespace_ podemos acceder a ella si hacemos un _using_ de su _namespace_.
 
@@ -113,19 +108,12 @@ Antes de meternos a explicar conceptos como clases, métodos, vamos a ver concep
 Vamos a crear una aplicación simple para ver cómo podemos ejecutarla.
 
 ```diff
-namespace hello_world_project
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
+
 +            var a = 1;
 +            a = a + 1;
 +            Console.WriteLine(a);
 +            Console.ReaLine();
-        }
-    }
-}
+
 ```
 
 Vale, ya podemos ejecutar nuestra aplicación. Lo podemos hacer de varias formas:
@@ -142,27 +130,20 @@ Vale, ya podemos ejecutar nuestra aplicación. Lo podemos hacer de varias formas
 
 Pero, ojo nuestro código ¡no funciona! En la ventana de _Output_ vemos como se ha detectado un problema en nuestro código. Hemos escrito mal el nombre del método _Readline_ por tanto la aplicación no se puede ejecutar.
 
-Desde la ventana de _Error List_ podemos movernos de forma rápida a la línea donde se ha detectado el problema. 
+Desde la ventana de _Error List_ podemos movernos de forma rápida a la línea donde se ha detectado el problema.
 
 <img src="./content/error-readline.png" style="zoom:67%;"  >
 
 Vamos a solucionarlo:
 
 ```diff
-namespace hello_world_project
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            var a = 1;
-            a = a + 1;
-            Console.WriteLine(a);
--           Console.ReaLine();
-+           Console.ReadLine();
-        }
-    }
-}
+
+    var a = 1;
+    a = a + 1;
+    Console.WriteLine(a);
+-   Console.ReaLine();
++   Console.ReadLine();
+
 ```
 
 Ahora si podemos ejecutar la aplicación y ver el resultado por consola.
@@ -226,20 +207,11 @@ Otras herramientas muy útiles son las acciones rápidas o refactorización de c
 Vamos a modificar nuestro código para ver cómo se utilizan estas herramientas:
 
 ```diff
-namespace hello_world_project
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-             var a = 1;
--             a = a + 1;
-+            a = a * Math.PI;
-             Console.WriteLine(a);
-             Console.ReadLine();
-        }
-    }
-}
+    var a = 1;
+-   a = a + 1;
++   a = a * Math.PI;
+    Console.WriteLine(a);
+    Console.ReadLine();
 ```
 
 Aparece un error porque no sabe cómo convertir un valor _double_ a _int_ (lo veremos más adelante). Si ponemos el ratón encima del error, y si esperamos unos segundos, aparecerá la bombilla indicando que hay un error y nos va a proponer las soluciones disponibles.
@@ -250,7 +222,7 @@ Seleccionamos la opción _Add explicit cast_ para hacer el casting de forma auto
 
 Otra acción que podemos realizar es la refactorización de código. Vamos a verlo en el ejemplo.
 
-Seleccionamos **(int)(a * Math.PI)** y esperamos unos segundo a que aparezca el destornillador o la bombilla. Al hacer clic sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
+Seleccionamos **(int)(a \* Math.PI)** y esperamos unos segundo a que aparezca el destornillador o la bombilla. Al hacer clic sobre le destornillador se nos presentan todas las posible acciones que podemos realizar para mejorar el código.
 
 ![Refactorización](./content/refactor.png)
 
