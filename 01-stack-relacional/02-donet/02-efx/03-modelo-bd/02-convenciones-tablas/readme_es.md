@@ -129,7 +129,7 @@ namespace LibraryManagerWeb.DataAccess
 }
 ```
 
-Ya lo tendríamos, compilamos _Shift+F6_, y vamos a crear la migración.
+Ya lo tendríamos, compilamos, y vamos a crear la migración.
 
 ```console
 dotnet ef migrations add RenameTables.

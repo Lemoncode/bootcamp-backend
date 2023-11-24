@@ -124,7 +124,7 @@ namespace LibraryManagerWeb.DataAccess
 
 Nada más que con esta llamada el _modelBuilder_ es consciente de esta nueva entidad y la va a añadir al modelo. Esto, normalmente, viene acompañado de una configuración, por ejemplo, podríamos hacer un _HasKey_ o un _.properties_ para configurar una propiedad, etc. En teoría, solo con esto, estamos haciendo que la entidad sea parte de nuestro modelo.
 
-Bien, vamos a intentar compilar _Shift+F6_, y ahora vamos a crear la migración. Nos vamos a la consola y al directorio donde está nuestro _CSPROJ_, por lo cual podemos ejecutar directamente:
+Bien, vamos a intentar compilar, y ahora vamos a crear la migración. Nos vamos a la consola y al directorio donde está nuestro _CSPROJ_, por lo cual podemos ejecutar directamente:
 
 ```console
  dotnet ef migrations add NewEntities
