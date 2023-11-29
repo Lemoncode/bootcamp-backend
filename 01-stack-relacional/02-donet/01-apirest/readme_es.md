@@ -38,14 +38,14 @@ El servidor me devuelve una respuesta, que tiene las siguientes partes:
 
 - **Versión del protocolo**: en este caso sería la 1.1. como en la _request_.
 - **Código del estado:** en este caso un 200, ahora en el siguiente apartado veremos algunos de los diferentes códigos que tenemos y que significan cada uno de ellos.
-https://www.lucushost.com/blog/codigos-http-mas-comunes/
+  https://www.lucushost.com/blog/codigos-http-mas-comunes/
 - **Mensaje de estado:** que va asociado al código de estado, pero que podemos personalizarlo si lo vemos conveniente.
 - **Headers**: donde irían incluidos diferentes datos, como el _content-type_ donde nos informa del formato de la respuesta, _XML_, _JSON_,... El servidor nos manda información a través de ellas y otras veces somos nosotros los que añadimos información a las cabeceras.
 - **Payload**: Es opcional, nos devuelve el contenido de la respuesta.
 
 ## Soap Vs Rest
 
-Ambos son protocolos que se encuentran englobados en el cajón de "*SOA*" (*Service Oriented Architecture*). *SOA* es un tipo de arquitectura de software que se basa en la integración de aplicaciones mediante servicios.
+Ambos son protocolos que se encuentran englobados en el cajón de "_SOA_" (_Service Oriented Architecture_). _SOA_ es un tipo de arquitectura de software que se basa en la integración de aplicaciones mediante servicios.
 
 ### SOAP
 
@@ -71,7 +71,7 @@ El término REST (_Representational State Transfer_) lo acuñó Roy Fielding (pa
 El estándar de API tiene ya 20 años, fue una revolución en su día, pero ya va pidiendo un reemplazo.
 
 - La estructura es rígida y no siempre se adapta a lo que necesitas.
-- Al final acabas creando métodos en los que haces "*trampas*" para acceder a _queries_ específicas.
+- Al final acabas creando métodos en los que haces "_trampas_" para acceder a _queries_ específicas.
 - Muchas veces te hace falta mezclar los resultados de varios _endpoints_, teniendo que hacer varios viajes a servidor o hacer un _cherry pick_ de los campos a mostrar.
 - _GraphQL_ se está erigiendo como el nuevo estándar de facto para solucionar algunas limitaciones de _REST API_.
 
@@ -93,21 +93,21 @@ Introducimos el nombre del proyecto y le damos a siguiente:
 
 <img src="./content/create-webapi-app2.png" alt="create-webapi-app2" style="zoom:67%;" />
 
-En Información adicional elegimos _.NET 5.0_ y desactivamos _Configure for HTTPS_ para que el navegador no nos muestre que esta dirección no es segura y le damos a crear.
+En Información adicional dejamos seleccionado el framework _.NET 8.0_ y desactivamos _Configure for HTTPS_ para que el navegador no nos muestre que esta dirección no es segura y le damos a crear. Dejamos marcadas las opciones _Enable OpenAPI support_, la cual nos habilitará _Swagger_ y _Use controllers_, esta última para que nos permita ver los controladores.
 
 <img src="./content/create-webapi-app3.png" alt="create-webapi-app3" style="zoom:67%;" />
 
-Vamos a la derecha de nuestra aplicación y vemos que tiene una carpeta _Controllers_ que contiene nuestro controlador que en este caso se llama _Weather ForecastController.cs_ si lo abrimos vemos que tiene:
+Vamos a la derecha de nuestra aplicación y vemos que tiene una carpeta _Controllers_ que contiene nuestro controlador que en este caso se llama _WeatherForecastController.cs_ si lo abrimos vemos que tiene:
 
 <img src="./content/controller.png" alt="controller" style="zoom:67%;" />
 
-**ApiControler**: este atributo nos ayuda a habilitar algunas características por defecto.
+**ApiController**: este atributo nos ayuda a habilitar algunas características por defecto.
 
-- **Route:** es la ruta de acceso al controlador que estamos creando. Coge el nombre de la clase, por ejemplo _WeatherForecast_, y mi _endpoint_ sería tal como *api/WeatherForecast*.
+- **Route:** es la ruta de acceso al controlador que estamos creando. Coge el nombre de la clase, por ejemplo _WeatherForecast_, y mi _endpoint_ sería tal como _api/WeatherForecast_.
 - Si el modelo que manda no es válido automáticamente, gracias al _ApiController_, nos va a mandar un 400 o qué no ha encontrado al método, etc...
 - Cuando hagamos _post_ o _put_ hay que pasar por parámetros el objeto que queremos recibir de la petición. Antes había que poner unos atributos, ya no es necesario especificarlo, excepto que sea _string_ o un _integer_, el cual hay que indicarle que procede del body.
 
-Si ahora abrimos a **_appsetttings.json_**:
+Si ahora abrimos a **_appsettings.json_**:
 
 <img src="./content/appsettings.png" alt="appsetttings" style="zoom:67%;" />
 
@@ -131,19 +131,19 @@ Vamos a abrir ahora el archivo **_Program.cs_**
 
 Program es nuestro punto de entrada donde tenemos al método _Main_.
 
-Va a ser el primer método que se va a ejecutar en nuestra aplicación, el cuál llama al método _CreateHostBuilder_, donde estamos cargando la configuración del host con la variable de entorno que tengo el prefijo _dotnet_.
+Va a ser el primer método que se va a ejecutar en nuestra aplicación, el cuál llama al método _CreateBuilder_, donde estamos cargando la configuración del host con la variable de entorno que tengo el prefijo _dotnet_.
 
-Esto lo realiza automáticamente, y también carga la configuración de las _appsettings_, agregan los proveedores registro de consola, de depuración y me indica que cargue la configuración del **_Startup_**.
+Esto lo realiza automáticamente, y también carga la configuración de las _appsettings_, agregan los proveedores registro de consola, de depuración y además carga la configuración adicional de los servicios, Swagger y también podríamos incluir todas las inyecciones de dependencia.
 
-Este fichero **_Startup.cs_**:
-
-<img src="./content/startup-cs.png" alt="startup-cs" style="zoom:67%;" />
-
-Podemos encontrar la configuración de todos los servicios que tenemos activos en nuestro servidor web, por defecto nos añade el servicio de los controladores, nos agrega *Swagger* y también podríamos incluir todas las inyecciones de dependencia.
-
-Si ejecutamos nuestra aplicación:
+Si ejecutamos nuestra aplicación, vemos que hay varios perfiles creados, en nuestro caso vamos a seleccionar _IIS Express_ para ejecutar la aplicación sobre IIS:
 
 <img src="./content/start-app.png" alt="start-app" style="zoom:67%;" />
+
+Los perfiles se crean en el fichero _launchsettings.json_ que está en la carpeta _Properties_:
+
+<img src="./content/launchsettings.png" alt="start-app" style="zoom:67%;" />
+
+Ahora vamos a ejecutar la aplicación sobre _IIS Express_.
 
 Vemos que se abre **_Swagger_**, qué es una serie de reglas, especificaciones y herramientas que nos ayudan a documentar nuestra Api de forma automática.
 
@@ -291,11 +291,11 @@ namespace DemoRestApi.Models
 
 ##### Interfaz
 
-Ahora creamos una carpeta para la interfaz con la que vamos a trabajar con las típicas operaciones CRUD (*Create Read Update Delete*), la vamos a llamar *Contracts*.
+Ahora creamos una carpeta para la interfaz con la que vamos a trabajar con las típicas operaciones CRUD (_Create Read Update Delete_), la vamos a llamar _Contracts_.
 
-Creamos una **_interface_** que la vamos a llamar *IActorRepository.cs*, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
+Creamos una **_interface_** que la vamos a llamar _IActorRepository.cs_, aquí vamos a introducir los métodos que vamos a querer implementar en nuestra Api.
 
-./Contracts/IActorReposiroty.cs
+./Contracts/IActorRepository.cs
 
 ```diff
 + using DemoRestApi.Models;
@@ -348,7 +348,7 @@ namespace DemoRestApi.Repositories
 }
 ```
 
-Y al utilizar *CTRL + .* encima vamos a implementar esa interfaz en mi nueva clase.
+Y al utilizar _CTRL + ._ encima vamos a implementar esa interfaz en mi nueva clase.
 
 <img src="./content/implement-interface.png" alt="implement-interface" style="zoom:67%;" />
 
@@ -494,7 +494,6 @@ namespace DemoRestApi.Repositories
     public class prueba : IActorRepository
     {
 +        const string JSON_PATH = @"<Full Path de Actores.json>";
-........
     }
 }
 ```
@@ -513,32 +512,25 @@ namespace DemoRestApi.Repositories
 {
     public class prueba : IActorRepository
     {
-    const string JSON_PATH = @"<Full Path de Actores.json>";
-........
-+ 	private string GetActorsFromFile()
-+        {
+        const string JSON_PATH = @"<Full Path de Actores.json>";
+
++ 	    private string GetActorsFromFile()
++       {
 +            var json = File.ReadAllText(JSON_PATH);
 +            return json;
-+        }
++       }
     }
 }
 
 ```
 
 Ahora sí vamos a GetActors y creamos la implementación.
-
-Primero vamos a instalar un _NuGet_ llamado _NewtonSoft_ para ello pulsamos botón derecho sobre nuestro proyecto y seleccionamos Manage Nuget Packages...
-
-<img src="./content/install-nuget.png" alt="install nuget" style="zoom:67%;" />
-
-Buscamos el paquete Newtonsoft.Json y lo instalamos, con este paquete vamos a serializar o deserializar según nos haga falta.
-
-<img src="./content/install-nuget2.png" alt="install nuget2" style="zoom:67%;" />
+Para serializar/deserializar podemos usar o el nuget de Newtonsoft o el serializador que incluye .Net 8 `System.Text.Json`. Este serializador ha mejorado mucho en las nuevas versiones del framework.
 
 ```diff
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
-+ using Newtonsoft.Json;
++ using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -553,7 +545,7 @@ namespace DemoRestApi.Repositories
 +            try
 +            {
 +                var actoresFromFile = GetActorsFromFile();
-+                List<Actor> actores = JsonConvert.DeserializeObject<List<Actor>>(actoresFromFile);
++                List<Actor> actores = JsonSerializer.Deserialize<List<Actor>>(actoresFromFile);
 +                return actores;
 +            }
 +            catch (Exception)
@@ -561,6 +553,37 @@ namespace DemoRestApi.Repositories
 +                throw;
 +            }
 +        }
+........
+```
+
+Vemos que salen algunos warnings, para resolverlos:
+
+```diff
+using DemoRestApi.Contracts;
+using DemoRestApi.Models;
+using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace DemoRestApi.Repositories
+{
+    public class ActorRepository : IActorRepository
+......
+ public List<Actor> GetActors()
+        {
+            try
+            {
+                var actoresFromFile = GetActorsFromFile();
+-               List<Actor> actores = JsonSerializer.Deserialize<List<Actor>>(actoresFromFile);
++               List<Actor> actores = JsonSerializer.Deserialize<List<Actor>>(actoresFromFile) ?? [];
+                return actores;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 ........
 ```
 
@@ -574,47 +597,42 @@ Y al ejecutar nos da un error.
 
 Nos dice que no se puede resolver el servicio para el tipo _IActorRepository_, y no nos devuelve el listado de actores.
 
-Para entender esto vamos a introducir un nuevo concepto, la inyección de dependencia, pero ¿qué es esto de inyección de dependencia? 
+Para entender esto vamos a introducir un nuevo concepto, la inyección de dependencia, pero ¿qué es esto de inyección de dependencia?
 
-Consiste de manera resumida en evitar el acoplamiento entre clases utilizando interfaces. 
+Consiste de manera resumida en evitar el acoplamiento entre clases utilizando interfaces.
 
 Gracias esto, conseguimos que cada clase tenga una función única, facilitando así el mantenimiento y el soporte de nuestro código.
 
-Volviendo al error que obtuvimos anteriormente, para solucionarlo, tenemos que registrar este servicio e inyectar la dependencia en todos los controladores, y para ello nos vamos a Startup y vamos a añadir este servicio.
+Volviendo al error que obtuvimos anteriormente, para solucionarlo, tenemos que registrar este servicio e inyectar la dependencia en todos los controladores, y para ello nos vamos a Program y vamos a añadir este servicio.
 
 ./Startup.cs
 
 ```diff
 + using DemoRestApi.Contracts;
 + using DemoRestApi.Repositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
-namespace DemoRestApi
-{
-    public class Startup
-    {
 ......
- public void ConfigureServices(IServiceCollection services)
-        {
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "demodia3", Version = "v1" });
-            });
-+            services.AddTransient<IActorRepository, ActorRepository>();
-        }
++ // Add dependency injection for custom services
++ builder.Services.AddScoped<IActorRepository, ActorRepository>();
+
+
+var app = builder.Build();
 ....
-	}
-}
 ```
 
 Ahora estamos añadiendo la resolución de la dependencia _ActorRepository_, le estamos diciendo que a la interfaz _IActorRepository_ la implementa la clase _ActorRepository_.
+
+Hay distintos tipos de inyecciones de dependencia:
+* **AddTransient**: un nueva instancia del servicio es creada cada vez que haya que sea solicitado y se elimina cuando finaliza la solicitud. 
+Es importante notar que si el mismo servicio es necesitado desde múltiples sitios este tipo no es el mejor. Por ejemplo, si dos servicios necesitan un mismo repositorio, no vamos a usar transient para inyectar el repositorio.
+
+* **AddScoped**: una nueva instancia del servicio es creado por cada petición. Es muy útil para servicios que mantengan algun estado durante una petición HTTP.
+
+* **AddSingleton**: una única instancia del servicio es creado por todo el tiempo de vida de la aplicación. El servicio es compartido entre todas las peticiones y clientes durante el tiempo de vida de la aplicación.
+
 
 Si ejecutamos de nuevo _Swagger_, vemos que ya nos devuelve correctamente el listado de Actores.
 
@@ -656,11 +674,8 @@ Vamos a configurar la implementación de _GetActorById_.
 ```diff
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-+ using System.Linq;
+using System.Text.Json;
+
 namespace DemoRestApi.Repositories
 {
     public class ActorRepository : IActorRepository
@@ -704,8 +719,6 @@ Volvemos a nuestro controlador, y en este caso vamos a añadir un _HttpPost_. A�
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
 using Microsoft.AspNetCore.Mvc;
-+ using System;
-using System.Collections.Generic;
 
 namespace DemoRestApi.Controllers
 {
@@ -713,6 +726,7 @@ namespace DemoRestApi.Controllers
     [ApiController]
     public class ActorController : ControllerBase
     {
+.....
 +		 [HttpPost]
 +        public ActionResult CreateActor(Actor actor)
 +        {
@@ -726,22 +740,19 @@ namespace DemoRestApi.Controllers
 +                return BadRequest(ex.Message);
 +            }
 +        }
+.....
 	}
 }
 ```
 
-Ahora nos vamos al _ActorResository_ a implementar el método, pero primero vamos a crearnos un método privado de escritura llamado _UpdateActores_, en el cuál tenemos que pasar de una lista de Actores a un formato Json, es decir, tenemos ahora que serializar.
+Ahora nos vamos al _ActorRepository_ a implementar el método, pero primero vamos a crearnos un método privado de escritura llamado _UpdateActores_, en el cuál tenemos que pasar de una lista de Actores a un formato Json, es decir, tenemos ahora que serializar.
 
 ./Repositories/ActorRepository.cs
 
 ```diff
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text.Json;
 
 namespace DemoRestApi.Repositories
 {
@@ -755,7 +766,9 @@ namespace DemoRestApi.Repositories
         	}
 +       private void UpdateActores(List<Actor> actores)
 +       {
-+           var actoresJson = JsonConvert.SerializeObject(actores, Formatting.Indented);
++          JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
++        jsonOptions.WriteIndented = true;
++        var actoresJson = JsonSerializer.Serialize(actores, jsonOptions);
 +           File.WriteAllText(JSON_PATH, actoresJson);
 +        }
 	}
@@ -769,11 +782,7 @@ Para añadir nuestro autor, primero comprobamos que no haya ningún autor con la
 ```diff
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text.Json;
 
 namespace DemoRestApi.Repositories
 {
@@ -847,11 +856,7 @@ Y ahora nos vamos a nuestro _ActorRepository.cs_
 ```diff
 using DemoRestApi.Contracts;
 using DemoRestApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text.Json;
 
 namespace DemoRestApi.Repositories
 {
@@ -941,6 +946,7 @@ Ahora nos vamos a la implementación del método al _ActorRepository.cs_
 
         public void DeleteActor(int id)
         {
+-            throw new NotImplementedException();
 +            var actores = GetActors();
 +            var indiceActor = actores.FindIndex(a => a.Id == id);
 

@@ -36,8 +36,8 @@ var pares = valores.Where(x => x % 2 == 0).ToList();
 ¿Veis la mejora en el código? Con LINQ utilizamos un lenguaje más natural y nos ayuda a eliminar bucles que nos "ensucian" el código. Ahora que ya conocemos las ventajas que nos aporta LINQ, vamos a ver algunos de los métodos que podemos utilizar. Para ello vamos a partir de la siguiente colección de objetos:
 
 ```csharp
-.....
-public class Student
+
+    public class Student
     {
         public string Name { get; set; }
         public int Average { get; set; }
