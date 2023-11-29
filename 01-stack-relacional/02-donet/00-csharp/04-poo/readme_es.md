@@ -118,7 +118,7 @@ Partimos de una aplicación de consola.
 ```csharp
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     internal class Program
     {
@@ -135,7 +135,7 @@ Lo primero que vamos a crear es nuestra clase, y la vamos a incluir en el mismo 
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 +    public class Person
 +    {
@@ -163,7 +163,7 @@ Y ahora creamos una instancia de persona desde nuestro método _Main_
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     public class Person
     {
@@ -196,7 +196,7 @@ Si seleccionamos la línea donde creamos la instancia (_new Person()_) nos apare
 ```csharp
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
         ...
         var person = new Person 
@@ -213,7 +213,7 @@ Vamos a lo importante, como veis el método _FullName_ es accesible porque está
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     public class Person
     {
@@ -249,7 +249,7 @@ Cuando lo cambiamos como privado, nos marca un error en nuestro método _Main_ p
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     public class Person
     {
@@ -292,7 +292,7 @@ Vamos ahora con ejemplo de _protected_:
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     public class Person
     {
@@ -335,7 +335,7 @@ Pero ¿en qué se diferencia _private_ y _protected_? que el método o propiedad
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     public class Person
     {
@@ -373,7 +373,7 @@ Hemos creado una clase _Employee_ que hereda de _Person_ y por tanto tendrá tod
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
     ...
 
@@ -418,7 +418,7 @@ Copiamos y borramos a _Person_ y _Employee_ que ya no nos haría falta:
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 -    public class Person
 -    {
@@ -600,7 +600,7 @@ namespace ClassLibrary1
 }
 ```
 
-Vemos que no se detecta ningún error, pero si intentamos crear una instancia de la clase _Person_ no detectará un error por ser una clase abstracta.
+Vemos que no se detecta ningún error, pero si intentamos crear una instancia de la clase _Person_ detectará un error por ser una clase abstracta.
 
 _./ConsoleApp1.cs_
 
@@ -685,7 +685,7 @@ Vamos a limpiar el código de nuestra aplicación de consola y creamos lo siguie
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 
 +   public class Animal 
@@ -728,7 +728,7 @@ Con esto hemos creado una clase base _Animal_ y dos clases hijas _Perro_ y _Gato
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 
     public class Animal 
@@ -777,7 +777,7 @@ Como observamos el resultado del método _QuienSoy_ para ambos casos da el mismo
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 
     public class Animal 
@@ -831,7 +831,7 @@ Vamos a darle una vuelta al código y definiremos la clase _Animal_ como abstrac
 ```diff
 using System;
 
-namespace ConsoleApp1
+namespace hello_world_project
 {
 +   public abstract class Animal 
 -   public class Animal 
@@ -851,7 +851,7 @@ namespace ConsoleApp1
 Ahora las clases _Perro_ y _Gato_ se marcan con errores, ¿por qué? Con el método abstracto que hemos creado estamos forzando a qué todas las clases que hereden de _Animal_ tengan que implementar el método _ComoSoy_.
 
 ```diff
-namespace ConsoleApp1
+namespace hello_world_project
 {
     ...
 
@@ -888,7 +888,7 @@ namespace ConsoleApp1
 Vamos a ver el resultado, para ello llama al método _ComoSoy_ desde el _main_ de nuestra aplicación:
 
 ```diff
-namespace ConsoleApp1
+namespace hello_world_project
 {
     ...
 
@@ -916,7 +916,7 @@ Por último, si queremos definir un comportamiento para todas nuestras clases po
 Vamos a cambiar la clase abstracta por la interfaz _IAnimal_:
 
 ```diff
-namespace ConsoleApp1
+namespace hello_world_project
 {
 -   public abstract class Animal 
 -   {
@@ -942,7 +942,7 @@ namespace ConsoleApp1
 Y ahora cambiamos las definiciones de la clase _Gato_ y _Perro_
 
 ```diff
-namespace ConsoleApp1
+namespace hello_world_project
 {
     ...
 - 	public class Perro : Animal
