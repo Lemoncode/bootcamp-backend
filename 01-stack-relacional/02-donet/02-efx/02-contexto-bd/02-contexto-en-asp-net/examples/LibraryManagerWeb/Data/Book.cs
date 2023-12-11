@@ -13,10 +13,10 @@ namespace LibraryManagerWeb.Data
 
 		public int AuthorId { get; set; }
 
-		public Author Author { get; set; }
+		public required Author Author { get; set; }
 
-		public string Title { get; set; }
+		public required string Title { get; set; }
 
-		public string Sinopsis { get; set; }
+		public string? Sinopsis { get; set; }
 	}
 }

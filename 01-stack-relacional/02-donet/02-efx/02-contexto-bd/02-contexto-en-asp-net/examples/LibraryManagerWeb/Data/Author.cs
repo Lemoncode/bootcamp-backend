@@ -11,9 +11,9 @@ namespace LibraryManagerWeb.Data
 
 		public int AuthorId { get; set; }
 
-		public string Name { get; set; }
+		public required string Name { get; set; }
 
-		public string LastName { get; set; }
+		public required string LastName { get; set; }
 
 		public List<Book> Books { get; set; } = new List<Book>();
 
