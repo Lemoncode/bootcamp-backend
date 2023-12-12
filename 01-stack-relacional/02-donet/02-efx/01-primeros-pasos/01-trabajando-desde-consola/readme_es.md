@@ -1,6 +1,6 @@
 # Herramienta de consola para trabajar con Entity Framework
 
-A lo largo de este curso trabajaremos con dos herramientas principales para trabajar con Entity Framework Core, por ejemplo, para crear migraciones, eliminarla o aplicarlas en una base de datos. Estas dos herramientas son:
+A lo largo de este curso utilizaremos dos herramientas principales para trabajar con Entity Framework Core, por ejemplo, para crear migraciones, eliminarlas o aplicarlas en una base de datos. Estas dos herramientas son:
 
 - La herramienta que funciona con la CLI de .Net, dotnet ef.
 - La consola de paquetes de Visual Studio.
@@ -23,7 +23,7 @@ dotnet-ef -v
 
 Con este comando obtenemos la versión que tenemos instalada.
 
-<img src="./content/dotnet-ef-version.png" style="zoom:67%">
+<img src="./content/dotnet-ef-version.png" style="zoom:67%" alt="Vista de la consola donde aparece la versión de la herramienta dotnet-ef instalada">
 
 Si pasados unos meses queremos actualizar la versión de las herramientas sólo tenemos que ejecutar el siguiente comando:
 
@@ -37,4 +37,4 @@ Si queremos utilizar esta herramienta en un proyecto, tenemos que instalar en di
 dotnet add package Microsoft.EntityFrameworkCore.Design
 ```
 
-A partir de este momento, si en este proyecto configuramos un contecto y una cadena de conexión podremos utilizar la herramienta para manejar las migraciones y las actualizaciones.
+A partir de este momento, si en este proyecto configuramos un contexto y una cadena de conexión podremos utilizar la herramienta para manejar las migraciones y las actualizaciones.

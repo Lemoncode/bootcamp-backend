@@ -1,6 +1,6 @@
 # Tamaño máximo de columnas
 
-En este vídeo vamos a ver cómo añadir restricciones de tamaño máximo a las propiedades de nuestro modelo. Esto hará que en nuestra base de datos el tipo de valor de las columnas también cambie, esto es aplicable a matrices y a cadenas, por ejemplo, donde la restricción de tamaño máximo dará que el tipo de valor, por ejemplo, en SQL Server, deje de ser _nvarchar(max)_ y se convierta en _nvarchar_ del tamaño máximo del campo. Vamos a ver esto con un ejemplo.
+En este apartado vamos a ver cómo añadir restricciones de tamaño máximo a las propiedades de nuestro modelo. Esto hará que en nuestra base de datos el tipo de valor de las columnas también cambie, esto es aplicable a matrices y a cadenas, por ejemplo, donde la restricción de tamaño máximo dará que el tipo de valor, por ejemplo, en SQL Server, deje de ser _nvarchar(max)_ y se convierta en _nvarchar_ del tamaño máximo del campo. Vamos a ver esto con un ejemplo.
 
 Abrimos el proyecto _LibraryManagerWeb_. Con respecto a la forma de hacerlo, como siempre, podemos hacerlo con _Data Annotations_ o con _Fluent API_. Comencemos con _Data Annotations_.
 

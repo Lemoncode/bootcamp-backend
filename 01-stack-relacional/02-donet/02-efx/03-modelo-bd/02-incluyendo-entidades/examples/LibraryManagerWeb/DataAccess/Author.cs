@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagerWeb.Data
+namespace LibraryManagerWeb.DataAccess
 {
 	public class Author
 	{
@@ -15,7 +15,7 @@ namespace LibraryManagerWeb.Data
 
 		public required string LastName { get; set; }
 
-		public List<Book> Books { get; set; } = new List<Book>();
+		public List<Book> Books { get; set; } = new();
 
 	}
 }

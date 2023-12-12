@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagerWeb.Data
+namespace LibraryManagerWeb.DataAccess
 {
 	public class Book
 	{
@@ -18,5 +18,6 @@ namespace LibraryManagerWeb.Data
 		public required string Title { get; set; }
 
 		public string? Sinopsis { get; set; }
+
 	}
 }

@@ -1,6 +1,6 @@
 # Evitando errores con múltiples operaciones en paralelo
 
-Los contextos de base de datos de Entity Framework Core no son seguros para subprocesos. Eso significa que un solo contexto no se puede utilizar con diferentes hilos en operaciones paralelas. Vamos ver esto con un ejemplo.
+Los contextos de base de datos de Entity Framework Core no son seguros para subprocesos. Eso significa que un solo contexto no se puede utilizar con diferentes hilos en operaciones paralelas. Vamos a ver esto con un ejemplo.
 Vamos a abrir la aplicación de consola _FirstEFCoreConsoleApp_ y modificamos _Program.cs_
 
 ***./Program.cs***

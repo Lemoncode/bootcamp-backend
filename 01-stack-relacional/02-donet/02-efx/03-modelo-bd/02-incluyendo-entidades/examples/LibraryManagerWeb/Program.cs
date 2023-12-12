@@ -1,4 +1,4 @@
-using LibraryManagerWeb.Data;
+using LibraryManagerWeb.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -11,7 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<LibraryContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions => {
+		sqlServerOptions.EnableRetryOnFailure();
+		});
 	options.EnableSensitiveDataLogging(true);
 });
 

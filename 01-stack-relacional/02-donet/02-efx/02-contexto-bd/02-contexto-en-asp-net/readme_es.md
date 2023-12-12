@@ -1,6 +1,6 @@
 # Contexto en ASP.NET Core
 
-El tiempo de vida del contexto en una aplicación de ASP.NET Core MVC o Web API es el mismo que la petición HTTP que va a ejecutar las operaciones del contexto. Eso suele ser óptimo, puesto que, en una sola petición HTTP, se ejecuta toda la unidad de trabajo. Que va a ejecutar por ejemplo, todas las operaciones de añadir un autor, editar un autor... esto se hace, normalmente en un sola petición HTTP, por ejemplo, en un método POST de un controlador.
+El tiempo de vida del contexto en una aplicación de ASP.NET Core MVC o Web API es el mismo que la petición HTTP que va a ejecutar las operaciones del contexto. Eso suele ser óptimo, puesto que, en una sola petición HTTP, se ejecuta toda la unidad de trabajo. En nuestro ejemplo, se van a ejecutar todas las operaciones de añadir un autor, editar un autor... esto se hace normalmente en una sola petición HTTP, por ejemplo, en un método POST de un controlador.
 
 Para conseguir que nuestro contexto dure lo que dura la petición HTTP, vamos a utilizar el inyector de dependencia que viene embebido con ASP.NET Core.
 
@@ -32,6 +32,6 @@ Vamos a ver un _Controller_ por ejemplo el _HomeController_. En el método _inde
 
 <img src="./content/home-controller.png" style="zoom:80%">
 
-En el controlador tenemos, tanto el contexto como el sistema de logging. Automáticamente el inyector de dependencias es capaz de construir el controlador, satisfaciendo sus dependencias, en este caso, el logging y el contexto de base de datos.
+En el controlador tenemos tanto el contexto como el sistema de logging. Automáticamente el inyector de dependencias es capaz de construir el controlador, satisfaciendo sus dependencias, en este caso, el logging y el contexto de base de datos.
 
 Bueno, vamos a ejecutar nuestra aplicación pulsando _F5_ y vamos a mirar los logs. Como ves en la consola, vemos que cuando acaba la petición HTTP, lo último que ocurre es que el contexto se elimina, cierra la conexión con la base de datos y, finalmente, la petición finaliza.

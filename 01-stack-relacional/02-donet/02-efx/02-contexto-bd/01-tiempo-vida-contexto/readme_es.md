@@ -1,6 +1,6 @@
 # Tiempo de vida de un contexto
 
-Nuestro contexto de base de datos hereda de la clase DbContext, que implementa entre otras muchas, dos interfaces (dentro de la interfaz _IdbContextPoolable_): _IDisposable_ y _IAsyncDisposable_. Estas dos interfaces nos van a asegurar de que cuando finalicemos el contexto y hagamos un dispoise, todos los objetos relacionados con el contexto, como por ejemplo, la conexión con la base de datos, se van a cerrar adecuadamente.
+Nuestro contexto de base de datos hereda de la clase DbContext, que implementa, entre otras muchas, dos interfaces (dentro de la interfaz _IdbContextPoolable_): _IDisposable_ y _IAsyncDisposable_. Estas dos interfaces nos van a asegurar de que cuando finalicemos el contexto y hagamos un dispoise, todos los objetos relacionados con el contexto, como por ejemplo la conexión con la base de datos, se van a cerrar adecuadamente.
 
 Esto viene muy relacionado con la duración de nuestro contexto, que normalmente es muy breve. La duración del contexto suele asociarse a una unidad de trabajo, o _unit of work_, es decir, a una transacción de negocio con nuestra base de datos. 
 

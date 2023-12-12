@@ -68,4 +68,4 @@ dotnet ef migrations add ChangedPrecission
 
 Vamos a Visual Studio para ver qué es lo que ha generado en _Migrations_ y _ChangedPrecission_. Podemos ver como añade la columna e indica que la precisión va a ser 20.
 
- <img src="./content/change-precision.png" style="zoom:80%">
+ <img src="./content/change-precision.png" style="zoom:80%" alt="Migración con las instrucciones para crear el nuevo campo.">
