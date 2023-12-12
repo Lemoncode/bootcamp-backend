@@ -4,7 +4,7 @@ Anteriormente, hemos visto que a la hora de crear nuestro modelo podemos utiliza
 
 Vamos a ver exactamente qué es la API fluida. Abrimos el proyecto _LibraryManagerWeb_ y dentro de nuestro contexto, que hereda de DbContext, tenemos el método _OnModelCreating_. Este método recibe un parámetro que se llama _modelBuilder_ que es de tipo _ModelBuilder_.
 
-<img src="./content/model-builder.png" style="zoom:80%">
+<img src="./content/model-builder.png" style="zoom:80%" alt="Vista del contexto con el método OnModelCreating.">
 
 Con este _modelBuilder_ podemos configurar todo nuestro modelo utilizando código C#. ¿Pero por qué se llama esto API fluida? Pues API fluida es un concepto que nos permite configurar algo, en este caso una entidad, concatenando llamadas a diferentes métodos. Vamos a configurar la entidad Autor.
 

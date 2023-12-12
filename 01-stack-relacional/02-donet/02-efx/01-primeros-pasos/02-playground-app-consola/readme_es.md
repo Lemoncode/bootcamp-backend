@@ -68,8 +68,8 @@ namespace FirstEFCoreConsoleApp.Model
     public class Author
     {
         public int AuthorId { get; set; }
-        public string Name { get; set; }
-        public string LastName { get; set; }
+        public required string Name { get; set; }
+        public required string LastName { get; set; }
     }
 }
 ```
@@ -82,8 +82,8 @@ namespace FirstEFCoreConsoleApp.Model
     public class Book
     {
         public int BookId { get; set; }
-        public string Title { get; set; }
-        public string Sinopsis { get; set; }
+        public required string Title { get; set; }
+        public string? Sinopsis { get; set; }
     }
 }
 ```
@@ -123,7 +123,7 @@ namespace FirstEFCoreConsoleApp.Model
 }
 ```
 
-Como habéis visto, hemos utilizado la palabra clave _required_ a la hora de crear algunas de nuestras propiedades. Esto lo hacemos para evitar advertencias del compilador con respecto a campos nullables, pues nos indica que algunos campos podrían ser null, y por tanto, deberíamos añadirle el operadur de nulabilidad *?*. En nuestro caso, como estas propiedades son obligatorias, las marcamos como _required_, lo que obligará a que dichas propiedades estén rellenas cuando se instancie un objeto de nuestras clases.
+Como habéis visto, hemos utilizado la palabra clave _required_ a la hora de crear algunas de nuestras propiedades. Esto lo hacemos para evitar advertencias del compilador con respecto a campos nullables, pues nos indica que algunos campos podrían ser null, y por tanto, deberíamos añadirle el operador de nulabilidad *?*. En nuestro caso, como estas propiedades son obligatorias, las marcamos como _required_, lo que obligará a que dichas propiedades estén rellenas cuando se instancie un objeto de nuestras clases.
 
 Bien, y ahora vamos al contexto. Vamos a crear una nueva clase en la carpeta raíz, a la que llamaremos _LibraryContext_.
 

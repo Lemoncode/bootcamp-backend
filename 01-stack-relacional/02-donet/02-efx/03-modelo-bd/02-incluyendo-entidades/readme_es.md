@@ -81,7 +81,7 @@ namespace LibraryManagerWeb.DataAccess
 
     public string Sinopsis { get; set; }
 
-+   public Publisher Publisher { get; set; }
++   public required Publisher Publisher { get; set; }
   }
 }
 ```

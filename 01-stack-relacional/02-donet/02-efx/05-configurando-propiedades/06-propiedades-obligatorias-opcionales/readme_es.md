@@ -1,12 +1,12 @@
 # Propiedades obligatorias y opcionales
 
-Al crear una entidad nueva en Entity Framework Core, todas sus propiedades serán opcionales o no dependiendo del tipo en .NET, es decir, de si acepta o no acepta nulos. Vamos a verlo con un ejemplo.
+Al crear una entidad nueva en Entity Framework Core, todas sus propiedades serán opcionales o no dependiendo del tipo en .NET, es decir, de si acepta o no acepta nulos, siempre recordando que por defecto en los proyectos está activado _NRT_. Vamos a verlo con un ejemplo.
 
 Estamos aquí en el proyecto _LibraryManagerWeb_ y en la clase identidad, AuditEntry.
 
  <img src="./content/audit-entry.png" style="zoom:80%">
 
-Aquí tenemos, por ejemplo, _AuditEntryId_, que es de tipo int, por lo cual esta columna no va a ser opcional, ya que un _int_ no acepta nulos. Igual ocurre con _DateTime_. ¿Pero y con _OPeration_? Es un tipo _string_ y, por tanto, acepta nulos. Esto significa que, cuando se haga la traducción a base de datos, esta columna va a aceptar valores nulos. ¿Cómo podríamos sobrescribir este comportamiento por convención? Pues utilizando o Data Annotations o Fluent API.
+Aquí tenemos, por ejemplo, _AuditEntryId_, que es de tipo int, por lo cual esta columna no va a ser opcional, ya que un _int_ no acepta nulos. Igual ocurre con _DateTime_. ¿Pero y con _OPeration_? Es un tipo _string_ y, por tanto, acepta nulos. Sin embargo, al tener _NTR_ activado por defecto, esta propiedad tampoco aceptará nulos. Para que acepte nulos, deberemos poner el operador de nulabilidad (_?). Esto significa que, cuando se haga la traducción a base de datos, esta columna no va a aceptar valores nulos. ¿Cómo podríamos sobrescribir este comportamiento por convención? Pues utilizando o Data Annotations o Fluent API.
 
 Comencemos con Data Annotations, como siempre. Simplemente tendremos que decorar la propiedad con el atributo _Required_.
 
@@ -27,7 +27,7 @@ namespace LibraryManagerWeb.DataAccess
   public DateTime Date { get; set; }
 
 + [Required]
-  public string OPeration { get; set; }
+  public string? OPeration { get; set; }
 
   public decimal TimeSpent { get; set; }
 
@@ -56,7 +56,7 @@ namespace LibraryManagerWeb.DataAccess
 }
 ```
 
-Esta propiedad ahora no es opcional, a pesar de que en .NET sí que admite nulos.
+Esta propiedad ahora no es opcional, a pesar de que en .NET sí que admite nulos ya que hemos añadido el operador de nulabilidad.
 
 Ahora, vamos a hacer lo mismo pero con Fluent API. Vamos a _LibraryContext_ y al método _OnModelCreating_. 
 

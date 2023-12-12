@@ -2,7 +2,7 @@
 
 Al añadir una nueva entidad a nuestro modelo, cualquier propiedad pública que tenga un _get_ y un _set_ será añadida a dicha entidad. Sin embargo, podemos sobrescribir este comportamiento utilizando tanto API fluida como anotaciones de datos. Vamos a verlo con un ejemplo.
 
-Abrimos el proyecto _LibraryManagerWeb_, en la entidad Author. Imagina, por ejemplo, que queremos añadir un campo que se va a llamar _LoadedDate_, donde vamos a almacenar la fecha en la que se ha cargado la información del autor, pero solo queremos guardar esta información en memoria, no nos interesa persistir esto en base de datos, ya que es un valor totalmente dinámico y que no tiene sentido guardarlo. 
+Abrimos el proyecto _LibraryManagerWeb_, en la entidad Author. Imagina, por ejemplo, que queremos añadir un campo que se va a llamar _LoadedDate_, donde vamos a almacenar la fecha en la que se ha cargado la información del autor, pero solo queremos guardar esta información en memoria, no nos interesa persistir esto en base de datos, ya que es un valor totalmente dinámico y que no tiene sentido guardar. 
 
 Si directamente hacemos:
 
@@ -20,9 +20,9 @@ namespace LibraryManagerWeb.DataAccess
 
   public int AuthorId { get; set; }
 
-  public string Name { get; set; }
+  public required string Name { get; set; }
 
-  public string LastName { get; set; }
+  public required string LastName { get; set; }
 
   public List<Book> Books { get; set; } = new List<Book>();
 
@@ -49,9 +49,9 @@ namespace LibraryManagerWeb.DataAccess
 
   public int AuthorId { get; set; }
 
-  public string Name { get; set; }
+  public required string Name { get; set; }
 
-  public string LastName { get; set; }
+  public required string LastName { get; set; }
 
   public List<Book> Books { get; set; } = new List<Book>();
 

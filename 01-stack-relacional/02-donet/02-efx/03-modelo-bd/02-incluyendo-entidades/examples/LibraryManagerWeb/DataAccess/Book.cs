@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace LibraryManagerWeb.DataAccess
 {
-	public class Author
+	public class Book
 	{
+
+		public int BookId { get; set; }
 
 		public int AuthorId { get; set; }
 
-		public string Name { get; set; }
+		public required Author Author { get; set; }
 
-		public string LastName { get; set; }
+		public required string Title { get; set; }
 
-		public List<Book> Books { get; set; } = new List<Book>();
+		public string? Sinopsis { get; set; }
 
 	}
 }

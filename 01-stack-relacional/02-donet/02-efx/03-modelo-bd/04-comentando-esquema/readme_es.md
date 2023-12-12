@@ -17,17 +17,17 @@ namespace LibraryManagerWeb.DataAccess
 
         public int AuthorId { get; set; }
 
-        public Author Author { get; set; }
+        public required Author Author { get; set; }
 
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
-        public string Sinopsis { get; set; }
+        public string? Sinopsis { get; set; }
 
-        public List<BookFile> BookFiles { get; set; }
+        public required List<BookFile> BookFiles { get; set; }
 
         public int PublisherId { get; set; }
 
-        public Publisher Publisher { get; set; }
+        public required Publisher Publisher { get; set; }
 
         public List<BookRating> Ratings { get; set; }
     }
@@ -58,4 +58,4 @@ Add-Migration AddedCommentsInSchema
 
 Ya tenemos la migración creada, en AddedCommentsInSchema, podemos ver que el método _Up_ está alterando la tabla _Publishers_ para añadir el comentario, la tabla _Books_ y la tabla _Authors_.
 
-<img src="./content/add-comments-schema.png" style="zoom:80%">
+<img src="./content/add-comments-schema.png" style="zoom:80%" alt="CAptura con la nueva migración en la que se añaden los comentarios a nustro esquema.">

@@ -3,32 +3,41 @@ using LibraryManagerWeb.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+#nullable disable
 
 namespace LibraryManagerWeb.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20231212130310_EnabledNRTInNet8")]
+    partial class EnabledNRTInNet8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            modelBuilder.Entity("LibraryManagerWeb.Data.Author", b =>
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("LibraryManagerWeb.DataAccess.Author", b =>
                 {
                     b.Property<int>("AuthorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"));
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AuthorId");
@@ -36,12 +45,13 @@ namespace LibraryManagerWeb.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("LibraryManagerWeb.Data.Book", b =>
+            modelBuilder.Entity("LibraryManagerWeb.DataAccess.Book", b =>
                 {
                     b.Property<int>("BookId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"));
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -50,6 +60,7 @@ namespace LibraryManagerWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BookId");
@@ -59,9 +70,9 @@ namespace LibraryManagerWeb.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("LibraryManagerWeb.Data.Book", b =>
+            modelBuilder.Entity("LibraryManagerWeb.DataAccess.Book", b =>
                 {
-                    b.HasOne("LibraryManagerWeb.Data.Author", "Author")
+                    b.HasOne("LibraryManagerWeb.DataAccess.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -70,7 +81,7 @@ namespace LibraryManagerWeb.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("LibraryManagerWeb.Data.Author", b =>
+            modelBuilder.Entity("LibraryManagerWeb.DataAccess.Author", b =>
                 {
                     b.Navigation("Books");
                 });

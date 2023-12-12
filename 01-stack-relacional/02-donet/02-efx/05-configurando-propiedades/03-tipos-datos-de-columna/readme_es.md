@@ -1,6 +1,6 @@
 # Tipos de datos de columnas
 
-En Entity Framework Core, cuando actualicemos una base de datos en función de nuestro modelo en .NET, el tipo de dato de las columnas generadas dependerá del proveedor de base de datos y también del tipo de dato en .NET. Por ejemplo, en SQL Server, una propiedad de tipo _string_ se convertirá en una columna de tipo _nvarchar(max)_, aunque esto dependerá, de si la propiedad tiene algún tipo de restricción de tamaño, en cuyo caso, en lugar de ser _nvarchar(max)_, será _nvarchar_ y el tamaño máximo.
+En Entity Framework Core, cuando actualicemos una base de datos en función de nuestro modelo en .NET, el tipo de dato de las columnas generadas dependerá del proveedor de base de datos y también del tipo de dato en .NET. Por ejemplo, en SQL Server, una propiedad de tipo _string_ se convertirá en una columna de tipo _nvarchar(max)_, aunque esto dependerá de si la propiedad tiene algún tipo de restricción de tamaño, en cuyo caso, en lugar de ser _nvarchar(max)_, será _nvarchar_ y el tamaño máximo.
 
 También podría depender de si esa propiedad pertenece a una clave principal, en cuyo caso, por ejemplo, sería _nvarchar(450)_. Sin embargo, este comportamiento se puede sobrescribir. Vamos a verlo con un ejemplo. 
 
@@ -27,11 +27,11 @@ namespace LibraryManagerWeb.DataAccess
   public int AuthorId { get; set; }
 
 + [Column(TypeName = "nvarchar(200")]
-  public string Name { get; set; }
+  public required string Name { get; set; }
 
-  public string LastName { get; set; }
+  public required string LastName { get; set; }
 
-  public List<Book> Books { get; set; } = new List<Book>();
+  public List<Book> Books { get; set; } = new();
 
   [NotMapped]
   public DateTime LoadedDate { get; set; }

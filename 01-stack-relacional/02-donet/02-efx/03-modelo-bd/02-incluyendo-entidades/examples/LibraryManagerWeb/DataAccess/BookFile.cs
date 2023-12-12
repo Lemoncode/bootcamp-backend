@@ -13,10 +13,10 @@ namespace LibraryManagerWeb.DataAccess
 
 		public int BookId { get; set; }
 
-		public Book Book { get; set; }
+		public required Book Book { get; set; }
 
-		public string InternalFilePath { get; set; }
+		public required string InternalFilePath { get; set; }
 
-		public BookFormat Format { get; set; }
+		public required BookFormat Format { get; set; }
 	}
 }

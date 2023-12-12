@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace LibraryManagerWeb.DataAccess
 {
-	public class BookFormat
+	public class Publisher
 	{
 
-		public int BookformatId { get; set; }
+		public int PublisherId { get; set; }
 
-		public string Name { get; set; }
+		public required string Name { get; set; }
 	}
 }

@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 
 namespace LibraryManagerWeb.DataAccess
 {
-	public class Country
+	public class BookFormat
 	{
 
-		public int CountryId { get; set; }
+		public int BookformatId { get; set; }
 
-		public string NativeName { get; set; }
-
-		public string EnglishName { get; set; }
+		public required string Name { get; set; }
 	}
 }
