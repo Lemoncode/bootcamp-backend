@@ -53,11 +53,11 @@ namespace LibraryManagerWeb.DataAccess
 
 Hemos añadido dos entidades utilizando _DbSet_, pero en realidad estamos añadiendo más entidades, puesto que también se añadirán las entidades que tengan relación directa con estas dos entidades añadidas. Vamos a ver _AuditEntry_.
 
-<img src="./content/audit-entry.png" style="zoom:80%">
+<img src="./content/audit-entry.png" style="zoom:80%" alt="Vista donde se aprecia que se han añadido entidades adicionales a las añadidas con DBSEt.">
 
 Pues fíjate, tenemos una relación con Country, por lo cual Country también se va a añadir. Y en BookFile, ¿qué tenemos?
 
-<img src="./content/book-file.png" style="zoom:80%">
+<img src="./content/book-file.png" style="zoom:80%" alt="Vista donde se aprecia que BookFormat también se ha añadido a nuestra migración.">
 
 Pues tenemos _BookFormat_. Así que BookFormat también se añadiría.
 
@@ -132,11 +132,11 @@ Bien, vamos a intentar compilar, y ahora vamos a crear la migración. Nos vamos 
 
 Y ya ha creado la migración. Vamos a verla en Visual Studio. Abrimos el archivo que se a creado con la migración:
 
-<img src="./content/migration-file.png" style="zoom:80%">
+<img src="./content/migration-file.png" style="zoom:80%" alt="Vista de la migración recién creada.">
 
 Y si hacemos una búsqueda de _CreateTable_, vamos a ver qué tablas ha creado: _BookFormat_, _Country_, _Publisher_, _BookFiles_, _AuditEntries_ y _PhisicalLibraries_.
 
-<img src="./content/create-table.png" style="zoom:80%">
+<img src="./content/create-table.png" style="zoom:80%" alt="Vista con la llista de tablas nuevas que se han añadido en la migración.">
 
 Como ves, ha añadido todas las entidades que queríamos añadir, pero utilizando las tres opciones que hemos visto al principio.
 
