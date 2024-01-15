@@ -1,0 +1,24 @@
+﻿@model DogMeasures.Models.DogInfoRequest
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Comprueba si tu perro está en su peso ideal</h2>
+<div class="row">
+    <form asp-action="Index" asp-antiforgery="true">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Breed" class="control-label"></label>
+            <input asp-for="Breed" class="form-control" />
+            <span asp-validation-for="Breed" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Weight" class="control-label"></label>
+            <input asp-for="Weight" class="form-control" />
+            <span asp-validation-for="Weight" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Consultar" class="btn btn-default" />
+        </div>
+    </form>
+</div>
