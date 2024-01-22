@@ -2,6 +2,7 @@
 using LibraryManagerWeb.Models;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using System;
@@ -24,9 +25,10 @@ namespace LibraryManagerWeb.Controllers
 			_logger = logger;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			var books = _context.Books.OrderBy(b => b.Title).ThenBy(b => b.Author.Name).ThenBy(b => b.Author.LastName).ToList();
+
+			var books = await _context.Books.OrderBy(b => b.Title).ThenBy(b => b.Author.Name).ThenBy(b => b.Author.LastName).ToListAsync();
 			return View();
 		}
 

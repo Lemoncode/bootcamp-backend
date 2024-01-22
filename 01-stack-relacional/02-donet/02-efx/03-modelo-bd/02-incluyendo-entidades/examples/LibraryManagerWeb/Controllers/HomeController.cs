@@ -27,13 +27,7 @@ namespace LibraryManagerWeb.Controllers
 
 		public async Task<IActionResult> Index()
 		{
-			var books = await _context.Books.OrderBy(b => b.Title).ThenBy(b => b.Author.Name).ThenBy(b => b.Author.LastName).ToListAsync();
-			foreach (var b in books)
-			{
-				b.Title += " (modified)";
-			}
 			await _context.SaveChangesAsync();
-
 			return View();
 		}
 

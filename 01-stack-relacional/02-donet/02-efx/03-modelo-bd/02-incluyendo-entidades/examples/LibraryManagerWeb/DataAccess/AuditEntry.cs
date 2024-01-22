@@ -1,10 +1,17 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryManagerWeb.DataAccess
 {
+	/// <summary>
+	///  Clase para incluir entradas de auditoría con respecto a las operaciones realizadas en nuestra biblioteca.
+	/// </summary>
+	[Comment("Clase para incluir entradas de auditoría con respecto a las operaciones realizadas en nuestra biblioteca.")]
 	public class AuditEntry
 	{
 

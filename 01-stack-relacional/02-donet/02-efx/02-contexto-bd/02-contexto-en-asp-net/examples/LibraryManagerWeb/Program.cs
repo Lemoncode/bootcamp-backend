@@ -6,14 +6,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<LibraryContext>(options =>
+
+builder.Services.AddEndpointsApiExplorer()
+	.AddSwaggerGen()
+	.AddDbContext<LibraryContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
+	{
+		sqlServerOptions.EnableRetryOnFailure();
+	});
 	options.EnableSensitiveDataLogging(true);
-});
+})
+    .AddControllersWithViews();
 
 var app = builder.Build();
 

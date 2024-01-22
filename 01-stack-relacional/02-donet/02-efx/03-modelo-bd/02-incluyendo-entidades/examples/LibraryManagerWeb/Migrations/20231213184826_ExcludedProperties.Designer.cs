@@ -4,6 +4,7 @@ using LibraryManagerWeb.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagerWeb.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20231213184826_ExcludedProperties")]
+    partial class ExcludedProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,8 +60,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.Property<string>("OPeration")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("OperationType");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OperatingSystem")
                         .HasColumnType("nvarchar(max)");
@@ -90,25 +92,15 @@ namespace LibraryManagerWeb.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AuthorId");
 
                     b.ToTable("Authors");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            LastName = "Montiel",
-                            Name = "Juanjo"
-                        });
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.Book", b =>
@@ -118,10 +110,6 @@ namespace LibraryManagerWeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"));
-
-                    b.Property<decimal>("AVerage")
-                        .HasPrecision(2)
-                        .HasColumnType("decimal(2,2)");
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -134,8 +122,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BookId");
 
@@ -144,51 +131,6 @@ namespace LibraryManagerWeb.Migrations
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("LibraryManagerWeb.DataAccess.BookFile", b =>
-                {
-                    b.Property<int>("BookFileId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookFileId"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FormatBookformatId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InternalFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("FilePath");
-
-                    b.HasKey("BookFileId");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("FormatBookformatId");
-
-                    b.ToTable("BookFiles");
-                });
-
-            modelBuilder.Entity("LibraryManagerWeb.DataAccess.BookFormat", b =>
-                {
-                    b.Property<int>("BookformatId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookformatId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("BookformatId");
-
-                    b.ToTable("BookFormat");
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.Country", b =>
@@ -259,14 +201,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.HasKey("PublisherId");
 
-                    b.ToTable("Publishers");
-
-                    b.HasData(
-                        new
-                        {
-                            PublisherId = 1,
-                            Name = "Libros malos"
-                        });
+                    b.ToTable("Publisher");
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.AuditEntry", b =>
@@ -297,25 +232,6 @@ namespace LibraryManagerWeb.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Publisher");
-                });
-
-            modelBuilder.Entity("LibraryManagerWeb.DataAccess.BookFile", b =>
-                {
-                    b.HasOne("LibraryManagerWeb.DataAccess.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraryManagerWeb.DataAccess.BookFormat", "Format")
-                        .WithMany()
-                        .HasForeignKey("FormatBookformatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Format");
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.PhisicalLibrary", b =>

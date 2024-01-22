@@ -4,6 +4,7 @@ using LibraryManagerWeb.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagerWeb.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20231213192547_AddedCollationToTitle")]
+    partial class AddedCollationToTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,14 +104,6 @@ namespace LibraryManagerWeb.Migrations
                     b.HasKey("AuthorId");
 
                     b.ToTable("Authors");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            LastName = "Montiel",
-                            Name = "Juanjo"
-                        });
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.Book", b =>
@@ -259,14 +254,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.HasKey("PublisherId");
 
-                    b.ToTable("Publishers");
-
-                    b.HasData(
-                        new
-                        {
-                            PublisherId = 1,
-                            Name = "Libros malos"
-                        });
+                    b.ToTable("Publisher");
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.AuditEntry", b =>

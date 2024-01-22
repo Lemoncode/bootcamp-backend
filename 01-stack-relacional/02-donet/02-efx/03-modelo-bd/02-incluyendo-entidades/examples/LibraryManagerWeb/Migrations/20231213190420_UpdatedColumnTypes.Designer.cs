@@ -4,6 +4,7 @@ using LibraryManagerWeb.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagerWeb.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20231213190420_UpdatedColumnTypes")]
+    partial class UpdatedColumnTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,25 +93,15 @@ namespace LibraryManagerWeb.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("AuthorId");
 
                     b.ToTable("Authors");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            LastName = "Montiel",
-                            Name = "Juanjo"
-                        });
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.Book", b =>
@@ -118,10 +111,6 @@ namespace LibraryManagerWeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"));
-
-                    b.Property<decimal>("AVerage")
-                        .HasPrecision(2)
-                        .HasColumnType("decimal(2,2)");
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -134,8 +123,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BookId");
 
@@ -259,14 +247,7 @@ namespace LibraryManagerWeb.Migrations
 
                     b.HasKey("PublisherId");
 
-                    b.ToTable("Publishers");
-
-                    b.HasData(
-                        new
-                        {
-                            PublisherId = 1,
-                            Name = "Libros malos"
-                        });
+                    b.ToTable("Publisher");
                 });
 
             modelBuilder.Entity("LibraryManagerWeb.DataAccess.AuditEntry", b =>
