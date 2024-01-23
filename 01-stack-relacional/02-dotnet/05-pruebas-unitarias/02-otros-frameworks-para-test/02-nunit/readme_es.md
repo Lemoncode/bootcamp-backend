@@ -1,32 +1,20 @@
 # Proyecto de test con NUnit
 
-Ahora vamos a trabajar con otro framework de test muy conocido llamado _NUnit_. _NUnit_ también se integra con el test runner de _Visual Studio_, aunque, en este caso, no tiene una plantilla de creación de proyecto por defecto, por lo cual tendremos que crear un proyecto _Class Library_ e instalar algunos paquetes _NuGet_.
+Ahora vamos a trabajar con otro framework de test muy conocido llamado _NUnit_. _NUnit_ también se integra con el test runner de _Visual Studio_.
 
 Vamos a partir del proyecto de ejemplo que ya hemos usado anteriormente _DogMeasures_. Este proyecto tiene un servicio al que se le pasa la raza y el peso de un perro y nos devuelve si el perro está en su peso ideal o no lo está. Vamos a hacer un proyecto de Test para probar este servicio. Pulsamos botón derecho en la solución y seleccionamos _Add New Project_.
 
 <img src="./content/add-new-project.png" style="zoom:67%" alt="Añadimos un nuevo proyecto">
 
-Deberá ser .NET Core, y usar la plantilla de _Class Library_, porque, en este caso, no hay plantilla por defecto para _NUnit_. Le ponemos el nombre _DogMeasures.Test_.
+Deberá ser .NET Core, y usar la plantilla de _NUnit Test Project _. Le ponemos el nombre _DogMeasures.Test_.
 
 <img src="./content/add-class-library-project.png" style="zoom:67%" alt="Añadimos un proyecto de librería de clases">
 
-Y ahora borramos la clase que nos crea por defecto _Class1_. Vamos a comenzar a instalar los paquetes para integrar _NUnit_ con el test runner de _Visual Studio_ y convertir este proyecto de _Class Library_ en un proyecto de Test. Pulsamos notón derecho sobre el proyecto y vamos a la opción _Manage NuGet Packages_.
+Y ahora borramos la clase que nos crea por defecto: _UnitTest1.cs_.
 
-<img src="./content/nuget.png" style="zoom:67%" alt="Abrir el gestor de paquetes Nuget">
+Como habéis visto, nos ha creado un fichero llamado **GlobalUsings.cs**. Este fichero utiliza el modificador _global_ como sufijo de un par de _usings_. Esto va a permitir que esos _usings_ estén presentes de forma global en todo nuestro proyecto sin necesidad de añadirlos en cada clase.
 
-En el campo _search_ escribimos _Nunit_, e instalamos la última versión estable.
-
-<img src="./content/package-nunit.png" style="zoom:67%" alt="Instalamos el paquete NUnit">
-
-El siguiente paquete es _NUnit3TestAdapter_, pulsamos _Install_ y aceptamos la licencia.
-
-<img src="./content/package-nunit-test-adapter.png" style="zoom:67%" alt="Instalamos el paquete NUnit Test Adapter">
-
-Por último, tenemos que instalar el paquete _Microsoft.NET.Test.Sdk_.
-
-<img src="./content/package-microsoft-test-sdk.png" style="zoom:67%" alt="Instalamos el paquete Microsoft Test SDK">
-
-Ya podemos crear nuestra clase para probar el servicio _DogMeasure Services_. Pulsamos botón derecho en nuestro proyecto de test y seleccioamos _Add item_, del tipo _Class_. Como nombre le pondremos _DogMeasuresServiceShould_.
+Y ahora, vamos a crear nuestra clase para probar el servicio _DogMeasure Services_. Pulsamos botón derecho en nuestro proyecto de test y seleccionamos _Add item_, del tipo _Class_. Como nombre le pondremos _DogMeasuresServiceShould_.
 
 <img src="./content/add-new-class.png" style="zoom:67%" alt="Añadimos una clase para nuestros test">
 
@@ -44,12 +32,11 @@ namespace DogMeasures.Tests
 }
 ```
 
-Y aquí, para que el motor de Test sepa que esto es una clase de Test, la decoramos con el atributo _TestFixture_.
+Y aquí, para que el motor de Test sepa que esto es una clase de Test, la decoramos con el atributo _TestFixture_. En realidad, en versiones modernas de NUnit, no es necesario utilizar `[TestFixture]` si la clase contiene uno o más métodos marcados como métodos de test usando los atributos `[Test], `[TestCase]`, `[TestCaseSource]`, ETC. De todos modos, no hay ningún inconveniente en añadir este atribut ode forma explícita para que el código sea más claro.
 
 ***./DogMeasures.Tests/DogMeasuresServiceShould***
 
 ```diff
-+ using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -60,13 +47,15 @@ namespace DogMeasures.Tests
 }
 ```
 
+Fíjate que no hemos tenido que añadir ningún using aquí, ya que se están añadiendo de forma implícita la haber utilizado los _global usings_.
+
 Vamos a añadir la referencia al proyecto _DogMeasures_ para que podamos tener acceso al servicio desde el proyecto de test.
 
 <img src="./content/add-reference.png" style="zoom:67%" alt="Añadir referencia al proyecto del servicio">
 
 <img src="./content/add-reference-dogmeasures.png" style="zoom:67%" alt="Añadir referencia al proyecto DogMeasures">
 
-Ahora, lo que tenemos que hacer es instanciar nuestro servicio a probar. Para ello, vamos a utilizar un atributo llamado _OneTimeSetUp_. Al trabajar con _NUnit_, tenemos dos atributos que decorando un método harán que ese método se ejecute, o bien al inicio de un conjunto de Test, o bien antes de ejecutar cada Test que sería el decorador _SetUp_.
+Ahora, lo que tenemos que hacer es instanciar nuestro servicio a probar. Para ello, vamos a utilizar un atributo llamado _OneTimeSetUp_. Al trabajar con _NUnit_, tenemos dos atributos que decorando un método harán que ese método se ejecute, o bien al inicio de un conjunto de Test, o bien antes de ejecutar cada Test, que sería el decorador _SetUp_.
 
 En este caso, con _OneTimeSetUp_ hacemos que el método decorado por ese atributo se ejecute solo una vez al iniciar el conjunto de Test.
 
@@ -74,7 +63,6 @@ En este caso, con _OneTimeSetUp_ hacemos que el método decorado por ese atribut
 
 ```diff
 + using DogMeasures.Services;
-using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -100,7 +88,6 @@ Vamos a hacer ahora nuestra primera prueba. Se trata de ver si realmente cuando 
 
 ```diff
 using DogMeasures.Services;
-using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -134,7 +121,6 @@ Vamos a hacer un par de métodos de prueba más. Creamos uno para ver si está l
 
 ```diff
 using DogMeasures.Services;
-using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -180,7 +166,6 @@ Por último, vamos a hacer test de prueba de datos. Vamos a hacer un test para v
 
 ```diff
 using DogMeasures.Services;
-using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -247,7 +232,6 @@ Vamos a hacer otro test, que es para calcular si realmente la esperanza de vida 
 
 ```diff
 using DogMeasures.Services;
-using NUnit.Framework;
 
 namespace DogMeasures.Tests
 {
@@ -318,4 +302,4 @@ Compilamos y ejecutamos nuestros tests.
 
 <img src="./content/all-tests-passed.png" style="zoom:67%" alt="Todos los test pasados correctamente">
 
-Han pasado todos nuestros tests, y fíjate cómo va generando todas las llamadas según los rangos que hemos definidos. Con esto, hemos conseguido de forma muy sencilla probar los métodos del servicio _DogMeasuresServices_, y además, con el atributo _Range_, hemos conseguido probar rangos de datos sin tener que crear muchos métodos de Test y, además, de una forma muy elegante, simplemente con una línea de código en el propio método de Test.
+Han pasado todos nuestros tests, y fíjate cómo va generando todas las llamadas según los rangos que hemos definido. Con esto, hemos conseguido de forma muy sencilla probar los métodos del servicio _DogMeasuresServices_, y además, con el atributo _Range_, hemos conseguido probar rangos de datos sin tener que crear muchos métodos de Test y, además, de una forma muy elegante, simplemente con una línea de código en el propio método de Test.

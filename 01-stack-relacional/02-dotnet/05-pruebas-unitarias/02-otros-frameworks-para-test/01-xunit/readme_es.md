@@ -12,7 +12,7 @@ Vamos a buscar en plantilla de tipo _.NET Core_, puesto que este proyecto está 
 
 <img src="./content/add-project-xunit.png" style="zoom:67%" alt="Añadimos un nuevo proyecto de test XUnit">
 
-Vamos a borramos la clase _UnitTest1_ que nos crea por defecto. Ahora, vamos a crear nuestra clase para probar el servicio. Añadimos una clase, que llamaremos _DogMeasuresServiceShould_.
+Vamos a borrar la clase _UnitTest1_ que nos crea por defecto. Ahora, vamos a crear nuestra clase para probar el servicio. Añadimos una clase, que llamaremos _DogMeasuresServiceShould_.
 
 <img src="./content/add-new-class.png" style="zoom:67%" alt="Añadimos una clase para nuestros test">
 
@@ -47,7 +47,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-+       private DogMeasuresService _dogMeasuresService;
++       private readonly DogMeasuresService _dogMeasuresService;
 
 +       public DogMeasuresServiceShould()
 +       {
@@ -63,7 +63,7 @@ Ahora vamos a codificar nuestra primera prueba. En el método _CheckDogIdealWeig
 
 Se comprueba si:
 
-- La raze es nula, en ese caso se va a devolver un _ArgumentNullException_.
+- La raza es nula, en ese caso se va a devolver un _ArgumentNullException_.
 - El peso es negativo, en ese caso se va a devolver un _OutOfRange_.
 - La raza no se encuentra, en ese caso se va a devolver un _BreedNotFoundException_.
 
@@ -78,7 +78,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {
@@ -94,7 +94,7 @@ namespace DogMeasures.Tests
 }
 ```
 
-Compilamos. Y ejecutamos los test en el _Test Explorer_. Y vemos que nuestro test ha pasado.
+Compilamos  y ejecutamos los test en el _Test Explorer_. Vemos que nuestro test ha pasado.
 
 <img src="./content/test-one-passed.png" style="zoom:67%" alt="El primer test ha pasado correctamente">
 
@@ -107,7 +107,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {
@@ -139,7 +139,7 @@ Veamos si pasa los test.
 
 <img src="./content/test-three-passed.png" style="zoom:67%" alt="Los tres primeros tests han pasado correctamente">
 
-Ahora vamos a trabajar con _theory_. _Theory_ nos permite trabajar con varios datos en un mismo test. Vamos a ejecuta el test tantas veces como datos aparezcan en _Inline_, pasándole estos valores como weight.
+Ahora vamos a trabajar con _theory_. _Theory_ nos permite trabajar con varios datos en un mismo test. Vamos a ejecutar el test tantas veces como datos aparezcan en _Inline_, pasándole estos valores como weight.
 
 ***./DogMeasures.Tests/DogMeasuresServiceShould***
 
@@ -148,7 +148,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {
@@ -211,7 +211,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {
@@ -295,7 +295,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {
@@ -392,7 +392,7 @@ namespace DogMeasures.Tests
 {
     public class DogMeasuresServiceShould
     {
-        private DogMeasuresService _dogMeasuresService;
+        private readonly DogMeasuresService _dogMeasuresService;
 
         public DogMeasuresServiceShould()
         {

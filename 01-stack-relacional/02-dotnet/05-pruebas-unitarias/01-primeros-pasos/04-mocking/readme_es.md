@@ -1,11 +1,11 @@
 # Mocking
 
-En el ejemplo anterior, vimos que los test se habian convertido en test de integración porque ya no solo proban el funcionamiento de un método. En el test intervenia un elemento externo que nos devolvía un resultado que no podemos controlar. ¿Cómo podriamos simular ese comportamiento para que el elemento externo nos devuelva un resultado deseado? Tenemos dos opciones:
+En el ejemplo anterior, vimos que los test se habían convertido en test de integración porque ya no solo probaban el funcionamiento de un método. En el test intervenía un elemento externo que nos devolvía un resultado que no podemos controlar. ¿Cómo podríamos simular ese comportamiento para que el elemento externo nos devuelva un resultado deseado? Tenemos dos opciones:
 
-- Creando una clase que implemente la interfaz y que siempre nos devuelva un mismo resultado al llamar al metodo _GetRange_.
-- Usar una libreria de _Mock_ que se comporte de la forma que deseemos en cada momento.
+- Creando una clase que implemente la interfaz y que siempre nos devuelva un mismo resultado al llamar al método _GetRange_.
+- Usar una librería de _Mock_ que se comporte de la forma que deseemos en cada momento.
 
-Vamos a ver que es eso de _Mock_. Una Librería de Mock es una librería que nos permite emular interfase o clases de forma muy sencilla. En caso de emular una clase, la Librería de Mock va a ser capaz de sobrescribir su comportamiento por un comportamiento que nosotros mismos codifiquemos dentro del mock. En ese proyecto, vamos a utilizar una de las librerías más conocidas llamada _MOQ_.
+Vamos a ver que es eso de _Mock_. Una Librería de Mock es una librería que nos permite emular interfaces o clases de forma muy sencilla. En caso de emular una clase, la Librería de Mock va a ser capaz de sobrescribir su comportamiento por un comportamiento que nosotros mismos codifiquemos dentro del mock. En ese proyecto, vamos a utilizar una de las librerías más conocidas llamada _MOQ_.
 
 <img src="./content/nuget.png" style="zoom:67%" alt="Abrir el gestor de paquetes Nuget">
 

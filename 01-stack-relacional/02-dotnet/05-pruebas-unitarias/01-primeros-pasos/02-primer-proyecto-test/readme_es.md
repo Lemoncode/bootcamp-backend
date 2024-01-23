@@ -33,11 +33,11 @@ namespace TaxCalculator.Test
 }
 ```
 
-Vamos a crear nuestro primer test para cuando le pasemos al servicio, un salario inferior a 10 mil euros. Para ello vamos a creamos un método, con las siguientes consideraciones:
+Vamos a crear nuestro primer test para cuando le pasemos al servicio un salario inferior a 10 mil euros. Para ello vamos a crear un método con las siguientes consideraciones:
 
 - Para indicar que es un método de test, utilizaremos el decorador _TestMethod_.
 - Los métodos de test nunca devuelven nada, por tanto indicamos _void_ como tipo de retorno.
-- El nombre siempre por convención, debería ser autoexplicar del caso que vamos a probar, es decir, en este caso: "Devuelve 1000 si el salario es inferior a 10000". Le podemos poner algo así como _Returns1000IfGrossSalaryIs9500_.
+- El nombre, siempre por convención, debería ser autoexplicativo del caso que vamos a probar, es decir, en este caso: "Devuelve 1000 si el salario es inferior a 10000". Le podemos poner algo así como _Returns1000IfGrossSalaryIs9500_.
 
 ***./TaxCalculator.Test/TaxServiceShould.cs***
 
@@ -62,7 +62,7 @@ Ahora nos toca completar el test, para ello lo primero que vamos hacer es añadi
 
 <img src="./content/add-reference-taxcalculator.png" style="zoom:67%" alt="Añadir referencia al proyecto del taxcalculator">
 
-Y creamos una instancia del servicio pasandole el valor de prueba y comprobando el resultado generado.
+Y creamos una instancia del servicio pasándole el valor de prueba y comprobando el resultado generado.
 
 ***./TaxCalculator.Test/TaxServiceShould.cs***
 
@@ -84,7 +84,7 @@ namespace TaxCalculator.Test
 }
 ```
 
-¿Qué es lo que hace el Assert? El Assert es como decirle, "asegurate que esto es lo que debe ocurrir." Es decir, en este caso espera que el test produzca 1000. Si esto se cumple, el test pasará. Si eso no se cumple, el test fallará.
+¿Qué es lo que hace el Assert? El Assert es como decirle, "asegúrate que esto es lo que debe ocurrir." Es decir, en este caso espera que el test produzca 1000. Si esto se cumple, el test pasará. Si eso no se cumple, el test fallará.
 
 Compilamos la solución y ahora vamos a irnos a la herramienta que tiene _Visual Studio_ para permitirnos ejecutar nuestros test _Test Explorer_.
 
@@ -129,7 +129,7 @@ namespace TaxCalculator.Test
 
 Comprobamos que aparece como No ejecutado en el _Test Explorer_. Lo ejecutamos y vemos que tenemos los dos test en verde como pasados. Tenemos nuestra prueba unitaria para determinar que los dos flujos posibles de ejecución de nuestro proyecto _TaxCalculator_ pasan correctamente.
 
-Vamos a comprobar que pasaría si alguien módifica la lógica de nuestro servicio. Vamos a _TaxCalculator_ y cambiamos el servicio _TaxService_.
+Vamos a comprobar que pasaría si alguien modifica la lógica de nuestro servicio. Vamos a _TaxCalculator_ y cambiamos el servicio _TaxService_.
 
 ***./TaxCalculator/Service/TaxService.cs***
 
@@ -158,7 +158,7 @@ namespace TaxCalculator.Services
 }
 ```
 
-Reejecutamos los todos los test Run Selected Tests.
+Reejecutamos todos los test Run Selected Tests.
 
 <img src="./content/run-all-test.png" style="zoom:67%" alt="Ejecutamos todos los test">
 
