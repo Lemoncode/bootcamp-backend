@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDialer", "AutoDialer\AutoDialer.csproj", "{AC1AA49C-0EB4-4C17-8A90-9F548DF48A92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDialer.Tests", "AutoDialer.Tests\AutoDialer.Tests.csproj", "{8459FD02-7C82-4005-8396-AEDBD06F265F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC1AA49C-0EB4-4C17-8A90-9F548DF48A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC1AA49C-0EB4-4C17-8A90-9F548DF48A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC1AA49C-0EB4-4C17-8A90-9F548DF48A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC1AA49C-0EB4-4C17-8A90-9F548DF48A92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8459FD02-7C82-4005-8396-AEDBD06F265F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8459FD02-7C82-4005-8396-AEDBD06F265F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8459FD02-7C82-4005-8396-AEDBD06F265F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8459FD02-7C82-4005-8396-AEDBD06F265F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {646AAC8F-298C-4D3C-87E9-FFDFE8A2237B}
+	EndGlobalSection
+EndGlobal
