@@ -14,3 +14,13 @@ Para ejecutar una aplicación Docker multi-contenedor con Docker compose, debes 
 docker-compose up -d
 ```
 
+## Cómo detener una aplicación Docker multi-contenedor con Docker compose
+
+Para detener una aplicación Docker multi-contenedor con Docker compose, debes utilizar el comando `docker-compose down`. Este comando recibe como parámetro el nombre del archivo YAML que contiene la configuración de los contenedores de tu aplicación. Por ejemplo, si quieres detener la aplicación definida en el archivo `docker-compose.yml`, debes ejecutar el siguiente comando:
+
+```bash
+docker-compose down
+```
+
+
+
