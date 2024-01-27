@@ -38,14 +38,20 @@ Este comando descargará la imagen `hello-world` desde Docker Hub y ejecutará u
 
 ## Crea tu primer contenedor con una aplicación web
 
-Ahora que ya sabes como crear un contenedor, puedes crear un contenedor con una aplicación web. Para ello, debes abrir una terminal y ejecutar el siguiente comando:
+Ahora que ya sabes como crear un contenedor, puedes crear un contenedor con una aplicación web. En este caso no solo basta con ejecutarlo, sino que seguramente querrás poder acceder a la misma. Para ello, debes abrir una terminal y ejecutar el siguiente comando:
 
 ```bash
-docker run -d -p 8080:80 nginx
+docker run  -p 8080:80 nginx
 ```
 
 Este comando descargará la imagen `nginx` desde Docker Hub y ejecutará un contenedor utilizando dicha imagen. El contenedor ejecutará un servidor web en el puerto `80` y lo expondrá en el puerto `8080` de tu máquina.
 
 Para verificar que el contenedor se está ejecutando, debes abrir un navegador web y acceder a la URL `http://localhost:8080`.
+
+En este caso, como ves, el terminal se queda enganchado a la ejecución de este contenedor en concreto. Para evitarlo, puedes ejecutar el contenedor en segundo plano, añadiendo el parámetro `-d` al comando anterior:
+
+```bash
+docker run -d -p 8080:80 nginx
+```
 
 ¡Felicidades 🎉! Acabas de crear tu primer contenedor con una aplicación web.

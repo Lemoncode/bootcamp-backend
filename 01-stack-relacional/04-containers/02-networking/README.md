@@ -12,6 +12,22 @@ Docker soporta los siguientes tipos de redes:
 - **macvlan**: Los contenedores que se conectan a esta red pueden comunicarse con el mundo exterior utilizando direcciones MAC.
 - **none**: Los contenedores que se conectan a esta red no pueden comunicarse con ningún otro contenedor.
 
+## Demo con la red por defecto
+
+Cuando yo creo un contenedor, Docker lo conecta automáticamente a la red `bridge`. Para comprobarlo, ejecuta el siguiente comando:
+
+```bash
+docker run -d --name my-nginx nginx
+```
+
+Luego, ejecuta el siguiente comando para ver la lista de redes:
+
+```bash
+docker network ls
+```
+```
+
+
 ## Cómo crear una red
 
 Para crear una red, debes utilizar el comando `docker network create`. Este comando recibe como parámetro el nombre de la red que quieres crear. Por ejemplo, si quieres crear una red llamada `my-network`, debes ejecutar el siguiente comando:
