@@ -25,7 +25,62 @@ Luego, ejecuta el siguiente comando para ver la lista de redes:
 ```bash
 docker network ls
 ```
+
+Verás que aparece una red llamada `bridge`. Para ver los detalles de esta red, ejecuta el siguiente comando:
+
+```bash
+docker network inspect bridge
 ```
+
+Verás que aparece un objeto JSON con la información de la red. En este objeto, puedes ver que el contenedor `my-nginx` está conectado a la red `bridge`.
+
+## Demo con la red host
+
+Para crear un contenedor conectado a la red `host`, debes utilizar la opción `--network` del comando `docker run`. Esta opción recibe como parámetro el nombre de la red a la cual quieres conectar el contenedor. Por ejemplo, si quieres crear un contenedor conectado a la red `host`, debes ejecutar el siguiente comando:
+
+```bash
+docker run -d --name my-nginx-host --network host nginx
+```
+
+Inspecciona la red `host` y verás que el contenedor `my-nginx` está conectado a ella.
+
+```bash
+docker network inspect host
+```
+
+Si estás usando Docker Desktop no podrás acceder al contenedor `my-nginx-host` desde tu máquina porque Docker Desktop utiliza una máquina virtual para ejecutar los contenedores. Sin embargo, si estás usando Docker en Linux, puedes acceder al contenedor `my-nginx-host` desde tu máquina utilizando la dirección `localhost`.
+
+```bash
+curl localhost
+```
+
+## Cómo se hablan dos contenedores en la red bridge
+
+Ahora vamos a ver un ejemplo entre dos contenedores que utilizan una imagen con ping instalado. Para crear un contenedor con ping instalado, debes utilizar la imagen `networkstatic/ip-tools`. Para crear un contenedor con esta imagen, debes ejecutar el siguiente comando:
+
+```bash
+docker run -d --name pepito networkstatic/ip-tools
+docker run -d --name jose networkstatic/ip-tools
+```
+
+Ahora vamos a inspeccionar la red `bridge` para ver los detalles de los contenedores `pepito` y `jose`. Para inspeccionar la red `bridge`, debes ejecutar el siguiente comando:
+
+```bash
+docker network inspect bridge
+```
+
+Lo siguiente que vamos a hacer es ejecutar el comando `ip addr` en el contenedor `pepito` para ver su dirección IP. Para ejecutar este comando en el contenedor `pepito`, debes ejecutar el siguiente comando:
+
+```bash
+docker exec pepito ip addr
+```
+
+Lo siguiente que vamos a hacer es ejecutar el comando `ip addr` en el contenedor `jose` para ver su dirección IP. Para ejecutar este comando en el contenedor `jose`, debes ejecutar el siguiente comando:
+
+```bash
+docker exec jose ip addr
+```
+
 
 
 ## Cómo crear una red
