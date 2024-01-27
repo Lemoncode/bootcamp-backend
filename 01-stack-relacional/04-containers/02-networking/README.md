@@ -104,13 +104,15 @@ docker run --network my-network nginx
 Para crear un segundo contenedor en la misma red, debes utilizar el comando `docker run` con la opción `--network`. Por ejemplo, si quieres crear un segundo contenedor en la red `my-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker run --network my-network nginx
+docker run --name don-pepito --network my-network networkstatic/fping
+docker run --name don-jose --network my-network networkstatic/fping
+
 ```
 
 Para probar la conexión entre los contenedores, debes ejecutar el siguiente comando:
 
 ```bash
-docker exec -it <CONTAINER_ID> ping <CONTAINER_NAME>
+docker exec -it don-pepito ping don-jose
 ```
 
 ## Cómo desconectar un contenedor de una red
