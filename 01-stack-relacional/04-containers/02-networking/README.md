@@ -56,11 +56,11 @@ curl localhost
 
 ## Cómo se hablan dos contenedores en la red bridge
 
-Ahora vamos a ver un ejemplo entre dos contenedores que utilizan una imagen con ping instalado. Para crear un contenedor con ping instalado, debes utilizar la imagen `networkstatic/ip-tools`. Para crear un contenedor con esta imagen, debes ejecutar el siguiente comando:
+Ahora vamos a ver un ejemplo entre dos contenedores que utilizan una imagen con ping instalado. Para crear un contenedor con ping instalado, debes utilizar la imagen `networkstatic/fping`. Para crear un contenedor con esta imagen, debes ejecutar el siguiente comando:
 
 ```bash
-docker run -d --name pepito networkstatic/ip-tools
-docker run -d --name jose networkstatic/ip-tools
+docker run -d --name pepito networkstatic/fping
+docker run -d --name jose networkstatic/fping
 ```
 
 Ahora vamos a inspeccionar la red `bridge` para ver los detalles de los contenedores `pepito` y `jose`. Para inspeccionar la red `bridge`, debes ejecutar el siguiente comando:
