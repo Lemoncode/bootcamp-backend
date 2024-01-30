@@ -5,12 +5,17 @@ using System.Text.Json;
 
 namespace AutoDialer.Infrastructure;
 
-public class PhoneCallingAgent(IHttpClientFactory httpClientFactory) : IPhoneCallingAgent
+public class PhoneCallingAgent : IPhoneCallingAgent
 {
 
-    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     private readonly string BaseApiUrl = "https://myfakeapi/v1/";
+
+    public PhoneCallingAgent(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
 
     public async Task<Guid> MakeCall(string phoneNumber, Stream audioMessageInMp3)
     {

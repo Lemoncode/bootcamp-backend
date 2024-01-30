@@ -33,7 +33,7 @@ public class DialServiceShould
         await _dialService.Dial("1234567890", new MemoryStream());
 
         _mockPhoneCallingAgent.Verify(m => m.MakeCall(It.IsAny<string>(), It.IsAny<Stream>()), Times.Once);
-        _mockPhoneCallingAgent.Verify(m => m.CallIsComplete(jobId), Times.AtLeastOnce);
+        _mockPhoneCallingAgent.Verify(m => m.CallIsComplete(jobId), Times.Once);
     }
 
     [Fact]
