@@ -1,5 +1,7 @@
 # Docker y los datos
 
+En muchos casos los contenedores no pueden ser totalmente stateless. Es decir, necesitan guardar ciertos datos para poder funcionar.
+
 En esta sección te explicaré cómo usar bind mounts y volumes para persistir los datos de tus contenedores.
 
 ## Bind mounts
