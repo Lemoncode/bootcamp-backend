@@ -54,4 +54,46 @@ En este caso, como ves, el terminal se queda enganchado a la ejecución de este 
 docker run -d -p 8080:80 nginx
 ```
 
+Para ver los contenedores que tienes ejecutándose puedes ejecutar el siguiente comando:
+
+```bash
+docker ps
+```
+
+Si además quieres ver los contenedores que tienes parados, puedes ejecutar el siguiente comando:
+
+```bash
+docker ps -a
+```
+
+Por otro lado, si quieres eliminar un contenedor, puedes ejecutar el siguiente comando:
+
+```bash
+docker rm <CONTAINER_ID>
+```
+
+Si el contenedor no está parado no se puede eliminar, a no ser que lo fuerces con:
+
+```bash
+docker rm -f <CONTAINER_ID>
+```
+
+O lo pares antes con el comando:
+
+```bash
+docker stop <CONTAINER_ID>
+```
+
+En estas primeras demos has conseguido descargar dos imágenes para poder crear dos contenedores. Si quieres ver las imágenes que tienes descargadas puedes ejecutar el siguiente comando:
+
+```bash
+docker images
+```
+
+Si quieres eliminar una imagen, puedes ejecutar el siguiente comando:
+
+```bash
+docker rmi <IMAGE_ID>
+```
+
 ¡Felicidades 🎉! Acabas de crear tu primer contenedor con una aplicación web.
