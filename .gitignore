@@ -93,3 +93,4 @@ ClientBin/
 *.dbproj.schemaview
 *.jfm
 *.pfx
+01-stack-relacional/04-containers/00-dockerizar-una-app/app/.dockerignore
