@@ -6,9 +6,10 @@ Dockerizar una aplicación es crear una imagen Docker que contenga la aplicació
 
 ## Antes de empezar
 
-Antes de dockerizar tu aplicación te recomiendo que la pruebes antes 😙 En este laboratorio, tienes una aplicación en el directorio `app`, la cual puedes ejecutarla en tu local, si tienes Node.js instalado, lanzando estos dos comandos:
+Antes de dockerizar tu aplicación te recomiendo que la pruebes antes 😙 En este laboratorio, tienes una aplicación en el directorio `app`, la cual puedes ejecutarla en tu local, si tienes Node.js instalado, lanzando estos tres comandos:
 
 ```bash
+cd 01-stack-relacional/04-containers/00-dockerizar-una-app/app
 npm install
 npm start
 ```
