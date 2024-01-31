@@ -11,6 +11,7 @@ Para que puedas verlo con un ejemplo abre el archivo `docker-compose.yml` y revi
 Para ejecutar una aplicación Docker multi-contenedor con Docker compose, debes utilizar el comando `docker-compose up`. Este comando recibe como parámetro el nombre del archivo YAML que contiene la configuración de los contenedores de tu aplicación. Por ejemplo, si quieres ejecutar la aplicación definida en el archivo `docker-compose.yml`, debes ejecutar el siguiente comando:
 
 ```bash
+cd 01-stack-relacional/04-containers/03-docker-compose
 docker-compose up -d
 ```
 
