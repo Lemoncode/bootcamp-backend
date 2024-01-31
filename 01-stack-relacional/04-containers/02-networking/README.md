@@ -59,8 +59,8 @@ curl localhost
 Ahora vamos a ver un ejemplo entre dos contenedores que utilizan una imagen con ping instalado. Para crear un contenedor con ping instalado, debes utilizar la imagen `networkstatic/fping`. Para crear un contenedor con esta imagen, debes ejecutar el siguiente comando:
 
 ```bash
-docker run -d --name pepito networkstatic/fping
-docker run -d --name jose networkstatic/fping
+docker run -d -it --name pepito networkstatic/fping
+docker run -d -it --name jose networkstatic/fping
 ```
 
 Ahora vamos a inspeccionar la red `bridge` para ver los detalles de los contenedores `pepito` y `jose`. Para inspeccionar la red `bridge`, debes ejecutar el siguiente comando:
@@ -81,31 +81,49 @@ Lo siguiente que vamos a hacer es ejecutar el comando `ip addr` en el contenedor
 docker exec jose ip addr
 ```
 
+Ahora lo que vamos a ver es si pepito puede hacer ping a jose. Para hacer ping a jose desde pepito, debes ejecutar el siguiente comando:
+
+```bash
+docker exec pepito fping 172.17.0.3
+```
+
+Ahora lo que vamos a ver es si jose puede hacer ping a pepito. Para hacer ping a pepito desde jose, debes ejecutar el siguiente comando:
+
+```bash
+docker exec jose fping 172.17.0.2
+```
+
+Sin embargo, si pepito intenta hacer ping a jose utilizando su nombre, no va a poder. Para hacer ping a jose desde pepito utilizando su nombre, debes ejecutar el siguiente comando:
+
+```bash
+docker exec pepito fping jose
+```
+
+En la red brigde de Docker, los contenedores pueden comunicarse entre sí utilizando sus direcciones IP, pero no pueden comunicarse entre sí utilizando sus nombres. Para ello es necesario crear una red.
 
 
 ## Cómo crear una red
 
-Para crear una red, debes utilizar el comando `docker network create`. Este comando recibe como parámetro el nombre de la red que quieres crear. Por ejemplo, si quieres crear una red llamada `my-network`, debes ejecutar el siguiente comando:
+Para crear una red, debes utilizar el comando `docker network create`. Este comando recibe como parámetro el nombre de la red que quieres crear. Por ejemplo, si quieres crear una red llamada `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker network create my-network
+docker network create lemon-network
 ```
 
 ## Cómo conectar un contenedor a una red
 
-Para conectar un contenedor a una red, debes utilizar la opción `--network` del comando `docker run`. Esta opción recibe como parámetro el nombre de la red a la cual quieres conectar el contenedor. Por ejemplo, si quieres conectar un contenedor a la red `my-network`, debes ejecutar el siguiente comando:
+Para conectar un contenedor a una red, debes utilizar la opción `--network` del comando `docker run`. Esta opción recibe como parámetro el nombre de la red a la cual quieres conectar el contenedor. Por ejemplo, si quieres conectar un contenedor a la red `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker run --network my-network nginx
+docker run --name don-pepito -it --network lemon-network networkstatic/fping
 ```
 
 ## Crear un segundo contenedor en la misma red y probar la conexión
 
-Para crear un segundo contenedor en la misma red, debes utilizar el comando `docker run` con la opción `--network`. Por ejemplo, si quieres crear un segundo contenedor en la red `my-network`, debes ejecutar el siguiente comando:
+Para crear un segundo contenedor en la misma red, debes utilizar el comando `docker run` con la opción `--network`. Por ejemplo, si quieres crear un segundo contenedor en la red `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker run --name don-pepito --network my-network networkstatic/fping
-docker run --name don-jose --network my-network networkstatic/fping
+docker run --name don-jose -it --network lemon-network networkstatic/fping
 
 ```
 
@@ -117,10 +135,10 @@ docker exec -it don-pepito ping don-jose
 
 ## Cómo desconectar un contenedor de una red
 
-Para desconectar un contenedor de una red, debes utilizar el comando `docker network disconnect`. Este comando recibe como parámetros el nombre de la red y el nombre del contenedor. Por ejemplo, si quieres desconectar el contenedor `my-container` de la red `my-network`, debes ejecutar el siguiente comando:
+Para desconectar un contenedor de una red, debes utilizar el comando `docker network disconnect`. Este comando recibe como parámetros el nombre de la red y el nombre del contenedor. Por ejemplo, si quieres desconectar el contenedor `don-pepito` de la red `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker network disconnect my-network my-container
+docker network disconnect lemon-network don-pepito
 ```
 
 ## Cómo listar las redes
@@ -133,16 +151,16 @@ docker network ls
 
 ## Cómo inspeccionar una red
 
-Para inspeccionar una red, debes utilizar el comando `docker network inspect`. Este comando recibe como parámetro el nombre de la red que quieres inspeccionar. Por ejemplo, si quieres inspeccionar la red `my-network`, debes ejecutar el siguiente comando:
+Para inspeccionar una red, debes utilizar el comando `docker network inspect`. Este comando recibe como parámetro el nombre de la red que quieres inspeccionar. Por ejemplo, si quieres inspeccionar la red `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker network inspect my-network
+docker network inspect lemon-network
 ```
 
 ## Cómo eliminar una red
 
-Para eliminar una red, debes utilizar el comando `docker network rm`. Este comando recibe como parámetro el nombre de la red que quieres eliminar. Por ejemplo, si quieres eliminar la red `my-network`, debes ejecutar el siguiente comando:
+Para eliminar una red, debes utilizar el comando `docker network rm`. Este comando recibe como parámetro el nombre de la red que quieres eliminar. Por ejemplo, si quieres eliminar la red `lemon-network`, debes ejecutar el siguiente comando:
 
 ```bash
-docker network rm my-network
+docker network rm lemon-network
 ```
