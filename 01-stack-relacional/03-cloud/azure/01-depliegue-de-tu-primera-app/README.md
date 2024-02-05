@@ -68,11 +68,11 @@ SQL_SERVER_NAME=tour-of-heroes-sql
 SQL_SERVER_USERNAME=sqladmin
 SQL_SERVER_PASSWORD=Password1!
 
-# Front-end
-FRONT_END_NAME=tour-of-heroes-web
-
 # Backend
 BACK_END_NAME=tour-of-heroes-api
+
+# Front-end
+FRONT_END_NAME=tour-of-heroes-web
 ```
 
 ## Creación de un grupo de recursos
@@ -193,5 +193,28 @@ Hurra 🎉! Ya tienes el back-end desplegado en Azure. Ahora solo nos queda el f
 
 ## Despliegue del front-end
 
+El último componente que nos queda por desplegar es el front-end de nuestro Tour Of Heroes. Para ello vamos a utilizar el servicio llamado App Service Static Web Apps. Este servicio te permite desplegar aplicaciones web estáticas en la nube.
+
+Este servicio tiene una integración con GitHub que te permite desplegar automáticamente tu aplicación cada vez que haces un push a tu repositorio. Para ello necesitas crear un App Service Static Web Apps y conectarlo con tu repositorio de GitHub.
+
+Para este ejemplo puedes hacer un fork de este repositorio y utilizarlo para desplegar tu aplicación. Una vez que lo hayas hecho necesitas obtener el nombre de usuario de tu cuenta de GitHub. Puedes hacerlo con el siguiente comando:
+
+```bash
+GITHUB_USER_NAME="0GiS0"
+```
+
+Para crear un App Service Static Web Apps ejecuta el siguiente comando:
+
+```bash
+az staticwebapp create \
+--name $FRONT_END_NAME \
+--resource-group $RESOURCE_GROUP \
+--source https://github.com/$GITHUB_USER_NAME/bootcamp-backend \
+--location "westeurope" \
+--branch gisela/azure \
+--app-location "/01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/front-end" \
+--output-location "dist/angular-tour-of-heroes" \
+--login-with-github
+```
 
 
