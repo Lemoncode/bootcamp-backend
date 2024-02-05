@@ -217,4 +217,23 @@ az staticwebapp create \
 --login-with-github
 ```
 
+Una vez que el proceso termine te darás cuenta de que el frontal funciona sin problemas pero que no se conecta con el back-end. Esto es debido a que la URL del back-end todavía no está configurada. Para solucionar esto necesitas añadir la URL del back-end en el archivo `environments/environment.prod.ts` de tu repositorio.
 
+Para recuperar la URL del back-end puedes ejecutar el siguiente comando:
+
+```bash
+HOSTNAME=$(az webapp show \
+--name $BACK_END_NAME \
+--resource-group $RESOURCE_GROUP \
+--query defaultHostName \
+--output tsv)
+
+echo "export const environment = {
+  production: true,
+  api: 'https://$HOSTNAME/api/hero'
+};" > ./front-end/src/environments/environment.prod.ts
+```
+
+Guarda los cambios y que el despliegue automático haga el resto.
+
+Hurra 🎉! Ya tienes el front-end desplegado en Azure. Ahora ya tienes todo tu Tour Of Heroes desplegado en la nube de Azure. ¡Enhorabuena! 🥳 A descansar 😴
