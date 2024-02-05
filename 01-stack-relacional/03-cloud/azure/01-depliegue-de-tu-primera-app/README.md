@@ -125,3 +125,73 @@ az sql server firewall-rule create \
 ```
 Si ahora vuelves a acceder a la API verás que ya no te da ningún error y que puedes añadir héroes a la base de datos, de la misma forma que lo hiciste con la que tienes ejecutándose en Docker.
 
+Hurray 🎉! Ya tienes la base de datos desplegada en Azure. Ahora solo nos quedan las otras dos partes 😎
+
+## Despliegue del back-end
+
+Para desplegar el back-end necesitas un servicio de App Service. Este servicio te permite desplegar aplicaciones web, APIs, y funciones en la nube.
+
+Para crear un App Service ejecuta el siguiente comando:
+
+```bash
+az appservice plan create \
+--name $BACK_END_NAME \
+--resource-group $RESOURCE_GROUP \
+--location $LOCATION \
+--sku F1
+```
+
+Pero este solo es el Plan de App Service, ahora necesitas crear el App Service en sí. Para ello ejecuta el siguiente comando:
+
+```bash
+az webapp create \
+--name $BACK_END_NAME \
+--resource-group $RESOURCE_GROUP \
+--plan $BACK_END_NAME \
+--runtime "dotnet:8"
+```
+
+Ahora que ya tienes el App Service creado, necesitas desplegar el back-end en él. Para ello ejecuta los siguientes comandos, dentro de la carpeta `back-end` de este repositorio:
+
+```bash
+dotnet publish -o ./publish
+
+cd publish
+
+zip -r site.zip *
+
+az webapp deployment source config-zip \
+--src site.zip \
+--resource-group $RESOURCE_GROUP \
+--name $BACK_END_NAME
+```
+
+Ahora si intentas acceder a  `https://$BACK_END_NAME.azurewebsites.net/api/hero` estarás accediendo a tu API. Sin embargo, la misma todavía no funciona del todo bien. Esto es debido a que la cadena de conexión a la base de datos no es la correcta. Para solucionar esto necesitas añadir la cadena de conexión a la base de datos como una variable de entorno. Puedes hacerlo con el siguiente comando:
+
+```bash
+az webapp config connection-string set \
+--name $BACK_END_NAME \
+--resource-group $RESOURCE_GROUP \
+--connection-string-type SQLAzure \
+--settings "DefaultConnection=Server=tcp:$SQL_SERVER_NAME.database.windows.net,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=$SQL_SERVER_USERNAME;Password=$SQL_SERVER_PASSWORD;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+```
+
+Pero Ops! No funciona 🤨. Esto es debido porque el firewall del SQL Server donde se hospeda nuestra base de datos también tiene que habilitar el acceso desde otros servicios de Azure. Para ello puedes utilizar este otro comando:
+
+```bash
+az sql server firewall-rule create \
+--resource-group $RESOURCE_GROUP \
+--server $SQL_SERVER_NAME \
+--name AllowAzureServices \
+--start-ip-address 0.0.0.0 \
+--end-ip-address 0.0.0.0
+```
+
+Si vuelves a intentar acceder de nuevo verás que la API ya funciona correctamente. Uff 🥵, ya está todo listo.
+
+Hurra 🎉! Ya tienes el back-end desplegado en Azure. Ahora solo nos queda el front-end 😎
+
+## Despliegue del front-end
+
+
+
