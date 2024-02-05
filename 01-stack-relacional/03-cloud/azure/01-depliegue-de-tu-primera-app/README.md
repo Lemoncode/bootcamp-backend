@@ -230,7 +230,7 @@ HOSTNAME=$(az webapp show \
 
 echo "export const environment = {
   production: true,
-  api: 'https://$HOSTNAME/api/hero'
+  apiUrl: 'https://$HOSTNAME/api/hero'
 };" > ./front-end/src/environments/environment.prod.ts
 ```
 
