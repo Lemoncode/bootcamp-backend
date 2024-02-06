@@ -35,6 +35,7 @@ Ahora entra en el directorio `back-end` y ejecuta la API:
 
 ```bash
 cd back-end
+dotnet dev-certs https
 dotnet run
 ```
 
@@ -60,19 +61,19 @@ Para que sea más sencillo modificar el nombre que le des a las cosas, utiliza l
 
 ```bash
 # Generales
-RESOURCE_GROUP=tour-of-heroes
+RESOURCE_GROUP=tour-of-heroes-2
 LOCATION=westeurope
 
 # Base de datos
-SQL_SERVER_NAME=tour-of-heroes-sql
+SQL_SERVER_NAME=tour-of-heroes-sql-2
 SQL_SERVER_USERNAME=sqladmin
 SQL_SERVER_PASSWORD=Password1!
 
 # Backend
-BACK_END_NAME=tour-of-heroes-api
+BACK_END_NAME=tour-of-heroes-api-2
 
 # Front-end
-FRONT_END_NAME=tour-of-heroes-web
+FRONT_END_NAME=tour-of-heroes-web-2
 ```
 
 ## Creación de un grupo de recursos
@@ -119,7 +120,7 @@ Esto es debido a que Azure SQL Server tiene un firewall que por defecto no permi
 az sql server firewall-rule create \
 --resource-group $RESOURCE_GROUP \
 --server $SQL_SERVER_NAME \
---name AllowYourIp \
+--name Home \
 --start-ip-address $(curl ifconfig.me) \
 --end-ip-address $(curl ifconfig.me)
 ```
