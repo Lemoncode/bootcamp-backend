@@ -7,9 +7,8 @@
     <RootNamespace>tour_of_heroes_api</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.0.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
+  <ItemGroup>    
+    <!-- <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" /> -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

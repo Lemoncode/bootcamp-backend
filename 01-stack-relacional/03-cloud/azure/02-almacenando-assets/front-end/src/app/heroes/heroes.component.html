@@ -13,18 +13,18 @@
       <div class="col-4 col-12-medium" *ngFor="let hero of heroes">
         <!-- Box -->
         <section class="box feature">
-          <!-- <a routerLink="/detail/{{ hero.id }}" class="image featured"
+          <a routerLink="/detail/{{ hero.id }}" class="image featured"
             ><img
               src="assets/heroes/{{
                 hero.name | lowercase | replace: ' ' : '-'
               }}.jpeg"
               alt=""
-          /></a> -->
-          <a routerLink="/detail/{{hero.id}}" class="image featured">
+          /></a>
+          <!-- <a routerLink="/detail/{{hero.id}}" class="image featured">
             <img
               src="https://heroespics.blob.core.windows.net/heroes/{{hero.name | lowercase | replace: ' ':'-'}}.jpeg"
               alt="" />
-          </a>
+          </a> -->
           <div class="inner">
             <header>
               <h2>{{ hero.name }}</h2>
