@@ -280,13 +280,19 @@ En nuestra carpeta `back-end` tienes que descomentar el método `GetAlterEgoPic`
         }
 ```
 
-Este como ves es un método muy sencillo que se encarga de devolver la imagen del alter ego. Para que nuestra API pueda usar estas clases necesitas tener instalado el paquete `Azure.Storage.Blobs` en tu proyecto. 
+Este como ves es un método muy sencillo que se encarga de devolver la imagen del alter ego. Para que esto funcione he tenido que agregar el paquete de nuget  `Azure.Storage.Blobs` en el proyecto. 
 
 ```bash
 dotnet add package Azure.Storage.Blobs 
 ```
 
-Para tu API y ahora vamos a guardar en una variable la cadena de conexión necesaria para que esta pueda comunicarse con Azure Storage. En el terminal de la API lanza lo siguiente:
+Y añadir el using correspondiente en el archivo `Controllers/HeroController.cs`:
+
+```csharp
+using Azure.Storage.Blobs;
+```
+
+Ahora vamos a guardar en una variable la cadena de conexión necesaria para que esta pueda comunicarse con Azure Storage. En el terminal de la API lanza lo siguiente:
 
 ```bash
 STORAGE_ACCOUNT="heroespics"
@@ -305,4 +311,136 @@ Ahora que ya la tienes vamos a setear la variable de entorno que nuestra API nec
 AZURE_STORAGE_CONNECTION_STRING=$CONNECTION_STRING dotnet run
 ```
 
+Y voi lá! Ahora si que si, si vamos a la URL `https://localhost:5001/api/hero/alteregopic/2` deberíamos ver la imagen del alter ego de nuestro héroe.
 
+Ahora solo queda que nuestro frontal en Angular sepa llamar a esta nueva acción de nuestra API. Para ello añade en `01-stack-relacional/03-cloud/azure/02-almacenando-assets/front-end/src/app/hero.service.ts`el siguiente método:
+
+```typescript
+  getAlterEgoPic(id: number): Observable<Blob> {
+    return this.http.get(`${this.heroesUrl}/alteregopic/${id}`, { responseType: 'blob' });
+  }
+```
+
+y modifica `01-stack-relacional/03-cloud/azure/02-almacenando-assets/front-end/src/app/hero-detail/hero-detail.component.ts` para que llame a este nuevo método:
+
+```typescript
+import { Component, OnInit, Input } from '@angular/core';
+import { Hero } from '../hero';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+import { HeroService } from '../hero.service';
+
+@Component({
+  selector: 'app-hero-detail',
+  templateUrl: './hero-detail.component.html',
+  styleUrls: ['./hero-detail.component.css']
+})
+export class HeroDetailComponent implements OnInit {
+
+  @Input() hero?: Hero;
+  alterEgoPic?: any;
+
+  constructor(private route: ActivatedRoute, private heroService: HeroService, private location: Location) { }
+
+  ngOnInit(): void {
+    this.getHero();
+  }
+
+  getHero(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.heroService.getHero(id).subscribe(hero => this.hero = hero);
+    
+    this.heroService.getAlterEgoPic(id).subscribe(alterEgoPic => {
+      let reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.alterEgoPic = e.target.result;
+      };
+      
+      if (alterEgoPic){
+        reader.readAsDataURL(alterEgoPic);
+      }
+      
+    });
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  save(): void {
+    if (this.hero) {
+      this.heroService.updateHero(this.hero)
+        .subscribe(() => this.goBack());
+    }
+  }
+
+}
+```
+
+Y ya por último modifica `01-stack-relacional/03-cloud/azure/02-almacenando-assets/front-end/src/app/hero-detail/hero-detail.component.html` para que muestre la imagen del alter ego:
+
+```html
+<div id="features-wrapper">
+  <div class="container">
+    <div class="row" *ngIf="hero">
+      <div class="col-5 col-12-medium">
+        <!-- Box -->
+        <section class="box feature">
+          <!-- <a routerLink="/detail/{{ hero.id }}" class="image featured"
+            ><img
+              src="assets/alteregos/{{
+                hero.alterEgo | lowercase | replace: ' ' : '-'
+              }}.png"
+              alt=""
+          /></a> -->
+          <!-- <a routerLink="/detail/{{hero.id}}" class="image featured">
+            <img src="https://heroespics.blob.core.windows.net/alteregos/{{hero.alterEgo | lowercase | replace: ' ':'-'}}.png" alt="" />
+          </a> -->
+          <a routerLink="/detail/{{hero.id}}" class="image featured"><img src="{{alterEgoPic}}" alt="" /></a>
+        </section>
+      </div>
+      <div class="col-7">
+        <form>
+          <div class="form-group">
+            <label for="hero-name">
+              <input
+                id="hero-name"
+                [(ngModel)]="hero.name"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Name"
+              />
+              <span>Hero name</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="hero-name">
+              <input
+                id="hero-name"
+                [(ngModel)]="hero.alterEgo"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Alter ego"
+              />
+              <span>Alter ego</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="hero-name">
+              <textarea
+                id="hero-description"
+                [(ngModel)]="hero.description"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Description"
+              ></textarea>
+              <span>Description</span>
+            </label>
+          </div>
+          <div class="buttons">
+            <button (click)="save()">Save</button>
+            <button (click)="goBack()">Go back</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+```
