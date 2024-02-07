@@ -46,13 +46,13 @@ Estas imágenes a día de hoy forman parte del código de la aplicación, pero l
 Antes de crear la cuenta de Azure Storage vamos a recuperar la variable que creamos en la clase anterior con el grupo de recursos. Abre una terminal y ejecuta el siguiente comando:
 
 ```bash
-RESOURCE_GROUP="tour-of-heroes"
+RESOURCE_GROUP="tour-of-heroes-2"
 ```
 
 También vamos a cargar una variable con el nombre de la cuenta de Azure Storage que vamos a crear y la localización:
 
 ```bash
-STORAGE_ACCOUNT="heroespics"
+STORAGE_ACCOUNT="heroespics2"
 LOCATION="westeurope"
 ```
 
@@ -311,7 +311,7 @@ Ahora que ya la tienes vamos a setear la variable de entorno que nuestra API nec
 AZURE_STORAGE_CONNECTION_STRING=$CONNECTION_STRING dotnet run
 ```
 
-Y voi lá! Ahora si que si, si vamos a la URL `https://localhost:5001/api/hero/alteregopic/2` deberíamos ver la imagen del alter ego de nuestro héroe.
+Y voilá! Ahora si que si, si vamos a la URL `https://localhost:5001/api/hero/alteregopic/2` deberíamos ver la imagen del alter ego de nuestro héroe.
 
 Ahora solo queda que nuestro frontal en Angular sepa llamar a esta nueva acción de nuestra API. Para ello añade en `01-stack-relacional/03-cloud/azure/02-almacenando-assets/front-end/src/app/hero.service.ts`el siguiente método:
 

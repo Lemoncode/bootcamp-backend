@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using tour_of_heroes_api.Models;
 using System.Linq;
-// using Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 
 
 namespace tour_of_heroes_api.Controllers
@@ -86,33 +86,33 @@ namespace tour_of_heroes_api.Controllers
         }
 
         // GET: api/hero/alteregopic/5
-        // [HttpGet("alteregopic/{id}")]
-        // public async Task<ActionResult<Hero>> GetAlterEgoPic(int id)
-        // {
-        //     var hero = _heroRepository.GetById(id);
+        [HttpGet("alteregopic/{id}")]
+        public async Task<ActionResult<Hero>> GetAlterEgoPic(int id)
+        {
+            var hero = _heroRepository.GetById(id);
 
-        //     if (hero == null)
-        //     {
-        //         return NotFound();
-        //     }
+            if (hero == null)
+            {
+                return NotFound();
+            }
 
-        //     //Get image from Azure Storage
-        //     string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+            //Get image from Azure Storage
+            string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
             
-        //     // Create a BlobServiceClient object which will be used to create a container client
-        //     var blobServiceClient = new BlobServiceClient(connectionString);
+            // Create a BlobServiceClient object which will be used to create a container client
+            var blobServiceClient = new BlobServiceClient(connectionString);
 
-        //     //Get container client
-        //     var containerClient = blobServiceClient.GetBlobContainerClient("alteregos");
+            //Get container client
+            var containerClient = blobServiceClient.GetBlobContainerClient("alteregos");
 
-        //     //Get blob client
-        //     var blob = containerClient.GetBlobClient($"{hero.AlterEgo.ToLower().Replace(' ', '-')}.png");
+            //Get blob client
+            var blob = containerClient.GetBlobClient($"{hero.AlterEgo.ToLower().Replace(' ', '-')}.png");
 
-        //     //Get image from blob
-        //     var image = await blob.DownloadStreamingAsync();
+            //Get image from blob
+            var image = await blob.DownloadStreamingAsync();
 
-        //     //return image
-        //     return File(image.Value.Content, "image/png");
-        // }
+            //return image
+            return File(image.Value.Content, "image/png");
+        }
     }
 }

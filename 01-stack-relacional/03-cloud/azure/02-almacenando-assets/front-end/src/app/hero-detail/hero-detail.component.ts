@@ -12,7 +12,7 @@ import { HeroService } from '../hero.service';
 export class HeroDetailComponent implements OnInit {
 
   @Input() hero?: Hero;
-  // alterEgoPic?: any;
+  alterEgoPic?: any;
 
   constructor(private route: ActivatedRoute, private heroService: HeroService, private location: Location) { }
 
@@ -24,17 +24,17 @@ export class HeroDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.heroService.getHero(id).subscribe(hero => this.hero = hero);
     
-    // this.heroService.getAlterEgoPic(id).subscribe(alterEgoPic => {
-      // let reader = new FileReader();
-      // reader.onload = (e: any) => {
-      //   this.alterEgoPic = e.target.result;
-      // };
+    this.heroService.getAlterEgoPic(id).subscribe(alterEgoPic => {
+      let reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.alterEgoPic = e.target.result;
+      };
       
-      // if (alterEgoPic){
-      //   reader.readAsDataURL(alterEgoPic);
-      // }
+      if (alterEgoPic){
+        reader.readAsDataURL(alterEgoPic);
+      }
       
-    // });
+    });
   }
 
   goBack(): void {
