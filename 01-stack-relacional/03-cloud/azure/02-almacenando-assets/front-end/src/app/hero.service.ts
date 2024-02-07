@@ -28,9 +28,9 @@ export class HeroService {
     this.messageService.add(`HeroService: ${message}`);
   }
 
-  getAlterEgoPic(id: number): Observable<Blob> {
-    return this.http.get(`${this.heroesUrl}/alteregopic/${id}`, { responseType: 'blob' });
-  }
+  // getAlterEgoPic(id: number): Observable<Blob> {
+  //   return this.http.get(`${this.heroesUrl}/alteregopic/${id}`, { responseType: 'blob' });
+  // }
 
   getHeroes(): Observable<Hero[]> {
       return this.http.get<Hero[]>(this.heroesUrl).pipe(

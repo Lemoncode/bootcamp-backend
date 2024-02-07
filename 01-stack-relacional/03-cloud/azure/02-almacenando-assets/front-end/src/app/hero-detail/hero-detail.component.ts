@@ -24,7 +24,7 @@ export class HeroDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.heroService.getHero(id).subscribe(hero => this.hero = hero);
     
-    this.heroService.getAlterEgoPic(id).subscribe(alterEgoPic => {
+    // this.heroService.getAlterEgoPic(id).subscribe(alterEgoPic => {
       // let reader = new FileReader();
       // reader.onload = (e: any) => {
       //   this.alterEgoPic = e.target.result;
@@ -34,7 +34,7 @@ export class HeroDetailComponent implements OnInit {
       //   reader.readAsDataURL(alterEgoPic);
       // }
       
-    });
+    // });
   }
 
   goBack(): void {
