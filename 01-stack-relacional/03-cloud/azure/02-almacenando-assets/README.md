@@ -295,8 +295,8 @@ using Azure.Storage.Blobs;
 Ahora vamos a guardar en una variable la cadena de conexión necesaria para que esta pueda comunicarse con Azure Storage. En el terminal de la API lanza lo siguiente:
 
 ```bash
-STORAGE_ACCOUNT="heroespics"
-RESOURCE_GROUP="tour-of-heroes"
+STORAGE_ACCOUNT="heroespics2"
+RESOURCE_GROUP="tour-of-heroes-2"
 
 CONNECTION_STRING=$(az storage account show-connection-string \
 --name $STORAGE_ACCOUNT \
@@ -542,7 +542,7 @@ jobs:
 Y para esta ocasión, para desplegar los cambios de la API, vamos a usar otra de las funcionalidades que App Service nos ofrece, que son los slots. Por lo que primero vamos a crear un slot para nuestra API.
 
 ```bash
-BACK_END_NAME=tour-of-heroes-api
+BACK_END_NAME=tour-of-heroes-api-2
 
 az webapp deployment slot create \
 --name $BACK_END_NAME \
