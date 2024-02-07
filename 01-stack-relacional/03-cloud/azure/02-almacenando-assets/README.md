@@ -451,6 +451,8 @@ Ahora que ya tenemos nuestra nueva funcionalidad lista, vamos a desplegar tanto 
 
 ### Desplegar el frontal
 
+Si hiciste un fork del repo de Lemoncode tienes dos opciones:
+
 En el caso del frontal es muy sencillo, si en la clase anterior me hiciste caso 😃 e hiciste un fork de este repositorio. Ya que simplemente sincronizando los cambios que acabo de mostrarte solo tienes que darle al botón de **Sync Fork** en el branch que corresponda y automáticamente se desplegarán los cambios.
 
 <img src="docs-img/Sincronizar el fork.png" />
@@ -586,8 +588,6 @@ az webapp deployment source config-zip \
 ```
 
 A través de la extensión podrás ver que se ha creado un nuevo slot y que está desplegada la nueva versión de la API en él.
-
-
 
 Para probarla puedes usar la URL que te proporciona la extensión o bien acceder a la URL de la API y añadirle el nombre del slot que acabas de crear. En mi caso sería `https://tour-of-heroes-api-staging.azurewebsites.net/api/hero/alteregopic/2`.
 
