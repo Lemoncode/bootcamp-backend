@@ -280,7 +280,11 @@ En nuestra carpeta `back-end` tienes que descomentar el método `GetAlterEgoPic`
         }
 ```
 
-Este como ves es un método muy sencillo que se encarga de devolver la imagen del alter ego. 
+Este como ves es un método muy sencillo que se encarga de devolver la imagen del alter ego. Para que nuestra API pueda usar estas clases necesitas tener instalado el paquete `Azure.Storage.Blobs` en tu proyecto. 
+
+```bash
+dotnet add package Azure.Storage.Blobs 
+```
 
 Para tu API y ahora vamos a guardar en una variable la cadena de conexión necesaria para que esta pueda comunicarse con Azure Storage. En el terminal de la API lanza lo siguiente:
 

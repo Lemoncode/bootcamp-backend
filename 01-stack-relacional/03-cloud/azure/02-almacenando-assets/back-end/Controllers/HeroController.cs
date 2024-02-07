@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using tour_of_heroes_api.Models;
 using System.Linq;
+using Azure.Storage.Blobs;
+
 
 namespace tour_of_heroes_api.Controllers
 {
@@ -87,7 +89,7 @@ namespace tour_of_heroes_api.Controllers
         [HttpGet("alteregopic/{id}")]
         public async Task<ActionResult<Hero>> GetAlterEgoPic(int id)
         {
-            var hero = await _context.Heroes.FirstOrDefaultAsync(h => h.Id == id);
+            var hero = _heroRepository.GetById(id);
 
             if (hero == null)
             {
