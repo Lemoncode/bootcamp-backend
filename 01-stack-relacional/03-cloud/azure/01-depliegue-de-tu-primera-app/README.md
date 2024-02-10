@@ -61,19 +61,19 @@ Para que sea más sencillo modificar el nombre que le des a las cosas, utiliza l
 
 ```bash
 # Generales
-RESOURCE_GROUP=tour-of-heroes-2
+RESOURCE_GROUP=tour-of-heroes
 LOCATION=westeurope
 
 # Base de datos
-SQL_SERVER_NAME=tour-of-heroes-sql-2
+SQL_SERVER_NAME=tour-of-heroes-sql
 SQL_SERVER_USERNAME=sqladmin
 SQL_SERVER_PASSWORD=Password1!
 
 # Backend
-BACK_END_NAME=tour-of-heroes-api-2
+BACK_END_NAME=tour-of-heroes-api
 
 # Front-end
-FRONT_END_NAME=tour-of-heroes-web-2
+FRONT_END_NAME=tour-of-heroes-web
 ```
 
 ## Creación de un grupo de recursos
@@ -155,6 +155,7 @@ az webapp create \
 Ahora que ya tienes el App Service creado, necesitas desplegar el back-end en él. Para ello ejecuta los siguientes comandos, dentro de la carpeta `back-end` de este repositorio:
 
 ```bash
+cd 01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/back-end
 dotnet publish -o ./publish
 
 cd publish
@@ -210,10 +211,10 @@ Para crear un App Service Static Web Apps ejecuta el siguiente comando:
 az staticwebapp create \
 --name $FRONT_END_NAME \
 --resource-group $RESOURCE_GROUP \
---source https://github.com/$GITHUB_USER_NAME/bootcamp-backend \
+--source https://github.com/$GITHUB_USER_NAME/tour-of-heroes-angular \
 --location "westeurope" \
---branch gisela/azure \
---app-location "/01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/front-end" \
+--branch main \
+--app-location "/" \
 --output-location "dist/angular-tour-of-heroes" \
 --login-with-github
 ```
