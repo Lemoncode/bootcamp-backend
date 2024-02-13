@@ -46,13 +46,13 @@ Estas imágenes a día de hoy forman parte del código de la aplicación, pero l
 Antes de crear la cuenta de Azure Storage vamos a recuperar la variable que creamos en la clase anterior con el grupo de recursos. Abre una terminal y ejecuta el siguiente comando:
 
 ```bash
-RESOURCE_GROUP="tour-of-heroes-2"
+RESOURCE_GROUP="tour-of-heroes"
 ```
 
 También vamos a cargar una variable con el nombre de la cuenta de Azure Storage que vamos a crear y la localización:
 
 ```bash
-STORAGE_ACCOUNT="heroespics2"
+STORAGE_ACCOUNT="heroespics"
 LOCATION="westeurope"
 ```
 
