@@ -1,0 +1,180 @@
+    /* HeroDetailComponent's private CSS styles */
+    /* Box */
+    
+    .box {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0px 3px 0px 0px rgba(0, 0, 0, 0.05);
+        padding: 2em;
+        margin-top: 20px;
+    }
+    
+    .box.feature {
+        padding: 0;
+    }
+    
+    .box.feature .inner {
+        padding: 4em 2em 3em 2em;
+    }
+    
+    .box.feature h2 {
+        font-size: 1.35em;
+    }
+    
+    .box.feature p {
+        margin: 0;
+    }
+    
+    .box.feature .image {
+        position: relative;
+        margin: 0;
+    }
+    
+    .box.feature .image img {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    /* Image */
+    
+    .image {
+        display: inline-block;
+        outline: 0;
+    }
+    
+    .image img {
+        display: block;
+        width: 100%;
+        border-radius: 8px;
+    }
+    
+    .image.fit {
+        display: block;
+        width: 100%;
+    }
+    
+    .image.featured {
+        display: block;
+        width: 100%;
+        margin: 0 0 2.5em 0;
+    }
+    
+    .image.left {
+        float: left;
+        margin: 0 2em 2em 0;
+    }
+    
+    .image.centered {
+        display: block;
+        margin: 0 0 2.5em 0;
+    }
+    
+    .image.centered img {
+        margin: 0 auto;
+        width: auto;
+    }
+    
+    form label {
+        position: relative;
+        display: block;
+    }
+    
+    form label input {
+        font: 18px Helvetica, Arial, sans-serif;
+        box-sizing: border-box;
+        display: block;
+        border: none;
+        padding: 20px;
+        width: 300px;
+        margin-bottom: 20px;
+        font-size: 18px;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    form label input::-moz-placeholder {
+        -moz-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        color: #999;
+        font: 18px Helvetica, Arial, sans-serif;
+    }
+    
+    form label input:-ms-input-placeholder {
+        -ms-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        color: #999;
+        font: 18px Helvetica, Arial, sans-serif;
+    }
+    
+    form label input::placeholder {
+        transition: all 0.2s ease-in-out;
+        color: #999;
+        font: 18px Helvetica, Arial, sans-serif;
+    }
+    
+    form label input:focus,
+    form label input.populated {
+        padding-top: 28px;
+        padding-bottom: 12px;
+    }
+    
+    form label input:focus::-moz-placeholder,
+    form label input.populated::-moz-placeholder {
+        color: transparent;
+    }
+    
+    form label input:focus:-ms-input-placeholder,
+    form label input.populated:-ms-input-placeholder {
+        color: transparent;
+    }
+    
+    form label input:focus::placeholder,
+    form label input.populated::placeholder {
+        color: transparent;
+    }
+    
+    form label input:focus+span,
+    form label input.populated+span {
+        opacity: 1;
+        top: 10px;
+    }
+    
+    form label span {
+        color: #35dc9b;
+        font: 13px Helvetica, Arial, sans-serif;
+        position: absolute;
+        top: 0px;
+        left: 20px;
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    form button,
+    input[type="file"] {
+        transition: all 0.2s ease-in-out;
+        font: 18px Helvetica, Arial, sans-serif;
+        border: none;
+        background: #1aaf75;
+        color: #fff;
+        padding: 16px 40px;
+    }
+    
+    form button:hover {
+        background: #109f67;
+    }
+    
+    form textarea {
+        width: 100%;
+        font: 18px Helvetica, Arial, sans-serif;
+        height: 250px;
+        margin: 0;
+        border: 1px solid #fff;
+        padding: 15px;
+    }
+    
+    form textarea:focus {
+        outline: none;
+    }
+    
+    .buttons {
+        text-align: right;
+    }
