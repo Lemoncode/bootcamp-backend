@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using tour_of_heroes_api.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Queues;
 using Azure.Storage.Sas;
+using System.Text.Json;
 
 namespace tour_of_heroes_api.Controllers
 {
@@ -36,25 +38,75 @@ namespace tour_of_heroes_api.Controllers
 
         // PUT: api/Hero/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // [HttpPut("{id}")]
+        // public ActionResult PutHero(int id, Hero hero)
+        // {
+
+        //     var heroToUpdate = _heroRepository.GetById(id);
+
+        //     if (heroToUpdate == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     heroToUpdate.Name = hero.Name;
+        //     heroToUpdate.AlterEgo = hero.AlterEgo;
+        //     heroToUpdate.Description = hero.Description;
+
+        //     _heroRepository.Update(heroToUpdate);
+
+        //     return NoContent();
+
+        // }
+              // PUT: api/Hero/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public ActionResult PutHero(int id, Hero hero)
+        public async Task<IActionResult> PutHero(int id, Hero hero)
         {
-
-            var heroToUpdate = _heroRepository.GetById(id);
-
-            if (heroToUpdate == null)
+            if (id != hero.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            heroToUpdate.Name = hero.Name;
-            heroToUpdate.AlterEgo = hero.AlterEgo;
-            heroToUpdate.Description = hero.Description;
+            var oldAlterEgo = _heroRepository.GetById(id).AlterEgo;
 
-            _heroRepository.Update(heroToUpdate);
+            try
+            {
+                _heroRepository.Update(hero);
+
+                /*********** Background processs (We have to rename the image) *************/
+                if (hero.AlterEgo != oldAlterEgo)
+                {
+                    // Get the connection string from app settings
+                    string connectionString = _configuration.GetConnectionString("AzureStorage");
+
+                    // Instantiate a QueueClient which will be used to create and manipulate the queue
+                    var queueClient = new QueueClient(connectionString, "alteregos");
+
+                    // Create a queue
+                    await queueClient.CreateIfNotExistsAsync();
+
+                    // Create a dynamic object to hold the message
+                    var message = new
+                    {
+                        oldName = oldAlterEgo,
+                        newName = hero.AlterEgo
+                    };
+
+                    // Send the message
+                    await queueClient.SendMessageAsync(JsonSerializer.Serialize(message).ToString());
+
+                }
+                /*********** End Background processs *************/
+            }
+            catch (Exception ex)
+            {
+
+                return NotFound(ex.Message);              
+                
+            }
 
             return NoContent();
-
         }
 
         // POST: api/Hero

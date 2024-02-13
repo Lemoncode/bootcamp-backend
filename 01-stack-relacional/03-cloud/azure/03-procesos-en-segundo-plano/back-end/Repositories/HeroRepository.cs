@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using tour_of_heroes_api.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 public class HeroRepository : IHeroRepository
 {
@@ -29,7 +30,17 @@ public class HeroRepository : IHeroRepository
 
     public void Update(Hero hero)
     {
-        _context.Heroes.Update(hero);
+        var heroToUpdate = GetById(hero.Id);
+
+        if (heroToUpdate == null) return;
+
+        heroToUpdate.Name = hero.Name;
+        heroToUpdate.AlterEgo = hero.AlterEgo;
+        heroToUpdate.Description = hero.Description;
+
+        _context.Entry(heroToUpdate).State = EntityState.Modified;       
+
+        _context.Heroes.Update(heroToUpdate);
         _context.SaveChanges();
     }
 }

@@ -239,3 +239,193 @@ Si todo ha ha ido bien deberías de ver algo como lo siguiente en el terminal:
 Ahora la prueba de fuego 🔥 sería subir una imagen al contenedor de alter egos y comprobar que efectivamente esta función se ejecuta y que tenemos en el propio contenedor el resultado guardado en png. Para ello, elimina todas las imagenes que hay en el contenedor con Azure Storage Explorer y utiliza las imágenes guardadas en `assets/alteregos/jpeg`.
 
 También puedes probar desde la interfaz en Angular.
+
+## Azure Logic Apps
+
+Otro servicio que puede ayudarnos con los procesos en segudo plano se llama Azure Logic Apps, el cual de una forma gráfica nos permite generar flujos de trabajo que se ejecutan en respuesta a eventos. Para poder verlo con otro ejemplo vamos a crear uno que se ejecute cada vez que subimos una nueva imagen de un héroes al contenedor `heroes` y que la convierta en algo un poquito más artístico para poder mostrarla en el apartado de Dashboard. Crea la Azure Logic App a través del portal de Azure y genera un flujo como el siguiente:
+
+<img src="images/Flujo de Azure Logic Apps contraido.png" />
+
+Y este es el mismo flujo con todos los detalles:
+
+<img src="images/Flujo de Azure Logic Apps con todos los detalles.png" />
+
+Esta utiliza un conector que necesita de una API Key para poder utilizarlo, para ello debes ir a la web de [cloudmersive y aplicar para el plan gratuito](https://cloudmersive.com/pricing-small-business).
+
+El resultado será como el siguiente:
+
+## Azure App Service WebJobs
+
+Por último, existe un servicio como parte de App Service que se llama WebJobs el cual nos permite también aprovechar el computo de nuestro plan para procesos en segundo plano.
+
+Otro de los problemas que tiene nuestra aplicación es que cada vez que renombramos un alter ego, no se actualiza el nombre de la imagen en el contenedor de Azure Storage. Para ello vamos a modificar la API para que en la operación PUT introduzca un mensaje en una cola de Azure Storage de la siguiente forma:
+
+```csharp
+        // PUT: api/Hero/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHero(int id, Hero hero)
+        {
+            if (id != hero.Id)
+            {
+                return BadRequest();
+            }
+            var oldHero = await _context.Heroes.FindAsync(id);
+            _context.Entry(oldHero).State = EntityState.Detached;
+
+
+            _context.Entry(hero).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                /*********** Background processs (We have to rename the image) *************/
+                if (hero.AlterEgo != oldHero.AlterEgo)
+                {
+                    // Get the connection string from app settings
+                    string connectionString = _configuration.GetConnectionString("AzureStorage");
+
+                    // Instantiate a QueueClient which will be used to create and manipulate the queue
+                    var queueClient = new QueueClient(connectionString, "alteregos");
+
+                    // Create a queue
+                    await queueClient.CreateIfNotExistsAsync();
+
+                    // Create a dynamic object to hold the message
+                    var message = new
+                    {
+                        oldName = oldHero.AlterEgo,
+                        newName = hero.AlterEgo
+                    };
+
+                    // Send the message
+                    await queueClient.SendMessageAsync(JsonSerializer.Serialize(message).ToString());
+
+                }
+                /*********** End Background processs *************/
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!HeroExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+```
+
+Por otro lado, tenemos una aplicación de consola que se encarga de escuchar esta cola de mensajes y que se encarga de renombrar la imagen en el contenedor de Azure Storage. 
+
+Para ello crea una nueva aplicación de consola con el siguiente comando:
+
+```bash
+cd ..
+mkdir QueueProcessor
+cd QueueProcessor
+dotnet new console 
+```
+
+El código de esta aplicación es el siguiente:
+
+```csharp
+using System;
+using System.Text.Json;
+using System.Threading;
+using Azure.Storage.Blobs;
+using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+
+
+Console.WriteLine("Hello to the QueueProcessor!");            
+
+var queueClient = new QueueClient(Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING"), "alteregos");
+
+queueClient.CreateIfNotExists();
+
+while (true)
+{
+   QueueMessage message = queueClient.ReceiveMessage();
+
+    if (message != null)
+                {
+                    Console.WriteLine($"Message received {message.Body}");
+
+                    var task = JsonSerializer.Deserialize<Task>(message.Body);
+
+                    Console.WriteLine($"Let's rename {task.oldName} to {task.newName}");
+
+                    if (task.oldName != null)
+                    {
+                        //Create a Blob service client
+                        var blobClient = new BlobServiceClient(Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING"));
+
+                        //Get container client
+                        BlobContainerClient container = blobClient.GetBlobContainerClient("alteregos");
+
+                        //Get blob with old name
+                        var oldFileName = $"{task.oldName.Replace(' ', '-').ToLower()}.png";
+                        Console.WriteLine($"Looking for {oldFileName}");
+                        var oldBlob = container.GetBlobClient(oldFileName);                        
+
+                        if (oldBlob.Exists())
+                        {
+                            Console.WriteLine("Found it!");
+                            var newFileName = $"{task.newName.Replace(' ', '-').ToLower()}.png";
+                            Console.WriteLine($"Renaming {oldFileName} to {newFileName}");
+
+                            //Create a new blob with the new name                            
+                            BlobClient newBlob = container.GetBlobClient(newFileName);
+
+                            //Copy the content of the old blob into the new blob
+                            newBlob.StartCopyFromUri(oldBlob.Uri);
+
+                            //Delete the old blob
+                            oldBlob.DeleteIfExists();
+
+                            //Delete message from the queue
+                            queueClient.DeleteMessage(message.MessageId,message.PopReceipt);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"There is no old image to rename.");
+                            Console.WriteLine($"Dismiss task.");
+                            //Delete message from the queue
+                            queueClient.DeleteMessage(message.MessageId, message.PopReceipt);
+                        }
+
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Bad message. Delete it");
+                        //Delete message from the queue
+                        queueClient.DeleteMessage(message.MessageId, message.PopReceipt);
+                        
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Let's wait 5 seconds");
+                    Thread.Sleep(5000);
+                }
+
+            }
+
+class Task
+{
+    public string oldName { get; set; }
+    public string newName { get; set; }
+}
+```
+
+Este lo que hace es que se queda escuchando una cola llamada alteregos que cuando recibe un mensaje, lo procesa y realiza una acción. En este caso, recibe un mensaje con el nombre de la imagen que queremos renombrar y el nuevo nombre que queremos que tenga. Si la imagen existe, la renombra y si no, no hace nada.
+
+```bash
+AZURE_STORAGE_CONNECTION_STRING="UseDevelopmentStorage=true" dotnet run
+```
