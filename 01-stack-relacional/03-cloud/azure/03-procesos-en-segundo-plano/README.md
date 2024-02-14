@@ -12,6 +12,7 @@ Puedes utilizar tanto la extensión de [Azurite para Visual Studio Code](https:/
 ```bash
 docker run \
 --name azurite \
+-d \
 -p 10000:10000 \
 -p 10001:10001 \
 mcr.microsoft.com/azure-storage/azurite
@@ -31,7 +32,7 @@ Para los alter egos:
 
 ```bash
 az storage blob upload-batch \
---destination heroes \
+--destination alteregos \
 --source 01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/assets/alteregos/png/. \
 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 ```
