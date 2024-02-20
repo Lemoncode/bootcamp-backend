@@ -71,7 +71,7 @@ builder.Services.AddOpenTelemetry()
     metrics.AddHttpClientInstrumentation();
     metrics.AddProcessInstrumentation();
     metrics.AddRuntimeInstrumentation();
-    // metrics.AddConsoleExporter();
+    metrics.AddConsoleExporter();
     
     // https://opentelemetry.io/docs/instrumentation/net/exporters/#prometheus-experimental
     metrics.AddPrometheusExporter();
