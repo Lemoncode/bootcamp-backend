@@ -28,7 +28,27 @@ Para recuperar ese valor debemos crear un recurso de Application Insights bien d
 
 ```bash
 RESOURCE_GROUP="tour-of-heroes"
-az monitor app-insights component create --app application-insights-name --resource-group resource-group-name --location location
+APP_NAME="tour-of-heroes"
+API_NAME="tour-of-heroes-api"
+
+# Create a Log Analytics workspace
+az monitor log-analytics workspace create \
+--resource-group $RESOURCE_GROUP \
+--workspace-name $APP_NAME-log-analytics \
+--location $LOCATION
+
+# Get Log Analytics workspace id
+LOG_ANALYTICS_WORKSPACE_ID=$(az monitor log-analytics workspace show \
+--resource-group $RESOURCE_GROUP \
+--workspace-name $APP_NAME-log-analytics \
+--query "id" -o tsv)
+
+# Create Application Insights
+az monitor app-insights component create \
+--app $API_NAME-insights --location $LOCATION \
+--kind web -g $RESOURCE_GROUP \
+--application-type web \
+--workspace $LOG_ANALYTICS_WORKSPACE_ID
 ```
 
 Y por otro lado hemos añadido al archivo `Program.cs` la siguiente línea:
