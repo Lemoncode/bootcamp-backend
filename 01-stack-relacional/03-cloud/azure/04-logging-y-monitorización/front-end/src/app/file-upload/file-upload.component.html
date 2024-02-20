@@ -1,0 +1,7 @@
+<div class="file-upload-wrapper">
+    <label class="custom-file-upload">
+        <input type="file" (change)="onImageChange($event)" />
+        Change image
+    </label>
+    <button [disabled]="imgName == '' ? true : null" (click)="upload()">Apply image</button>
+</div>
