@@ -1,0 +1,58 @@
+<!-- <div *ngIf="hero">
+    <h2>{{hero.name | uppercase}} Details</h2>
+    <div><span>id: </span>{{hero.id}}</div>
+    <div>
+        <label for="hero-name">Hero name: </label>
+        <input id="hero-name" [(ngModel)]="hero.name" placeholder="name">
+    </div>
+</div> -->
+<div id="features-wrapper">
+    <div class="container">
+        <div class="row" *ngIf="hero">
+            <div class="col-5 col-12-medium">
+                <!-- Box -->
+                <section class="box feature">
+                    <!-- <a routerLink="/detail/{{hero.id}}" class="image featured"><img src="assets/alteregos/{{hero.alterEgo | lowercase | replace: ' ':'-'}}.png" alt="" /></a> -->
+                    <a routerLink="/detail/{{hero.id}}" class="image featured"><img src="{{alterEgoPic}}" alt="" /></a>
+                    <!-- <div class="inner">
+                        <header>
+                            <h2>{{hero.alterEgo}}</h2>
+                            <p>{{hero.ocuppation || "Occupation unknown"}}</p>
+                        </header>
+                        <p>{{hero.description}}</p>
+                    </div> -->
+                    <app-file-upload [hero]="hero" (messageEvent)="receiveMessage($event)"></app-file-upload>
+                </section>
+            </div>
+            <div class="col-7">
+                <form>
+                    <div class="form-group">
+                        <label for="hero-name">
+                            <input id="hero-name" [(ngModel)]="hero.name" [ngModelOptions]="{standalone: true}"
+                                placeholder="Name">
+                            <span>Hero name</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="hero-name">
+                            <input id="hero-name" [(ngModel)]="hero.alterEgo" [ngModelOptions]="{standalone: true}"
+                                placeholder="Alter ego">
+                            <span>Alter ego</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="hero-name">
+                            <textarea id="hero-description" [(ngModel)]="hero.description"
+                                [ngModelOptions]="{standalone: true}" placeholder="Description"></textarea>
+                            <span>Description</span>
+                        </label>
+                    </div>
+                    <div class="buttons">
+                        <button (click)="save()">Save</button>
+                        <button (click)="goBack()">Go back</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

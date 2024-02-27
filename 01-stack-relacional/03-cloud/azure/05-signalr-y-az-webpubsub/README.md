@@ -26,26 +26,25 @@ Para ejecutar todo esto, sigue los siguientes pasos:
 docker start sqlserver azurite
 ```
 
-3. Accede al directorio llamado `signalr-api` y ejecuta el siguiente comando para levantar la API:
+3. Ejecuta el siguiente comando para levantar la API de SignalR:
 
 ```bash
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/signalr/signalr-api
 dotnet run --urls=https://localhost:7238
 ```
 
-4. Accede al directorio llamado `back-end` y ejecuta el siguiente comando para levantar la API:
+4. Ejecuta el siguiente comando para levantar la API:
 
 ```bash
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/signalr/back-end
 dotnet run --urls=https://localhost:5001
 ```
 
-5. Abre una nueva terminal y navega hasta el directorio `signalr`.
-6. Accede al directorio llamado `front-end` y ejecuta el siguiente comando para levantar la aplicación web:
+5. Ejecuta el siguiente comando para levantar la aplicación web:
 
 ```bash
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/signalr/front-end
-npm start
+npm install && npm start
 ```
 
 Con todo levantado te darás cuenta de que ahora en la parte inferior de nuestra aplicación podemos ver ciertos mensajes indicando el Id de la conexión del usuario que está generando estos cambios. Esto es gracias a SignalR.
@@ -188,3 +187,27 @@ Para que puedas probar Azure Web PubSub hemos dejado dentro del directorio `webp
 - `front-end`: nuestra queria aplicación web en Angular con nuestros Tour of Heroes.
 - `back-end`: nuestra API en .NET Core que nos permite gestionar los héroes.
 - `webpubsub-az-func`: Para este ejemplo he implementado las llamadas que necesito para este servicio utilizanod Azure Functions y Node.js para que veas que no necesitas .NET para utilizar este servicio.
+
+Para arrancar todo esto, sigue los siguientes pasos:
+
+1. Ejecuta el siguiente comando para levantar el proyecto de Azure Functions para Web PubSub:
+
+```bash
+cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/webpubsub/webpubsub-az-func
+npm install
+func start
+```
+
+4. Ejecuta el siguiente comando para levantar la API:
+
+```bash
+cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/webpubsub/back-end
+dotnet run --urls=https://localhost:5001
+```
+
+5. Ejecuta el siguiente comando para levantar la aplicación web:
+
+```bash
+cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/webpubsub/front-end
+npm install && npm start
+```
