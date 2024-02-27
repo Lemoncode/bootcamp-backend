@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WebPubSubConnectionString": "Endpoint=https://lastheroes.webpubsub.azure.com;AccessKey=4QVaD9aCqN/VToa5PNgRsH+v8jWlASadZqNwMwxa8pU=;Version=1.0;"
+  },
+  "Host": {
+    "CORS": "*"
+  }
+}

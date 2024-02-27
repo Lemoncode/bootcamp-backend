@@ -30,6 +30,7 @@ Para recuperar ese valor debemos crear un recurso de Application Insights bien d
 RESOURCE_GROUP="tour-of-heroes"
 APP_NAME="tour-of-heroes"
 API_NAME="tour-of-heroes-api"
+LOCATION="westeurope"
 
 # Create a Log Analytics workspace
 az monitor log-analytics workspace create \
@@ -66,8 +67,7 @@ Solo con esto ya tenemos nuestra aplicación monitorizada. Si queremos ver los d
 Desde el punto de vista del frontal web hemos tenido que instalar estos dos paquetes de npm:
 
 ```bash
-npm install @microsoft/applicationinsights-web
-@microsoft/applicationinsights-angularplugin-js
+npm install @microsoft/applicationinsights-web @microsoft/applicationinsights-angularplugin-js
 ```
 Y modificar el archivo `app.module.ts` para añadir la siguiente configuración:
 
