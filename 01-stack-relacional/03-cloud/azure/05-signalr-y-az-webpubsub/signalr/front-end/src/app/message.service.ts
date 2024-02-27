@@ -33,11 +33,11 @@ export class MessageService {
 
   add(message: string) {
     // this.messages.push(message);
-    this.connection!.invoke('Send', message);
+    this.connection!.invoke('SendToTheServer', message);
   }
 
   receiveMessage() {
-    this.connection!.on('Send', (message, important) => {
+    this.connection!.on('SendToTheClient', (message, important) => {
 
       console.log(`Received message: ${message}`);
       console.log(`Received important: ${important}`);

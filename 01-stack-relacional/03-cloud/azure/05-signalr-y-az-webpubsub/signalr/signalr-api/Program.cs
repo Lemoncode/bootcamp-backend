@@ -9,8 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 //Add SignalR
-builder.Services.AddSignalR();
-// builder.Services.AddSignalR().AddAzureSignalR();
+// builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddAzureSignalR();
 
 //Configure CORS
 builder.Services.AddCors(options =>
