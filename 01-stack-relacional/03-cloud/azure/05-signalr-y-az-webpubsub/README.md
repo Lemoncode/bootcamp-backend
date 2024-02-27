@@ -211,3 +211,5 @@ dotnet run --urls=https://localhost:5001
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/webpubsub/front-end
 npm install && npm start
 ```
+
+Con todo levantado, podrás ver que la aplicación web sigue funcionando como antes, pero ahora con Azure Web PubSub. En este ejemplo mientras que navegas por la web te irá dando el tiempo ☀️.
