@@ -15,7 +15,18 @@ export class MessageService {
       console.log(`url: ${url.url}`);
       this.ws = new WebSocket(url.url,"json.webpubsub.azure.v1");
 
-      this.ws.onopen = () => console.log('connected');
+      this.ws.onopen = () => {
+        console.log('connection opened');
+
+        this.ws!.send(JSON.stringify(
+          {
+            from: 'me',
+            type: 'joinGroup',
+            group: 'group1',
+          }
+        ));
+        
+      }
 
       this.ws.onclose = e => console.log(`connection closed (${e.code})`);
 
@@ -42,6 +53,7 @@ export class MessageService {
           type: 'sendToGroup',
           dataType: 'text',
           group: 'group1',
+          noEcho: false,
           data: message,
         }
       ));
