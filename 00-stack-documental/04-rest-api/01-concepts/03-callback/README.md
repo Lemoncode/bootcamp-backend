@@ -20,7 +20,7 @@ And try to read it using `fs`:
 _./index.mjs_
 
 ```javascript
-import fs from "fs";
+import fs from "node:fs";
 
 fs.readFile("./file.txt", { encoding: "utf-8" }, (error, data) => {
   if (error) {

@@ -11,15 +11,12 @@ Let's update previous example to work with async/await:
 _./index.mjs_
 
 ```diff
-import fs from "fs";
-import { promisify } from "util";
+import fs from "node:fs/promises";
 
-const readFile = promisify(fs.readFile);
-
-- readFile("./file.txt", { encoding: "utf-8" })
+- fs.readFile("./file.txt", { encoding: "utf-8" })
 -   .then((data) => {
 -     console.log(data);
--     return readFile("./file.txt", { encoding: "utf-8" });
+-     return fs.readFile("./file.txt", { encoding: "utf-8" });
 -   })
 -   .then((data2) => {
 -     console.log("Executing after");
@@ -31,10 +28,10 @@ const readFile = promisify(fs.readFile);
 
 
 + try {
-+   const data = await readFile("./file.txt", { encoding: "utf-8" });
++   const data = await fs.readFile("./file.txt", { encoding: "utf-8" });
 +   console.log(data);
 +   console.log("Executing after");
-+   const data2 = await readFile("./file.txt", { encoding: "utf-8" });
++   const data2 = await fs.readFile("./file.txt", { encoding: "utf-8" });
 +   console.log(data2);
 + } catch (error) {
 +   console.error(error);
