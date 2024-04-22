@@ -1,4 +1,4 @@
-import http from "http";
+import http from "node:http";
 import {
   getBookList,
   getBook,
@@ -31,9 +31,8 @@ const handleRequest = (req, res) => {
         res.end();
       });
     }
-  } else if (/\/api\/books\/\d$/.test(url)) {
-    const [, bookIdString] = url.match(/\/api\/books\/(\d)$/);
-    const bookId = Number(bookIdString);
+  } else if (url.startsWith("/api/books/")) {
+    const bookId = Number(url.split("/")[3]);
     if (method === "GET") {
       res.setHeader("Content-Type", "application/json");
       res.statusCode = 200;

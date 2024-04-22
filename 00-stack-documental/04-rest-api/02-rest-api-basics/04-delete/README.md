@@ -11,7 +11,7 @@ Finally, we could implement the method to delete a discontinued book:
 _./index.mjs_
 
 ```diff
-import http from "http";
+import http from "node:http";
 import {
   getBookList,
   getBook,

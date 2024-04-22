@@ -19,7 +19,7 @@ As administrator we want:
 
 So, we need mix the minimum `URLs` and `HTTP methods` to identify the resource and the action, that is:
 
-- `/books`: for [1] y [3]
+- `/books`: for [1] and [3]
 - `/books/:id`: for [2], [4] and [5]
 
 Create simple server as start up point:
@@ -27,7 +27,7 @@ Create simple server as start up point:
 _./index.mjs_
 
 ```javascript
-import http from "http";
+import http from "node:http";
 
 const handleRequest = (req, res) => {
   res.write("My awesome books portal");
@@ -55,7 +55,7 @@ Let's define the first route to expose the current book list:
 _./index.mjs_
 
 ```diff
-import http from "http";
+import http from "node:http";
 + import { getBookList } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
@@ -117,7 +117,7 @@ Let's implement now the next query to get the book details:
 _./index.mjs_
 
 ```diff
-import http from "http";
+import http from "node:http";
 - import { getBookList } from "./mock-db.mjs";
 + import { getBookList, getBook } from "./mock-db.mjs";
 
@@ -128,8 +128,8 @@ const handleRequest = (req, res) => {
     res.statusCode = 200;
     res.write(JSON.stringify(getBookList()));
     res.end();
-+ } else if (/\/api\/books\/\d$/.test(url) && method === "GET") {
-+   const [, bookId] = url.match(/\/api\/books\/(\d)$/);
++ } else if (url.startsWith("/api/books/") && method === "GET") {
++   const bookId = url.split("/")[3];
 +   res.setHeader("Content-Type", "application/json");
 +   res.statusCode = 200;
 +   const book = getBook(Number(bookId));
@@ -144,7 +144,7 @@ const handleRequest = (req, res) => {
 
 ```
 
-> [Regex match method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+> [startsWith method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith)
 
 Run app:
 

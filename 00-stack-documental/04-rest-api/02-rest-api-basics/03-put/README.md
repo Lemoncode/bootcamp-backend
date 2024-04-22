@@ -11,17 +11,16 @@ Now, we can implement the route for update existing book. We could apply same co
 _./index.mjs_
 
 ```diff
-import http from "http";
+import http from "node:http";
 - import { getBookList, getBook, insertBook } from "./mock-db.mjs";
 + import { getBookList, getBook, insertBook, updateBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
 ...
-- } else if (/\/api\/books\/\d$/.test(url) && method === "GET") {
--   const [, bookId] = url.match(/\/api\/books\/(\d)$/);
-+ } else if (/\/api\/books\/\d$/.test(url)) {
-+   const [, bookIdString] = url.match(/\/api\/books\/(\d)$/);
-+   const bookId = Number(bookIdString);
+- } else if (url.startsWith("/api/books/") && method === "GET") {
+-   const bookId = url.split("/")[3];
++ } else if (url.startsWith("/api/books/")) {
++   const bookId = Number(url.split("/")[3]);
 +   if (method === "GET") {
       res.setHeader("Content-Type", "application/json");
       res.statusCode = 200;
