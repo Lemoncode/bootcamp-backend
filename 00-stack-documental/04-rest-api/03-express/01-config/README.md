@@ -46,20 +46,12 @@ _./package.json_
 
 ```diff
 {
-  "name": "01-config",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  ...
   "scripts": {
 -   "test": "echo \"Error: no test specified\" && exit 1"
-+   "start": "node src/index"
++   "start": "node src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.1"
-  }
+  ...
 }
 ```
 
@@ -120,15 +112,15 @@ npm start
 
 ```
 
-Previously, we were using some tools like [nodemon](https://github.com/remy/nodemon) to restart the server each time, now we can use the new [watch](https://nodejs.org/dist/latest-v18.x/docs/api/all.html#all_cli_--watch) flag (it's still in Experimental status):
+Previously, we were using some tools like [nodemon](https://github.com/remy/nodemon) to restart the server each time, now we can use the new [watch](https://nodejs.org/docs/latest-v22.x/api/cli.html#--watch) flag (it's a stable flag since v22):
 
 _./package.json_
 
 ```diff
 ...
   "scripts": {
--   "start": "node src/index"
-+   "start": "node --watch src/index"
+-   "start": "node src/index.js"
++   "start": "node --watch src/index.js"
   },
 ...
 ```
@@ -140,41 +132,12 @@ npm start
 
 ```
 
-Using the experimental `watch` flag is not the best option, because it's not ready at all and it could cause some extra re-builds, so we will use `nodemon`:
-
-```bash
-npm install nodemon --save-dev
-
-```
-
-Update `package.json`:
-
-_./package.json_
-
-```diff
-...
-  "scripts": {
--   "start": "node --watch src/index"
-+   "start": "nodemon src/index"
-  },
-...
-```
-
-Run app:
-
-```bash
-npm start
-
-```
-
-Now, `Nodejs >= 18` provides a lot of ES "new" features (even [import alias](https://nodejs.org/api/packages.html#imports)), that's why, we will not install [babel](https://github.com/babel/babel) this time.
+Now, the latest versions of Nodejs provide a lot of new ES features (even [import alias](https://nodejs.org/api/packages.html#imports)), that's why, we will not install [babel](https://github.com/babel/babel) this time.
 
 Let's install necessary dev libraries:
 
 - [typescript](https://github.com/microsoft/TypeScript): adds optional types to Javascript that helps you detects early errors.
-
-- [ts-node](https://github.com/TypeStrong/ts-node): to use nodemon with Typescript.
-
+- [tsx](https://www.npmjs.com/package/tsx): to run Typescript in Node.js in dev mode.
 - [npm-run-all](https://github.com/mysticatea/npm-run-all): is a tool that helps you run multiple npm scripts commands in parallel
 
 ```bash
@@ -190,7 +153,7 @@ _./tsconfig.json_
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -214,8 +177,8 @@ _./package.json_
 ...
   "scripts": {
 +   "start": "run-p -l type-check:watch start:dev",
--   "start": "nodemon src/index"
-+   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+-   "start": "node --watch src/index.js"
++   "start:dev": "tsx --watch src/index.ts",
 +   "type-check": "tsc --noEmit --preserveWatchOutput",
 +   "type-check:watch": "npm run type-check -- --watch"
   },
