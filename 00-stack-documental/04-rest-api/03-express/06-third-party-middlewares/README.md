@@ -86,11 +86,14 @@ Finally, create the start command:
 _./front/package.json_
 
 ```diff
-...
-  "scripts": {
--   "test": "echo \"Error: no test specified\" && exit 1"
+{
++ "scripts": {
 +   "start": "lite-server -c lite-server.config.json"
-  },
++ },
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
 ```
 
 Let's runs both servers (run back in `debug` mode):
@@ -132,7 +135,7 @@ const app = express();
 app.use(express.json());
 + app.use(
 +   cors({
-+     methods: "GET",
++     methods: ["GET"],
 +     origin: "http://localhost:8080",
 +   })
 + );
@@ -151,126 +154,6 @@ npm start
 
 cd front/
 npm start
-
-```
-
-If we need for example send some headers or cookies with authorization token, we need to enable `credentials` mode:
-
-```bash
-cd back/
-npm install cookie-parser --save
-npm install @types/cookie-parser --save-dev
-
-```
-
-Configure it:
-
-_./back/src/books.api.ts_
-
-```diff
-import express from "express";
-+ import cookieParser from "cookie-parser";
-import cors from "cors";
-import path from "path";
-import url from "url";
-import { booksApi } from "./books.api.js";
-
-const app = express();
-app.use(express.json());
-+ app.use(cookieParser());
-app.use(
-  cors({
-    methods: "GET",
-    origin: "http://localhost:8080",
-  })
-);
-...
-```
-
-Adding a `cross-site` cookie
-
-_./back/src/books.api.ts_
-
-```diff
-...
-  .get('/:id', async (req, res) => {
-    const { id } = req.params;
-    const bookId = Number(id);
-    const book = await getBook(bookId);
-+   res.cookie("my-cookie", "my-token", {
-+     sameSite: "none",
-+     secure: true, // necessary for sameSite: "none"
-+   });
-    res.send(book);
-  })
-...
-```
-
-Run app:
-
-```bash
-cd back/
-npm start
-
-cd front/
-npm start
-
-```
-
-Now, we can see the header `Set-Cookie` in the `Response Headers` section but the browser does not includes this cookie in the storage.
-
-Let's update the frontend code:
-
-_./front/app.js_
-
-```diff
-console.log("Running front app");
-
-- fetch("http://localhost:3000/api/books/2")
-+ fetch("http://localhost:3000/api/books/2", {
-+   credentials: "include",
-+ })
-  .then((response) => {
-    return response.json();
-  })
-  .then((book) => {
-    console.log({ book });
-  });
-
-```
-
-> [Official docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials)
-
-Let's runs both servers:
-
-```bash
-cd back/
-npm start
-
-cd front/
-npm start
-
-```
-
-As we see, this configuration has to be enable on backend too:
-
-_./back/src/index.ts_
-
-```diff
-...
-
-const app = express();
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    methods: "GET",
-    origin: "http://localhost:8080",
-+   credentials: true,
-  })
-);
-
-...
 
 ```
 
