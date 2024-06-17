@@ -1,22 +1,18 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
-import url from "url";
+import path from "node:path";
 import { booksApi } from "./books.api.js";
 
 const app = express();
 app.use(express.json());
 app.use(
   cors({
-    methods: "GET",
+    methods: ["GET"],
     origin: "http://localhost:8080",
-    credentials: true,
   })
 );
 
-// TODO: Feed env variable in production
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-app.use("/", express.static(path.resolve(__dirname, "../public")));
+app.use("/", express.static(path.resolve(import.meta.dirname, "../public")));
 
 app.use(async (req, res, next) => {
   console.log(req.url);

@@ -21,7 +21,6 @@ booksApi
         const endIndex = Math.min(startIndex + pageSize, bookList.length);
         bookList = bookList.slice(startIndex, endIndex);
       }
-
       res.send(bookList);
     } catch (error) {
       next(error);
