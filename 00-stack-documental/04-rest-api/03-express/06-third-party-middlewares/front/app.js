@@ -1,8 +1,6 @@
-console.log("Running front app");
+console.log('Running front app');
 
-fetch("http://localhost:3000/api/books/2", {
-  credentials: "include",
-})
+fetch('http://localhost:3000/api/books/2')
   .then((response) => {
     return response.json();
   })

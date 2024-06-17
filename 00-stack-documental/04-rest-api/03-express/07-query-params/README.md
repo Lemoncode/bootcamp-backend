@@ -58,12 +58,10 @@ npm start
 Let's try some urls:
 
 ```
+http://localhost:3000/api/books
 http://localhost:3000/api/books?page=1&pageSize=5
 http://localhost:3000/api/books?page=2&pageSize=5
 http://localhost:3000/api/books?page=3&pageSize=5
-
-http://localhost:3000/api/books?page=1&pageSize=3
-http://localhost:3000/api/books?page=2&pageSize=3
 http://localhost:3000/api/books?page=3&pageSize=3
 
 ```
