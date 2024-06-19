@@ -38,9 +38,12 @@ export const mockRepository: BookRepository = {
     paginateBookList(db.books, page, pageSize),
   getBook: async (id: string) => db.books.find((b) => b.id === id),
   saveBook: async (book: Book) =>
-    Boolean(book.id) ? updateBook(book) : insertBook(book),
+    db.books.some((b) => b.id === book.id)
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
+    const exists = db.books.some((b) => b.id === id);
     db.books = db.books.filter((b) => b.id !== id);
-    return true;
+    return exists;
   },
 };
