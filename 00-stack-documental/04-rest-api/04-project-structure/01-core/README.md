@@ -56,7 +56,7 @@ import express from "express";
 - import cors from "cors";
 import path from "node:path";
 + import { createRestApiServer } from "./core/servers/index.js";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 
 - const app = express();
 + const app = createRestApiServer();
@@ -132,7 +132,7 @@ import express from "express";
 import path from "node:path";
 import { createRestApiServer } from "./core/servers/index.js";
 + import { ENV } from "./core/constants/index.js";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 
 const app = createRestApiServer();
 

@@ -2,7 +2,7 @@ import express from "express";
 import path from "node:path";
 import { createRestApiServer } from "#core/servers/index.js";
 import { ENV } from "#core/constants/index.js";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 
 const app = createRestApiServer();
 
@@ -16,7 +16,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.use("/api/books", booksApi);
+app.use("/api/books", bookApi);
 
 app.use(async (error, req, res, next) => {
   console.error(error);

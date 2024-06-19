@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "node:path";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 
 const app = express();
 app.use(express.json());
@@ -19,7 +19,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.use("/api/books", booksApi);
+app.use("/api/books", bookApi);
 
 app.use(async (error, req, res, next) => {
   console.error(error);

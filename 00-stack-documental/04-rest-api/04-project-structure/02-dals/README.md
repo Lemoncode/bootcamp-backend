@@ -262,7 +262,7 @@ _./src/dals/index.ts_
 export * from "./book/index.js";
 ```
 
-_./src/books.api.ts_
+_./src/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -275,9 +275,9 @@ import {
   deleteBook,
 } from "./mock-db.js";
 
-export const booksApi = Router();
+export const bookApi = Router();
 
-booksApi
+bookApi
   .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
@@ -329,12 +329,12 @@ import path from "node:path";
 + import { createRestApiServer } from "#core/servers/index.js";
 - import { ENV } from "./core/constants/index.js";
 + import { ENV } from "#core/constants/index.js";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 ...
 
 ```
 
-_./src/books.api.ts_
+_./src/book.api.ts_
 
 ```diff
 import { Router } from "express";
