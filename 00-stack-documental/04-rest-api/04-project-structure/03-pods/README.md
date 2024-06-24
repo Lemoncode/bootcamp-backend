@@ -39,7 +39,7 @@ _./src/pods/book/book.mappers.ts_
 import * as model from "#dals/index.js";
 import * as apiModel from "./book.api-model.js";
 
-const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
+export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
   id: book.id,
   title: book.title,
   releaseDate: book.releaseDate?.toISOString(),
@@ -53,9 +53,9 @@ export const mapBookListFromModelToApi = (
 
 > [Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
 
-Let's implement the `rest-api`, move `./src/books.api.ts` -> `./src/pods/book/book.rest-api.ts`:
+Let's implement the `rest-api`, move `./src/book.api.ts` -> `./src/pods/book/book.api.ts`:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -69,9 +69,9 @@ import {
 - } from "./mock-db.js";
 + } from "../../mock-db.js";
 
-export const booksApi = Router();
+export const bookApi = Router();
 
-booksApi
+bookApi
   .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
@@ -88,10 +88,8 @@ booksApi
     } catch (error) {
       next(error);
     }
-
-...
-
-
+  })
+  ...
 ```
 
 Add barrel file:
@@ -99,7 +97,7 @@ Add barrel file:
 _./src/pods/book/index.ts_
 
 ```typescript
-export * from "./book.rest-api.js";
+export * from "./book.api.js";
 ```
 
 Update index:
@@ -113,8 +111,8 @@ import path from "path";
 import url from "url";
 import { createRestApiServer } from "#core/servers/index.js";
 import { envConstants } from "#core/constants/index.js";
-- import { booksApi } from "./books.api.js";
-+ import { booksApi } from "#pods/book/index.js";
+- import { bookApi } from "./book.api.js";
++ import { bookApi } from "#pods/book/index.js";
 
 ...
 
@@ -122,24 +120,9 @@ import { envConstants } from "#core/constants/index.js";
 
 Check Get list endpoint `http://localhost:3000/api/books`.
 
-Let's export single entity mapper:
-
-_./src/pods/book/book.mappers.ts_
-
-```diff
-...
-
-- const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
-+ export const mapBookFromModelToApi = (book: model.Book): apiModel.Book => ({
-  id: book.id,
-  title: book.title,
-...
-
-```
-
 Update `get by id` method:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -194,7 +177,7 @@ export const mapBookListFromModelToApi = (
 
 Update `post` method:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -239,7 +222,7 @@ BODY:
 
 Update `put` method:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -251,8 +234,8 @@ import {
 } from "./book.mappers.js";
 - import { updateBook, deleteBook } from "../../mock-db.js";
 + import { deleteBook } from "../../mock-db.js";
-
 ...
+
 - .put("/:id", async (req, res) => {
 + .put("/:id", async (req, res, next) => {
 +   try {
@@ -267,7 +250,7 @@ import {
 +     next(error);
 +   }
   })
-...
+  ...
 ```
 
 Running put method:
@@ -285,7 +268,7 @@ BODY:
 
 Update `delete` method:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -322,14 +305,31 @@ METHOD: DELETE
 
 Now, we could delete `./src/mock-db.ts` file.
 
-A nice improvement is move the pagination functionality to a mock data `helpers` in `book.mock-repository` file:
+A nice improvement is move the pagination functionality to each repository:
+
+Update contract:
+
+_./src/dals/book/repositories/book.repository.ts_
+
+```diff
+import { Book } from "../book.model.js";
+
+export interface BookRepository {
+- getBookList: () => Promise<Book[]>;
++ getBookList: (page?: number, pageSize?: number) => Promise<Book[]>;
+  getBook: (id: string) => Promise<Book>;
+  saveBook: (book: Book) => Promise<Book>;
+  deleteBook: (id: string) => Promise<boolean>;
+}
+
+```
 
 _./src/dals/book/repositories/book.mock-repository.ts_
 
 ```diff
 ...
 const updateBook = (book: Book) => {
-  db.books = db.books.map((b) => (b.id === book.id ? { ...b, ...book } : b));
+  db.books = db.book.map((b) => (b.id === book.id ? { ...b, ...book } : b));
   return book;
 };
 
@@ -352,73 +352,44 @@ export const mockRepository: BookRepository = {
 - getBookList: async () => db.books,
 + getBookList: async (page?: number, pageSize?: number) =>
 +   paginateBookList(db.books, page, pageSize),
-  getBook: async (id: string) => db.books.find((b) => b.id === id),
+  getBook: async (id: string) => db.book.find((b) => b.id === id),
   saveBook: async (book: Book) =>
     Boolean(book.id) ? updateBook(book) : insertBook(book),
   deleteBook: async (id: string) => {
-    db.books = db.books.filter((b) => b.id !== id);
+    db.books = db.book.filter((b) => b.id !== id);
     return true;
   },
 };
 
 ```
 
-Update contract:
+Update mongodb repository:
 
-_./src/dals/book/repositories/book.repository.ts_
-
-```diff
-import { Book } from "../book.model.js";
-
-export interface BookRepository {
-- getBookList: () => Promise<Book[]>;
-+ getBookList: (page?: number, pageSize?: number) => Promise<Book[]>;
-  getBook: (id: string) => Promise<Book>;
-  saveBook: (book: Book) => Promise<Book>;
-  deleteBook: (id: string) => Promise<boolean>;
-}
-
-```
-
-Update db repository:
-
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 ...
-
-export const dbRepository: BookRepository = {
+export const mongoDBRepository: BookRepository = {
 - getBookList: async () => {
 + getBookList: async (page?: number, pageSize?: number) => {
     throw new Error('Not implemented');
   },
-  getBook: async (id: string) => {
-    throw new Error('Not implemented');
-  },
-  saveBook: async (book: Book) => {
-    throw new Error('Not implemented');
-  },
-  deleteBook: async (id: string) => {
-    throw new Error('Not implemented');
-  },
-};
-
+...
 ```
 
 Update api:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 ...
-booksApi
-  .get('/', async (req, res, next) => {
+bookApi
+  .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
 -     let bookList = await bookRepository.getBookList();
 +     const bookList = await bookRepository.getBookList(page, pageSize);
-
 -     if (page && pageSize) {
 -       const startIndex = (page - 1) * pageSize;
 -       const endIndex = Math.min(startIndex + pageSize, bookList.length);

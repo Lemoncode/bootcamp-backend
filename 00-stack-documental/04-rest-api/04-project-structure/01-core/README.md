@@ -24,17 +24,16 @@ import express from "express";
 import cors from "cors";
 
 export const createRestApiServer = () => {
-  const restApiServer = express();
-  restApiServer.use(express.json());
-  restApiServer.use(
+  const app = express();
+  app.use(express.json());
+  app.use(
     cors({
-      methods: "GET",
+      methods: ["GET"],
       origin: "http://localhost:8080",
-      credentials: true,
     })
   );
 
-  return restApiServer;
+  return app;
 };
 
 ```
@@ -55,59 +54,34 @@ _./src/index.ts_
 ```diff
 import express from "express";
 - import cors from "cors";
-import path from "path";
-import url from "url";
+import path from "node:path";
 + import { createRestApiServer } from "./core/servers/index.js";
-import { booksApi } from "./books.api.js";
+import { bookApi } from "./book.api.js";
 
 - const app = express();
++ const app = createRestApiServer();
 - app.use(express.json());
 - app.use(
 -   cors({
--     methods: "GET",
+-     methods: ["GET"],
 -     origin: "http://localhost:8080",
--     credentials: true,
 -   })
 - );
-+ const restApiServer = createRestApiServer();
 
-// TODO: Feed env variable in production
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-- app.use("/", express.static(path.resolve(__dirname, "../public")));
-+ restApiServer.use("/", express.static(path.resolve(__dirname, "../public")));
-
-- app.use(async (req, res, next) => {
-+ restApiServer.use(async (req, res, next) => {
-  console.log(req.url);
-  next();
-});
-
-- app.use("/api/books", booksApi);
-+ restApiServer.use("/api/books", booksApi);
-
-- app.use(async (error, req, res, next) => {
-+ restApiServer.use(async (error, req, res, next) => {
-  console.error(error);
-  res.sendStatus(500);
-});
-
-- app.listen(3000, () => {
-+ restApiServer.listen(3000, () => {
-  console.log("Server ready at port 3000");
-});
+...
 
 ```
 
 Another important improvement, it's use environment variables in our code. These are a common used mechanism to provide different values in different environment like `production`, `development`, etc.
-In a `nodejs` process, we are getting all env variables from [process.env](https://nodejs.org/dist/latest-v8.x/docs/api/process.html#process_process_env):
+In a `nodejs` process, we are getting all env variables from [process.env](https://nodejs.org/docs/latest/api/all.html#all_process_processenv):
 
 _./src/core/constants/env.constants.ts_
 
 ```typescript
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
-  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH, 
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === "production",
+  PORT: Number(process.env.PORT),
+  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
 };
@@ -130,22 +104,21 @@ _./src/core/servers/rest-api.server.ts_
 ```diff
 import express from "express";
 import cors from "cors";
-+ import { envConstants } from "../constants/index.js";
++ import { ENV } from "../constants/index.js";
 
 export const createRestApiServer = () => {
-  const restApiServer = express();
-  restApiServer.use(express.json());
-  restApiServer.use(
+  const app = express();
+  app.use(express.json());
+  app.use(
     cors({
--     methods: "GET",
-+     methods: envConstants.CORS_METHODS,
+-     methods: ["GET"],
++     methods: ENV.CORS_METHODS,
 -     origin: "http://localhost:8080",
-+     origin: envConstants.CORS_ORIGIN,
-      credentials: true,
++     origin: ENV.CORS_ORIGIN,
     })
   );
 
-  return restApiServer;
+  return app;
 };
 
 ```
@@ -156,42 +129,30 @@ _./src/index.ts_
 
 ```diff
 import express from "express";
-import path from "path";
-import url from "url";
+import path from "node:path";
 import { createRestApiServer } from "./core/servers/index.js";
-+ import { envConstants } from "./core/constants/index.js";
-import { booksApi } from "./books.api.js";
++ import { ENV } from "./core/constants/index.js";
+import { bookApi } from "./book.api.js";
 
-const restApiServer = createRestApiServer();
+const app = createRestApiServer();
 
-- // TODO: Feed env variable in production
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-- restApiServer.use("/", express.static(path.resolve(__dirname, "../public")));
-+ const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
-+ restApiServer.use("/", express.static(staticFilesPath));
+app.use(
+  "/",
+- express.static(path.resolve(import.meta.dirname, "../public")
++ express.static(path.resolve(import.meta.dirname, ENV.STATIC_FILES_PATH))
+);
 
 ...
 
-- restApiServer.listen(3000, () => {
-+ restApiServer.listen(envConstants.PORT, () => {
-- console.log("Server ready at port 3000");
-+ console.log(`Server ready at port ${envConstants.PORT}`);
-});
+- app.listen(3000, () => {
++ app.listen(ENV.PORT, () => {
+-   console.log("Server ready at port 3000");
++   console.log(`Server ready at port ${ENV.PORT}`);
+  });
 
 ```
 
 > NOTE: We assume that we are always getting static files path from `index` location. Thats why we use `../public` in env variable and `path.resolve` from `__dirname`.
-
-How to set this `env variables`? It depends on each OS:
-
-- Windows: `set PORT=3000`
-- Linux or Mac: `export PORT=3000`
-
-We will use [dotenv](https://github.com/motdotla/dotenv) library to be OS agnostic:
-
-```bash
-npm install dotenv --save
-```
 
 Define `.env` file:
 
@@ -205,6 +166,12 @@ CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
 ```
 
+How to read this `env` file? `Node.js` has an experimental flag [--env-file](https://nodejs.org/docs/latest/api/all.html#all_cli_--env-fileconfig) to consume env variables from a file. Meanwhile, we can use [dotenv](https://www.npmjs.com/package/dotenv) library that is OS agnostic:
+
+```bash
+npm install dotenv --save-dev
+```
+
 We need preload all these env variables before running the app:
 
 _./package.json_
@@ -212,11 +179,11 @@ _./package.json_
 ```diff
 ...
   "scripts": {
-    ...
--   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
-+   "start:dev": "nodemon -r dotenv/config --transpileOnly --esm src/index.ts",
-    ...
-  },
+    "start": "run-p -l type-check:watch start:dev",
+-   "start:dev": "tsx --watch src/index.ts",
++   "start:dev": "tsx --require dotenv/config --watch src/index.ts",
+   ...
+
 ```
 
 > [Using preload option](https://github.com/motdotla/dotenv#preload)
@@ -224,50 +191,6 @@ _./package.json_
 ```bash
 npm start
 ```
-
-Another approach is load config script from code, it's a nice way to provide [config's options](https://github.com/motdotla/dotenv#options). Move to production dependencies:
-
-Restore script:
-
-_./package.json_
-
-```diff
-...
-  "scripts": {
-    ...
--   "start:dev": "nodemon -r dotenv/config --transpileOnly --esm src/index.ts",
-+   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
-    ...
-  },
-```
-
-> [Using from code](https://github.com/motdotla/dotenv#usage)
-
-Add file to load env variables:
-
-_./src/core/load-env.ts_
-
-```typescript
-import { config } from "dotenv";
-config();
-
-```
-
-Update `index.ts` file, this import should be the first one in your code:
-
-_./src/index.ts_
-
-```diff
-+ import "./core/load-env.js";
-import express from "express";
-import path from "path";
-...
-
-```
-
-> NOTE: It does not work if we write the load-env code in the `index.ts` file due to how the ES modules import works.
->
-> [More info here](https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import)
 
 Finally, we should `ignore` the `.env` file to avoid conflicts with production environments because if we upload this file, we will overwrite production values with these ones.
 

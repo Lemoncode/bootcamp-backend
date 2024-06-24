@@ -6,15 +6,14 @@ import {
   mapBookFromApiToModel,
 } from "./book.mappers.js";
 
-export const booksApi = Router();
+export const bookApi = Router();
 
-booksApi
+bookApi
   .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList(page, pageSize);
-
       res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
