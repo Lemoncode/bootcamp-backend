@@ -18,7 +18,6 @@ First, let's create a MongoDB container using docker-compose:
 _./docker-compose.yml_
 
 ```yml
-version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
@@ -28,8 +27,7 @@ services:
 
 ```
 
-> [Docker compose versioning](https://docs.docker.com/compose/compose-file/compose-versioning/)
-> [Docker versions](https://hub.docker.com/_/mongo?tab=tags&page=1&ordering=last_updated)
+> [Docker compose](https://docs.docker.com/compose/compose-file/)
 
 Let's create npm commands to run it:
 
@@ -37,11 +35,11 @@ _./package.json_
 
 ```diff
 ...
-  "scripts": {
+"scripts": {
 -   "start": "run-p -l type-check:watch start:dev",
 +   "start": "run-p -l type-check:watch start:dev start:local-db",
-    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
-    "start:console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
+    "start:dev": "tsx --require dotenv/config --watch src/index.ts",
+    "start:console-runners": "tsx --require dotenv/config --watch src/console-runners/index.ts",
 +   "start:local-db": "docker compose up -d",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
@@ -72,7 +70,9 @@ exit
 ```
 
 > Try Mongo Compass after commands
+>
 > Try to stop and running container again
+>
 > `docker stop book-store-db` and `npm run start:local-db`
 
 Remove local db:
@@ -94,7 +94,6 @@ docker compose down
 _./docker-compose.yml_
 
 ```diff
-version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
@@ -102,25 +101,13 @@ services:
     ports:
       - '27017:27017'
 +     volumes:
-+       - type: bind
-+         source: ./mongo-data
-+         target: /data/db
++       - ./mongo-data:/data/db
 + volumes:
 +   mongo-data:
 
 ```
 
 > If you are using linux, you have to create the `mongo-data` folder previously.
->
-> The short hand but could have some issues in linux or mac
->
-
-```
-  volumes:
-    - './mongo-data:/data/db'
-  volumes:
-    mongo-data:
-```
 
 ```bash
 npm run start:local-db
@@ -145,6 +132,16 @@ node_modules
 dist
 .env
 + mongo-data
+
+```
+
+Add some data in `Mongo Compass`.
+
+Stop and run the container again:
+
+```bash
+docker compose down
+npm run start:local-db
 
 ```
 

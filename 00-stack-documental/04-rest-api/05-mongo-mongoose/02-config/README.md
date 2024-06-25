@@ -34,7 +34,7 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
+IS_API_MOCK=true
 + MONGODB_URI=mongodb://localhost:27017/book-store
 
 ```
@@ -47,8 +47,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- API_MOCK=true
-+ API_MOCK=false
+- IS_API_MOCK=true
++ IS_API_MOCK=false
 + MONGODB_URI=mongodb://localhost:27017/book-store
 
 ```
@@ -58,13 +58,13 @@ Update `env.constants`:
 _./src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === "production",
+  PORT: Number(process.env.PORT),
   STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
-  isApiMock: process.env.API_MOCK === 'true',
+  IS_API_MOCK: process.env.IS_API_MOCK === "true",
 + MONGODB_URI: process.env.MONGODB_URI,
 };
 
@@ -77,13 +77,22 @@ _./src/core/servers/db.server.ts_
 ```typescript
 import { MongoClient, Db } from 'mongodb';
 
-export let db: Db;
+let client: MongoClient;
 
-export const connectToDBServer = async (connectionURI: string) => {
-  const client = new MongoClient(connectionURI);
+const connect = async (connectionURI: string) => {
+  client = new MongoClient(connectionURI);
   await client.connect();
+  dbServer.db = client.db();
+};
 
-  db = client.db();
+interface DBServer {
+  connect: (connectionURI: string) => Promise<void>;
+  db: Db;
+}
+
+export let dbServer: DBServer = {
+  connect,
+  db: undefined,
 };
 
 ```
@@ -104,22 +113,22 @@ _./src/index.ts_
 
 ```diff
 ...
-- import { createRestApiServer } from #core/servers/index.js;
-+ import { createRestApiServer, connectToDBServer, db } from "#core/servers/index.js";
-import { envConstants } from "#core/constants/index.js";
-import { booksApi } from "#pods/book/index.js";
+- import { createRestApiServer } from "#core/servers/index.js";
++ import { createRestApiServer, dbServer } from "#core/servers/index.js";
+import { ENV } from "#core/constants/index.js";
+import { bookApi } from "./pods/book/index.js";
 ...
 
-- restApiServer.listen(envConstants.PORT, () => {
-+ restApiServer.listen(envConstants.PORT, async () => {
-+   if (!envConstants.isApiMock) {
-+     await connectToDBServer(envConstants.MONGODB_URI);
-+     await db.collection('books').insertOne({ name: 'Book 1' });
+- app.listen(ENV.PORT, () => {
++ app.listen(ENV.PORT, async() => {
++   if (!ENV.IS_API_MOCK) {
++     await dbServer.connect(ENV.MONGODB_URI);
++     await dbServer.db.collection('books').insertOne({ name: 'Book 1' });
 +   } else {
-+     console.log('Running API mock');
++     console.log('Running Mock API');
 +   }
-  console.log(`Server ready at port ${envConstants.PORT}`);
-});
+    console.log(`Server ready at port ${ENV.PORT}`);
+  });
 
 ```
 
@@ -139,7 +148,7 @@ restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
     await connectToDBServer(envConstants.MONGODB_URI);
 -   await db.collection('books').insertOne({ name: 'Book 1' });
-+   const books = await db.collection("books").find().toArray();
++   const books = await dbServer.db.collection('books').find().toArray();
 +   console.log({ books });
   } else {
     console.log('Running API mock');
