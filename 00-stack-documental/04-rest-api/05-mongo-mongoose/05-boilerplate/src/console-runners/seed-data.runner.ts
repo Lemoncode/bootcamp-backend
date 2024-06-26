@@ -1,23 +1,25 @@
-import inquirer from 'inquirer';
+import prompts from 'prompts';
 import { runCommand } from './console-runners.helpers.js';
 
 const seedDataContainerPath = '/opt/app';
 
 export const run = async () => {
-  const { seedDataPath, containerName, dbName } = await inquirer.prompt([
+  const { seedDataPath, containerName, dbName } = await prompts([
     {
       name: 'seedDataPath',
-      type: 'input',
+      type: 'text',
       message: 'Seed data path (in your file system):',
     },
     {
       name: 'containerName',
-      type: 'input',
+      initial: 'mflix-db',
+      type: 'text',
       message: 'Docker container name:',
     },
     {
       name: 'dbName',
-      type: 'input',
+      initial: 'mflix',
+      type: 'text',
       message: 'Database name:',
     },
   ]);
