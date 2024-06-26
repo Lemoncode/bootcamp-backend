@@ -1,5 +1,13 @@
-import { connect } from 'mongoose';
+import mongoose from 'mongoose';
 
-export const connectToDBServer = async (connectionURI: string) => {
-  await connect(connectionURI);
+const connect = async (connectionURI: string) => {
+  await mongoose.connect(connectionURI);
+};
+
+interface DBServer {
+  connect: (connectionURI: string) => Promise<void>;
+}
+
+export let dbServer: DBServer = {
+  connect,
 };

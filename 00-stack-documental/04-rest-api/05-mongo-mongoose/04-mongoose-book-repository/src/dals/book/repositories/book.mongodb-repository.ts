@@ -3,7 +3,7 @@ import { BookRepository } from './book.repository.js';
 import { Book } from '../book.model.js';
 import { bookContext } from '../book.context.js';
 
-export const dbRepository: BookRepository = {
+export const mongoDBRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
     const skip = Boolean(page) ? (page - 1) * pageSize : 0;
     const limit = pageSize ?? 0;
@@ -28,11 +28,9 @@ export const dbRepository: BookRepository = {
       .lean();
   },
   deleteBook: async (id: string) => {
-    const { deletedCount } = await bookContext
-      .deleteOne({
-        _id: new ObjectId(id),
-      })
-      .lean();
+    const { deletedCount } = await bookContext.deleteOne({
+      _id: new ObjectId(id),
+    });
     return deletedCount === 1;
   },
 };
