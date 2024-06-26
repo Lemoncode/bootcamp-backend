@@ -2,15 +2,15 @@ import prompts from 'prompts';
 import { ENV } from '#core/constants/index.js';
 import { dbServer } from '#core/servers/index.js';
 
-let exit = false;
-
 const { connectionString } = await prompts({
   name: 'connectionString',
+  initial: ENV.MONGODB_URI,
   type: 'text',
   message: 'Connection string (Press enter to use default): ',
 });
-await dbServer.connect(connectionString ?? ENV.MONGODB_URI);
+dbServer.connect(connectionString);
 
+let exit = false;
 while (!exit) {
   const { consoleRunner } = await prompts({
     name: 'consoleRunner',

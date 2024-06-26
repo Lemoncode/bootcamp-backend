@@ -14,7 +14,7 @@ const disconnect = async () => {
 
 interface DBServer {
   connect: (connectionURI: string) => Promise<void>;
-  disconnect: () => void;
+  disconnect: () => Promise<void>;
   db: Db;
 }
 
