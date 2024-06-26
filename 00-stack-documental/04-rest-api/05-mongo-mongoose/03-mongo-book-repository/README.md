@@ -19,26 +19,18 @@ _./src/index.ts_
 
 ```diff
 ...
-import {
-  createRestApiServer,
-  connectToDBServer,
-- db,
-} from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { booksApi } from '#pods/book/index.js';
-...
-
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
--   const books = await db.collection("books").find().toArray();
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URI);
+-   const books = await dbServer.db.collection('books').find().toArray();
 -   console.log({ books });
-+   console.log("Connected to DB");
++   console.log('Running DataBase');
   } else {
-    console.log("Running API mock");
+    console.log('Running Mock API');
   }
-  console.log(`Server ready at port ${envConstants.PORT}`);
+  console.log(`Server ready at port ${ENV.PORT}`);
 });
+
 ```
 
 Notice an important refactor is the `id` field, MongoDB automatically create the field `_id` when a document was inserted:
@@ -82,8 +74,10 @@ const insertBook = (book: Book) => {
 };
 
 const updateBook = (book: Book) => {
-- db.books = db.books.map((b) => (b.id === book.id ? { ...b, ...book } : b));
-+ db.books = db.books.map((b) => (b._id.toHexString() === book._id.toHexString() ? { ...b, ...book } : b));
+  db.books = db.books.map((b) =>
+-   b.id === book.id ? { ...b, ...book } : b
++   b._id.toHexString() === book._id.toHexString() ? { ...b, ...book } : b
+  );
   return book;
 };
 
@@ -92,19 +86,20 @@ const updateBook = (book: Book) => {
 export const mockRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) =>
     paginateBookList(db.books, page, pageSize),
-- getBook: async (id: string) => db.books.find((b) => b.id === id),
-+ getBook: async (id: string) => db.books.find((b) => b._id.toHexString() === id),
+  getBook: async (id: string) =>
+-   db.books.find((b) => b.id === id),
++   db.books.find((b) => b._id.toHexString() === id),
   saveBook: async (book: Book) =>
--   Boolean(book.id)
-+   db.books.some((b) => b._id.toHexString() === book._id.toHexString())
+-   db.books.some((b) => b.id === book.id)
++   db.books.some((b) => b.id === book.id)
       ? updateBook(book)
       : insertBook(book),
   deleteBook: async (id: string) => {
--   db.books = db.books.filter((b) => b.id !== id);
--   return true;
+-   const exists = db.books.some((b) => b.id === id);
 +   const exists = db.books.some((b) => b._id.toHexString() === id);
+-   db.books = db.books.filter((b) => b.id !== id);
 +   db.books = db.books.filter((b) => b._id.toHexString() !== id);
-+   return exists;
+    return exists;
   },
 };
 
@@ -209,7 +204,7 @@ export const mapBookFromApiToModel = (book: apiModel.Book): model.Book => ({
 
 ```
 
-Update env variable `API_MOCK=true` and running:
+Let's check if mock mode is still working. We can update env variable `IS_API_MOCK=true` and running:
 
 _./.env_
 
@@ -219,10 +214,14 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- API_MOCK=false
-+ API_MOCK=true
+- IS_API_MOCK=false
++ IS_API_MOCK=true
  MONGODB_URI=mongodb://localhost:27017/book-store
 
+```
+
+```bash
+npm start
 ```
 
 Check mock queries `Get book list` and `Update book`.
@@ -243,7 +242,7 @@ BODY:
 }
 ```
 
-Update env variable `API_MOCK=false` and running:
+Now we can start to implement `mongodb-repository`. Update env variable `IS_API_MOCK=false` and running:
 
 _./.env_
 
@@ -253,25 +252,29 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- API_MOCK=true
-+ API_MOCK=false
+- IS_API_MOCK=true
++ IS_API_MOCK=false
  MONGODB_URI=mongodb://localhost:27017/book-store
 
 ```
 
+```bash
+npm start
+```
+
 Implement `get book list`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
-+ import { db } from '#core/servers/index.js';
++ import { dbServer } from '#core/servers/index.js';
 import { BookRepository } from "./book.repository.js";
 import { Book } from "../book.model.js";
 
-export const dbRepository: BookRepository = {
+export const mongoDBRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
 -   throw new Error("Not implemented");
-+   return await db.collection<Book>("books").find().toArray();
++   return await dbServer.db.collection<Book>('books').find().toArray();
   },
 ...
 
@@ -286,13 +289,15 @@ METHOD: GET
 
 Implement `insert new book`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 ...
   saveBook: async (book: Book) => {
 -   throw new Error("Not implemented");
-+   const { insertedId } = await db.collection<Book>("books").insertOne(book);
++   const { insertedId } = await dbServer.db
++     .collection<Book>('books')
++     .insertOne(book);
 +   return {
 +     ...book,
 +     _id: insertedId,
@@ -314,16 +319,23 @@ BODY:
 }
 ```
 
+Fetch all books:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
+```
+
 Implement pagination:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 ...
 getBookList: async (page?: number, pageSize?: number) => {
 +   const skip = Boolean(page) ? (page - 1) * pageSize : 0;
 +   const limit = pageSize ?? 0;
-    return await db
+    return await dbServer.db
       .collection<Book>('books')
       .find()
 +     .skip(skip)
@@ -353,22 +365,24 @@ METHOD: GET
 
 Implement `update book`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 ...
   saveBook: async (book: Book) => {
--   const { insertedId } = await db.collection<Book>("books").insertOne(book);
--   return {
+-   const { insertedId } = await dbServer.db
+-     .collection<Book>('books')
+-     .insertOne(book);
+--   return {
 -     ...book,
 -     _id: insertedId,
 -   };
-+   return await db.collection<Book>("books").findOneAndUpdate(
++   return await dbServer.db.collection<Book>('books').findOneAndUpdate(
 +     {
 +       _id: book._id,
 +     },
 +     { $set: book },
-+     { upsert: true, returnDocument: "after" }
++     { upsert: true, returnDocument: 'after' }
 +   );
   },
 ...
@@ -382,6 +396,26 @@ _./src/dals/book/repositories/book.db-repository.ts_
 > [Mongo Console docs](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/) differs from [Mongo Driver docs](https://mongodb.github.io/node-mongodb-native/3.6/api/Collection.html#findOneAndUpdate)
 
 Try url:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: POST
+BODY:
+{
+    "title": "Choque de reyes",
+    "releaseDate": "1998-11-16T00:00:00.000Z",
+    "author": "George R. R. Martin"
+}
+```
+
+Fetch all books:
+
+```
+URL: http://localhost:3000/api/books
+METHOD: GET
+```
+
+Update second book:
 
 ```
 URL: http://localhost:3000/api/books/<objet-id>
@@ -399,19 +433,18 @@ In order to avoid repeat `db.collection<Book>("books")` we can move to a file an
 _./src/dals/book/book.context.ts_
 
 ```typescript
-import { db } from '#core/servers/index.js';
+import { dbServer } from '#core/servers/index.js';
 import { Book } from './book.model.js';
 
-export const getBookContext = () => db?.collection<Book>('books');
-
+export const getBookContext = () => dbServer.db?.collection<Book>('books');
 ```
 
-Update `db-repository`:
+Update `mongodb-repository`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
-- import { db } from '#core/servers/index.js';
+- import { dbServer } from '#core/servers/index.js';
 import { BookRepository } from './book.repository.js';
 import { Book } from '../book.model.js';
 + import { getBookContext } from '../book.context.js';
@@ -420,7 +453,7 @@ export const dbRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
     const skip = Boolean(page) ? (page - 1) * pageSize : 0;
     const limit = pageSize ?? 0;
--   return await db
+-   return await dbServer.db
 -     .collection<Book>('books')
 +   return await getBookContext()
       .find()
@@ -430,8 +463,9 @@ export const dbRepository: BookRepository = {
   },
 ...
   saveBook: async (book: Book) => {
--   return await db.collection<Book>('books').findOneAndUpdate(
-+   return await getBookContext().findOneAndUpdate(
+-   return await dbServer.db.collection<Book>('books')
++   return await getBookContext()
+    .findOneAndUpdate(
       {
         _id: book._id,
       },
@@ -444,7 +478,7 @@ export const dbRepository: BookRepository = {
 
 Implement `get book`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 + import { ObjectId } from "mongodb";
@@ -472,7 +506,7 @@ METHOD: GET
 
 Implement `delete book`:
 
-_./src/dals/book/repositories/book.db-repository.ts_
+_./src/dals/book/repositories/book.mongodb-repository.ts_
 
 ```diff
 ...
@@ -495,7 +529,7 @@ METHOD: DELETE
 
 Update `rest-api` to update response error:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 ...
