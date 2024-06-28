@@ -49,23 +49,16 @@ npm run start:console-runners
 
 > Execute in JavaScript Debug Terminal
 
-Let's try complex queries related with insert/update/get subdocuments, arrays and relationships in external collections.
+## Simple queries
 
-## Queries over arrays subdocuments
-
-We could run same queries that we did in mongo console:
+First, let's start with a simple query, same that we did in the mongo module:
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
-import { envConstants } from '#core/constants/index.js';
-import {
-  connectToDBServer,
-  disconnectFromDBServer,
-} from '#core/servers/index.js';
 + import { getMovieContext } from '#dals/movie/movie.context.js';
 
-const runQueries = async () => {
+export const run = async () => {
 + const result = await getMovieContext()
 +   .find({
 +     runtime: { $lte: 15 },
@@ -73,7 +66,6 @@ const runQueries = async () => {
 +   .toArray();
 + console.log({ result });
 };
-...
 
 ```
 
@@ -84,7 +76,7 @@ _./src/console-runners/queries.runner.ts_
 ```diff
 ...
 
-const runQueries = async () => {
+const run = async () => {
   const result = await getMovieContext()
     .find({
       runtime: { $lte: 15 },
@@ -116,16 +108,43 @@ const runQueries = async () => {
 >
 > 'tomatoes.viewer.rating': this will retrieve only the rating field inside.
 
+## Queries over arrays subdocuments
+
+Let's try complex queries related with insert/update/get subdocuments, arrays and relationships with external collections.
+
+### Supporting genres model to accept string array and object array
+
+This time, we will refactor the `genres` field to support both types: string array and object array:
+
+_./src/dals/movie/movie.model.ts_
+
+```diff
+...
+
++ export interface Genre {
++   id: ObjectId;
++   name: string;
++ }
+
+export interface Movie {
+- genres?: string[];
++ genres?: string[] | Genre[];
+  cast?: string[];
+  ...
+}
+```
+
+### Insert object element in array subdocument
+
 We want to insert a new `genre` for a movie with `_id` equals `573a1390f29313caabcd4135` (the first movie with title `Blacksmith Scene`):
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
 + import { ObjectId } from 'mongodb';
-import { envConstants } from '#core/constants/index.js';
 ...
 
-const runQueries = async () => {
+const run = async () => {
   const result = await getMovieContext()
 -   .find(
 +   .findOneAndUpdate(
@@ -135,7 +154,10 @@ const runQueries = async () => {
       },
 +     {
 +       $push: {
-+         genres: 'Drama',
++         genres: {
++           id: new ObjectId(),
++           name: 'Drama',
++         },
 +       },
 +     },
       {
@@ -162,7 +184,10 @@ const runQueries = async () => {
 > NOTE: `updateOne` vs `findOneAndUpdate`
 >
 > Same behaviour but `updateOne` returns the object with number of updated documents, if ok, etc.
+>
 > `findOneAndUpdate` returns the object after updated it.
+
+### Update object element in array subdocument
 
 We want rename `Drama` genre in this document by `Fantasy`:
 
@@ -170,330 +195,125 @@ _./src/console-runners/queries.runner.ts_
 
 ```diff
 ...
-const runQueries = async () => {
+const run = async () => {
   const result = await getMovieContext().findOneAndUpdate(
     {
       _id: new ObjectId('573a1390f29313caabcd4135'),
-+     genres: 'Drama',
     },
     {
 -     $push: {
--       genres: 'Drama',
+-       genres: {
+-         id: new ObjectId(),
+-         name: 'Drama',
+-       },
 -     },
 +     $set: {
-+       'genres.$': 'Fantasy',
++       'genres.$[genre].name': 'Fantasy',
 +     },
     },
     {
++     arrayFilters: [{ 'genre.name': 'Drama' }],
       returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
-
 ...
 
 ```
 
-> [Reference .$](https://www.mongodb.com/docs/manual/reference/operator/update/positional/)
->
-> This only update the first Match
+> [.$[<identifier>] + arrayFilters Reference](https://docs.mongodb.com/v5.0/reference/operator/update/positional-filtered/#mongodb-update-up.---identifier--)
 >
 > 'genres.$[]': for all items in array
 
-> Update array in Mongo Compass like ['Short', 'Drama', 'Drama'].
+### Delete object element in array subdocument
 
-To update all values that match with some condition, we have to use `$[<identifier>]` + `arrayFilters`:
-
-_./src/console-runners/queries.runner.ts_
-
-```diff
-...
-const runQueries = async () => {
-  const result = await getMovieContext().findOneAndUpdate(
-    {
-      _id: new ObjectId('573a1390f29313caabcd4135'),
--     genres: 'Drama',
-    },
-    {
-      $set: {
--       'genres.$': 'Fantasy',
-+       'genres.$[genre]': 'Thriller',
-      },
-    },
-    {
-+     arrayFilters: [{ genre: 'Fantasy' }],
-      returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
-...
-
-```
-
-> [Reference](https://docs.mongodb.com/v5.0/reference/operator/update/positional-filtered/#mongodb-update-up.---identifier--)
-
-We want delete `Thriller` genre in this document:
+We want delete `Fantasy` genre in this document:
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
 ...
-const runQueries = async () => {
+const run = async () => {
   const result = await getMovieContext().findOneAndUpdate(
     {
       _id: new ObjectId('573a1390f29313caabcd4135'),
     },
     {
 -     $set: {
--       'genres.$[genre]': 'Thriller',
+-       'genres.$[genre].name': 'Fantasy',
 -     },
 +     $pull: {
-+       genres: 'Thriller',
++       genres: {
++         name: 'Fantasy',
++       },
 +     },
     },
     {
--     arrayFilters: [{ genre: 'Fantasy' }],
+-     arrayFilters: [{ 'genre.name': 'Drama' }],
       returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
 ...
 
 ```
 
+> NOTE: You cannot use `'genres.name': 'Fantasy'` because it will throw an error ( Cannot use the part (name) of (genres.name) to traverse the element).
+>
 > [Reference $pull](https://docs.mongodb.com/manual/reference/operator/update/pull/#mongodb-update-up.-pull)
 >
 > $pull vs [$pullAll](https://www.mongodb.com/docs/manual/reference/operator/update/pullAll/#mongodb-update-up.-pullAll): $pull remove all elements that match condition or value, $pullAll remove all elements that match the listed values.
 >
 > `{ $pullAll: { genres: [ 'Fantasy', 'Drama', 'Thriller' ] } }`
-
-Try same example with `{ _id: new ObjectId(), name: 'Drama' }`:
-
-```typescript
-// Model
-  genres?: { _id: ObjectId; name: string }[];
-
-// Insert
-  {
-    $push: {
-      genres: {
-        _id: new ObjectId(),
-        name: 'Drama',
-      },
-    },
-  },
-
-// Update
-  {
-    _id: new ObjectId('573a1390f29313caabcd4135'),
-  },
-  {
-    $set: { 'genres.$[genre].name': 'Fantasy' },
-  },
-  {
-    arrayFilters: [{ 'genre.name': 'Drama' }],
-    ...
-  }
-```
-
-```diff
-// Delete
-
-  {
-    $pull: {
-      genres: {
-        name: 'Fantasy',
-      },
-    },
-  },
-  {
--   arrayFilters: [{ 'genre.name': 'Drama' }],
-    ...
-  }
-
+>
 > [Reference query array of documents](https://docs.mongodb.com/manual/tutorial/query-array-of-documents/)
 >
 > [Update arrayFilters with object](https://www.mongodb.com/docs/manual/reference/operator/update/positional-filtered/#update-all-array-elements-that-match-multiple-conditions) > [Array projections](https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/#project-specific-array-elements-in-the-returned-array)
 >
 > [Array query limitations](https://docs.mongodb.com/manual/reference/operator/projection/positional/#array-field-limitations)
 
-## Queries over object subdocuments
+### Get object element from array subdocument
 
-Restore model:
+In the scenario we want to retrieve the desired `genre` from `movies.genres`.
 
-_./src/dals/movie/movie.model.ts_
-
-```diff
-- genres?: { _id: ObjectId; name: string }[];
-+ genres?: string[];
-
-```
-
-We want `delete` `imdb` review object in this document:
+First, we will add a few genres to the movie (in this case we are replacing all genres, that is, we are removing the `Short` genre string format):
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
 ...
-const runQueries = async () => {
-  const result = await getMovieContext().findOneAndUpdate(
     {
-      _id: new ObjectId('573a1390f29313caabcd4135'),
-    },
-    {
--     $pull: {
--       genres: {
--         name: 'Fantasy',
--       },
--     },
-+     $unset: {
-+       imdb: '',
-+     },
-    },
-    {
-      returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
+      $pull: {
+        genres: {
+          name: 'Fantasy',
+        },
       },
-    }
-  );
-};
-...
-```
-
-> [Reference $unset](https://docs.mongodb.com/manual/reference/operator/update/unset/#mongodb-update-up.-unset)
-
-We want `insert new` `imdb` review object in this document:
-
-_./src/console-runners/queries.runner.ts_
-
-```diff
-...
-const runQueries = async () => {
-  const result = await getMovieContext().findOneAndUpdate(
-    {
-      _id: new ObjectId('573a1390f29313caabcd4135'),
-    },
-    {
--     $unset: {
--       imdb: '',
--     },
 +     $set: {
-+       imdb: {
-+         rating: 6.2,
-+         votes: 1189,
-+         id: 5,
-+       },
++       genres: [
++         { id: new ObjectId(), name: 'Short' },
++         { id: new ObjectId(), name: 'Drama' },
++         { id: new ObjectId(), name: 'Fantasy' },
++         { id: new ObjectId(), name: 'Thriller' },
++       ],
 +     },
     },
-    {
-      returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
 ...
 ```
 
-> [Reference $set](https://docs.mongodb.com/manual/reference/operator/update/set/)
-> Update full object it's the same code
-
-Update only one field inside subdocument:
-
-```diff
-...
-
-const runQueries = async () => {
-  const result = await getMovieContext().findOneAndUpdate(
-    {
-      _id: new ObjectId('573a1390f29313caabcd4135'),
-    },
-    {
-      $set: {
--       imdb: {
--         rating: 6.2,
--         votes: 1189,
--         id: 5,
--       },
-+       'imdb.rating': 8.2,
-      },
-    },
-    {
-      returnDocument: 'after',
-      projection: {
-        _id: 1,
-        title: 1,
-        genres: 1,
-        imdb: 1,
-        'tomatoes.viewer.rating': 1,
-      },
-    }
-  );
-};
-...
-```
-
-## Queries over relationship documents
-
-In this case, the insert, update and delete operations are straightforward because it's a simple
-document without any subdocument. But if we try to get some movie's fields from comment documents,
-we need `aggregations`.
-
-First, we will retrieve a comment with simple fields for ObjectId equals `5a9427648b0beebeb69579e7` (it's the comment for the third movie):
+Now, we will retrieve the desired genre, for example `Fantasy`. A common mistake is to make a query like:
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
-import { ObjectId } from 'mongodb';
-import { envConstants } from '#core/constants/index.js';
-import {
-  connectToDBServer,
-  disconnectFromDBServer,
-} from '#core/servers/index.js';
-- import { getMovieContext } from '#dals/movie/movie.context.js';
-+ import { getCommentContext } from '#dals/comment/comment.context.js';
-
-const runQueries = async () => {
+...
 - const result = await getMovieContext().findOneAndUpdate(
-+ const result = await getCommentContext().findOne(
++ const result = await getMovieContext().findOne(
     {
--     _id: new ObjectId('573a1390f29313caabcd4135'),
-+     _id: new ObjectId('5a9427648b0beebeb69579e7'),
+      _id: new ObjectId('573a1390f29313caabcd4135'),
++     'genres.name': 'Fantasy',
     },
 -   {
 -     $set: {
--       'imdb.rating': 8.2,
+-       genres: [
+-         { id: new ObjectId(), name: 'Short' },
+-         { id: new ObjectId(), name: 'Drama' },
+-         { id: new ObjectId(), name: 'Fantasy' },
+-         { id: new ObjectId(), name: 'Thriller' },
+-       ],
 -     },
 -   },
     {
@@ -501,181 +321,271 @@ const runQueries = async () => {
       projection: {
         _id: 1,
 -       title: 1,
--       genres: 1,
+        genres: 1,
 -       imdb: 1,
 -       'tomatoes.viewer.rating': 1,
-+       name: 1,
-+       email: 1,
-+       movie_id: 1,
-+       text: 1,
-+       date: 1,
       },
     }
   );
-};
+```
 
+In the previous query, we are filtering `movies` that match with `_id` and it has a `genres.name` equals `Fantasy`, but we are not filtering the `genres` array. To filter the `genres` array, we need to use the [$ operator](https://www.mongodb.com/docs/manual/reference/operator/projection/positional/) in projection:
+
+_./src/console-runners/queries.runner.ts_
+
+```diff
+...
+    {
+      projection: {
+        _id: 1,
+-       genres: 1,
++       'genres.$': 1,
+      },
+    }
 ...
 
 ```
 
-> [Mongoose populate](https://mongoosejs.com/docs/api.html#query_Query-populate): it's not recommended because it could impact in performance.
+> Use $ in the projection document of the find() method or the findOne() method when you only need one particular array element in selected documents.
 
-We will use `aggregations` for include necessary fields:
+But this is only valid for the first level, if we want to filter in a nested array, we need to use [aggregations](https://docs.mongodb.com/manual/reference/operator/aggregation/).
+
+For example, we can update the `directors` model:
+
+_./src/dals/movie/movie.model.ts_
+
+```diff
+...
+export interface Genre {
+  id: ObjectId;
+  name: string;
+}
+
++ export interface Award {
++   id: ObjectId;
++   name: string;
++   year: number;
++ }
++
++ export interface Director {
++   id: ObjectId;
++   name: string;
++   awards: Award[];
++ }
+
+
+export interface Movie {
+...
+- directors?: string[];
++ directors?: string[] | Director[];
+...
+```
+
+And we will insert a new `directors` with `awards`:
+
+_./src/console-runners/queries.runner.ts_
+
+```diff
+...
+export const run = async () => {
+- const result = await getMovieContext().findOne(
++ const result = await getMovieContext().findOneAndUpdate(
+    {
+      _id: new ObjectId('573a1390f29313caabcd4135'),
+      'genres.name': 'Fantasy',
+    },
++   {
++     $set: {
++       directors: [
++         {
++           id: new ObjectId(),
++           name: 'Jane Doe',
++           awards: [
++             {
++               id: new ObjectId(),
++               name: 'Academy Awards',
++               year: 2020,
++             },
++             {
++               id: new ObjectId(),
++               name: 'Golden Globe Awards',
++               year: 2021,
++             },
++           ],
++         },
++         {
++           id: new ObjectId(),
++           name: 'John Doe',
++           awards: [
++             {
++               id: new ObjectId(),
++               name: 'Academy Awards',
++               year: 2020,
++             },
++             {
++               id: new ObjectId(),
++               name: 'Golden Globe Awards',
++               year: 2021,
++             },
++           ],
++         },
++       ],
++     },
++   },
+    {
++     returnDocument: 'after',
+      projection: {
+        _id: 1,
+-       'genres.$': 1,
++       directors: 1,
+      },
+    }
+  );
+  console.log({ result });
+};
+
+```
+
+We will retrieve the desired `director` with `awards`:
+
+_./src/console-runners/queries.runner.ts_
+
+```diff
+...
+export const run = async () => {
+- const result = await getMovieContext().findOneAndUpdate(
++ const result = await getMovieContext().findOne(
+    {
+      _id: new ObjectId('573a1390f29313caabcd4135'),
++     'directors.name': 'Jane Doe',
+    },
+-   {
+-     $set: {
+-       directors: [
+-         {
+-           id: new ObjectId(),
+-           name: 'Jane Doe',
+-           awards: [
+-             {
+-               id: new ObjectId(),
+-               name: 'Academy Awards',
+-               year: 2020,
+-             },
+-             {
+-               id: new ObjectId(),
+-               name: 'Golden Globe Awards',
+-               year: 2021,
+-             },
+-           ],
+-         },
+-         {
+-           id: new ObjectId(),
+-           name: 'John Doe',
+-           awards: [
+-             {
+-               id: new ObjectId(),
+-               name: 'Academy Awards',
+-               year: 2020,
+-             },
+-             {
+-               id: new ObjectId(),
+-               name: 'Golden Globe Awards',
+-               year: 2021,
+-             },
+-           ],
+-         },
+-       ],
+-     },
+-   },
+    {
+-     returnDocument: 'after',
+      projection: {
+        _id: 1,
+-       directors: 1,
++       'directors.$': 1,
+      },
+    }
+  );
+  console.log({ result });
+};
+
+```
+
+But if we want to filter by `awards` and get only the `Golden Globe Awards`:
+
+_./src/console-runners/queries.runner.ts_
+
+```diff
+...
+export const run = async () => {
+  const result = await getMovieContext().findOne(
+    {
+      _id: new ObjectId('573a1390f29313caabcd4135'),
+      'directors.name': 'Jane Doe',
++     'directors.awards.name': 'Golden Globe Awards',
+    },
+    {
+      projection: {
+        _id: 1,
+-       'directors.$': 1,
++       'directors.awards.$': 1,
+      },
+    }
+  );
+  console.log({ result });
+};
+
+```
+
+The previous operation is over `directors` array, but if we want to filter over `awards` array, we can do it in a simple way with [aggregations - $unwind](https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/):
 
 _./src/console-runners/queries.runner.ts_
 
 ```diff
 ...
 
-const runQueries = async () => {
-- const result = await getCommentContext().findOne(
+export const run = async () => {
+- const result = await getMovieContext().findOne(
 -   {
--     _id: new ObjectId('5a9427648b0beebeb69579e7'),
+-     _id: new ObjectId('573a1390f29313caabcd4135'),
+-     'directors.name': 'Jane Doe',
+-     'directors.awards.name': 'Golden Globe Awards',
 -   },
 -   {
 -     projection: {
 -       _id: 1,
--       name: 1,
--       email: 1,
--       movie_id: 1,
--       text: 1,
--       date: 1,
+-       'directors.awards.$': 1,
 -     },
 -   }
 - );
-
-+ const result = await getCommentContext()
++ const results = await getMovieContext()
 +   .aggregate([
 +     {
-+       $match: {
-+         _id: new ObjectId('5a9427648b0beebeb69579e7'),
-+       },
++       $unwind: '$directors',
 +     },
 +     {
-+       $lookup: {
-+         from: 'movies',
-+         localField: 'movie_id',
-+         foreignField: '_id',
-+         as: 'movies',
++       $unwind: '$directors.awards',
++     },
++     {
++       $match: {
++         _id: new ObjectId('573a1390f29313caabcd4135'),
++         'directors.name': 'Jane Doe',
++         'directors.awards.name': 'Golden Globe Awards',
 +       },
 +     },
 +     {
 +       $project: {
 +         _id: 1,
-+         name: 1,
-+         email: 1,
-+         movie_id: 1,
-+         movies: 1,
-+         text: 1,
-+         date: 1,
++         directors: 1,
 +       },
 +     },
 +   ])
 +   .toArray();
++ const result = results[0];
+
+  console.log({ result });
 };
 
-...
-
-```
-
-> NOTE: Aggregate method always returns an array.
-> [Reference aggregations](https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/)
-
-If we want fill the `movie` field instead of `movies` list, we could use [$addFields](https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/) and [$arrayElemAt](https://docs.mongodb.com/manual/reference/operator/aggregation/arrayElemAt/):
-
-_./src/console-runners/queries.runner.ts_
-
-```diff
-...
-const runQueries = async () => {
-  const result = await getCommentContext()
-    .aggregate([
-      {
-        $match: {
-          _id: new ObjectId('5a9427648b0beebeb69579e7'),
-        },
-      },
-      {
-        $lookup: {
-          from: 'movies',
-          localField: 'movie_id',
-          foreignField: '_id',
-          as: 'movies',
-        },
-      },
-+     {
-+       $addFields: {
-+         movie: { $arrayElemAt: ['$movies', 0] },
-+       },
-+     },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          email: 1,
-          movie_id: 1,
--         movies: 1,
-+         movie: 1,
-          text: 1,
-          date: 1,
-        },
-      },
-    ])
-    .toArray();
-};
-
-...
-
-```
-
-In this case, we could use too [$unwind](https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/):
-
-_./src/console-runners/queries.runner.ts_
-
-```diff
-...
-
-const runQueries = async () => {
-  const result = await getCommentContext()
-    .aggregate([
-      {
-        $match: {
-          _id: new ObjectId('5a9427648b0beebeb69579e7'),
-        },
-      },
-      {
-        $lookup: {
-          from: 'movies',
-          localField: 'movie_id',
-          foreignField: '_id',
--         as: 'movies',
-+         as: 'movie',
-        },
-      },
--     {
--       $addFields: {
--         movie: { $arrayElemAt: ['$movies', 0] },
--       },
--     },
-+     {
-+       $unwind: '$movie'
-+     },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          email: 1,
-          movie_id: 1,
-          movie: 1,
-          text: 1,
-          date: 1,
-        },
-      },
-    ])
-    .toArray();
-};
-
-...
 ```
 
 # ¿Con ganas de aprender Backend?

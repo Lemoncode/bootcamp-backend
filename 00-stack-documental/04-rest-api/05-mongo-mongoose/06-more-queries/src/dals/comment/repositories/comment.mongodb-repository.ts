@@ -1,3 +1,3 @@
 import { CommentRepository } from './comment.repository.js';
 
-export const dbRepository: CommentRepository = {};
+export const mongoDBRepository: CommentRepository = {};

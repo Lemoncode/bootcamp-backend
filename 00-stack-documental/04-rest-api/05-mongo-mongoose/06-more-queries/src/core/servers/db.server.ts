@@ -1,15 +1,25 @@
 import { MongoClient, Db } from 'mongodb';
 
-export let db: Db;
 let client: MongoClient;
 
-export const connectToDBServer = async (connectionURI: string) => {
+const connect = async (connectionURI: string) => {
   client = new MongoClient(connectionURI);
   await client.connect();
-
-  db = client.db();
+  dbServer.db = client.db();
 };
 
-export const disconnectFromDBServer = async () => {
+const disconnect = async () => {
   await client.close();
+};
+
+interface DBServer {
+  connect: (connectionURI: string) => Promise<void>;
+  disconnect: () => Promise<void>;
+  db: Db;
+}
+
+export let dbServer: DBServer = {
+  connect,
+  disconnect,
+  db: undefined,
 };

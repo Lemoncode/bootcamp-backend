@@ -8,7 +8,8 @@ const { connectionString } = await prompts({
   type: 'text',
   message: 'Connection string (Press enter to use default): ',
 });
-dbServer.connect(connectionString);
+console.log('Connecting to database...');
+await dbServer.connect(connectionString);
 
 let exit = false;
 while (!exit) {
