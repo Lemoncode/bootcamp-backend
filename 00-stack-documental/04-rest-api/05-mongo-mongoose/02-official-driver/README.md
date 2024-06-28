@@ -1,8 +1,8 @@
-# 02 Config
+# 02 Official driver
 
 In this example we are going to configure MongoDB in Nodejs App
 
-We will start from `01-install`.
+We will start from `01-mongodb-server`.
 
 # Steps to build it
 

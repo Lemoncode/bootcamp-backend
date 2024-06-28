@@ -1,4 +1,4 @@
-# 01 Install
+# 01 MongoDB Server
 
 In this example we are going to install MongoDB as Docker container
 
@@ -132,16 +132,6 @@ node_modules
 dist
 .env
 + mongo-data
-
-```
-
-Add some data in `Mongo Compass`.
-
-Stop and run the container again:
-
-```bash
-docker compose down
-npm run start:local-db
 
 ```
 

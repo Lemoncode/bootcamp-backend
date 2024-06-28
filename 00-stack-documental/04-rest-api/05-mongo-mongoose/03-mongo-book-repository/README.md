@@ -2,7 +2,7 @@
 
 In this example we are going to implement book repository in MongoDB.
 
-We will start from `02-config`.
+We will start from `02-official-driver`.
 
 # Steps to build it
 
