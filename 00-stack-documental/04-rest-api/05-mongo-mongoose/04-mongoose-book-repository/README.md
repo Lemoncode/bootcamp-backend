@@ -66,7 +66,6 @@ import { Book } from './book.model.js';
 +   author: { type: Schema.Types.String, required: true },
 + });
 
-
 - export const getBookContext = () => dbServer.db?.collection<Book>('books');
 + export const bookContext = model<Book>('Book', bookSchema);
 

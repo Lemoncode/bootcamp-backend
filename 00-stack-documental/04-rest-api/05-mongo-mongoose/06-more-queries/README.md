@@ -277,11 +277,11 @@ _./src/console-runners/queries.runner.ts_
 ```diff
 ...
     {
-      $pull: {
-        genres: {
-          name: 'Fantasy',
-        },
-      },
+-     $pull: {
+-       genres: {
+-         name: 'Fantasy',
+-       },
+-     },
 +     $set: {
 +       genres: [
 +         { id: new ObjectId(), name: 'Short' },
@@ -373,7 +373,6 @@ export interface Genre {
 +   awards: Award[];
 + }
 
-
 export interface Movie {
 ...
 - directors?: string[];
@@ -392,7 +391,7 @@ export const run = async () => {
 + const result = await getMovieContext().findOneAndUpdate(
     {
       _id: new ObjectId('573a1390f29313caabcd4135'),
-      'genres.name': 'Fantasy',
+-     'genres.name': 'Fantasy',
     },
 +   {
 +     $set: {
