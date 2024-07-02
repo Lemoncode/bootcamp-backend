@@ -4,7 +4,7 @@ import { dbServer } from '#core/servers/index.js';
 
 const { connectionString } = await prompts({
   name: 'connectionString',
-  initial: ENV.MONGODB_URI,
+  initial: ENV.MONGODB_URL,
   type: 'text',
   message: 'Connection string (Press enter to use default): ',
 });

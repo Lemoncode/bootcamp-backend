@@ -23,9 +23,8 @@ app.use(logErrorRequestMiddleware);
 
 app.listen(ENV.PORT, async () => {
   if (!ENV.IS_API_MOCK) {
-    await dbServer.connect(ENV.MONGODB_URI);
-    const books = await dbServer.db.collection('books').find().toArray();
-    console.log({ books });
+    await dbServer.connect(ENV.MONGODB_URL);
+    console.log('Running DataBase');
   } else {
     console.log('Running Mock API');
   }

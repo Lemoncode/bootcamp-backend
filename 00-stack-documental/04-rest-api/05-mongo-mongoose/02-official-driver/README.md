@@ -24,7 +24,7 @@ npm install mongodb --save
 >
 > It includes typings.
 
-Create the connection URI as env variable:
+Create the connection URL as env variable:
 
 _./.env.example_
 
@@ -35,7 +35,7 @@ STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
 IS_API_MOCK=true
-+ MONGODB_URI=mongodb://localhost:27017/book-store
++ MONGODB_URL=mongodb://localhost:27017/book-store
 
 ```
 
@@ -47,9 +47,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- IS_API_MOCK=true
-+ IS_API_MOCK=false
-+ MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=false
++ MONGODB_URL=mongodb://localhost:27017/book-store
 
 ```
 
@@ -65,7 +64,7 @@ export const ENV = {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
   IS_API_MOCK: process.env.IS_API_MOCK === "true",
-+ MONGODB_URI: process.env.MONGODB_URI,
++ MONGODB_URL: process.env.MONGODB_URL,
 };
 
 ```
@@ -79,14 +78,14 @@ import { MongoClient, Db } from 'mongodb';
 
 let client: MongoClient;
 
-const connect = async (connectionURI: string) => {
-  client = new MongoClient(connectionURI);
+const connect = async (connectionURL: string) => {
+  client = new MongoClient(connectionURL);
   await client.connect();
   dbServer.db = client.db();
 };
 
 interface DBServer {
-  connect: (connectionURI: string) => Promise<void>;
+  connect: (connectionURL: string) => Promise<void>;
   db: Db;
 }
 
@@ -94,7 +93,6 @@ export let dbServer: DBServer = {
   connect,
   db: undefined,
 };
-
 ```
 
 Update barrel file:
@@ -122,7 +120,7 @@ import { bookApi } from "./pods/book/index.js";
 - app.listen(ENV.PORT, () => {
 + app.listen(ENV.PORT, async() => {
 +   if (!ENV.IS_API_MOCK) {
-+     await dbServer.connect(ENV.MONGODB_URI);
++     await dbServer.connect(ENV.MONGODB_URL);
 +     await dbServer.db.collection('books').insertOne({ name: 'Book 1' });
 +   } else {
 +     console.log('Running Mock API');
@@ -146,7 +144,7 @@ _./src/index.ts_
 ...
 restApiServer.listen(envConstants.PORT, async () => {
   if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
+    await connectToDBServer(envConstants.MONGODB_URL);
 -   await db.collection('books').insertOne({ name: 'Book 1' });
 +   const books = await dbServer.db.collection('books').find().toArray();
 +   console.log({ books });
@@ -158,7 +156,27 @@ restApiServer.listen(envConstants.PORT, async () => {
 
 ```
 
-> Delete the previous inserted document, for example using Mongo Compass
+Delete the previous inserted document, for example using `Mongo Compass`
+
+Clean `index` file:
+
+_./src/index.ts_
+
+```diff
+...
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+-   const books = await dbServer.db.collection('books').find().toArray();
+-   console.log({ books });
++   console.log('Running DataBase');
+  } else {
+    console.log('Running Mock API');
+  }
+  console.log(`Server ready at port ${ENV.PORT}`);
+});
+
+```
 
 # ¿Con ganas de aprender Backend?
 

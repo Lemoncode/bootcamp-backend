@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
-const connect = async (connectionURI: string) => {
-  await mongoose.connect(connectionURI);
+const connect = async (connectionURL: string) => {
+  await mongoose.connect(connectionURL);
 };
 
 interface DBServer {
-  connect: (connectionURI: string) => Promise<void>;
+  connect: (connectionURL: string) => Promise<void>;
 }
 
 export let dbServer: DBServer = {

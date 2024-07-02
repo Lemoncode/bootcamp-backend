@@ -13,26 +13,6 @@ npm install
 
 ```
 
-Clean `index` file:
-
-_./src/index.ts_
-
-```diff
-...
-app.listen(ENV.PORT, async () => {
-  if (!ENV.IS_IS_API_MOCK) {
-    await dbServer.connect(ENV.MONGODB_URI);
--   const books = await dbServer.db.collection('books').find().toArray();
--   console.log({ books });
-+   console.log('Running DataBase');
-  } else {
-    console.log('Running Mock API');
-  }
-  console.log(`Server ready at port ${ENV.PORT}`);
-});
-
-```
-
 Notice an important refactor is the `id` field, MongoDB automatically create the field `_id` when a document was inserted:
 
 _./src/dals/book/book.model.ts_
@@ -216,7 +196,7 @@ CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
 - IS_API_MOCK=false
 + IS_API_MOCK=true
- MONGODB_URI=mongodb://localhost:27017/book-store
+ MONGODB_URL=mongodb://localhost:27017/book-store
 
 ```
 
@@ -254,7 +234,7 @@ CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
 - IS_API_MOCK=true
 + IS_API_MOCK=false
- MONGODB_URI=mongodb://localhost:27017/book-store
+ MONGODB_URL=mongodb://localhost:27017/book-store
 
 ```
 

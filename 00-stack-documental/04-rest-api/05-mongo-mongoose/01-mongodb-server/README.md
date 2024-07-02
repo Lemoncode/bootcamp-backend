@@ -13,6 +13,19 @@ npm install
 
 ```
 
+Copy the `.env.example` to `.env` and replace the `IS_API_MOCK` value by `false`:
+
+_./env_
+
+```bash
+NODE_ENV=development
+PORT=3000
+STATIC_FILES_PATH=../public
+CORS_ORIGIN=*
+CORS_METHODS=GET,POST,PUT,DELETE
+IS_API_MOCK=false
+```
+
 First, let's create a MongoDB container using docker-compose:
 
 _./docker-compose.yml_
