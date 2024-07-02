@@ -1,17 +1,15 @@
-import express from "express";
-import cors from "cors";
-import { envConstants } from "../constants/index.js";
+import express from 'express';
+import cors from 'cors';
+import { ENV } from '../constants/index.js';
 
 export const createRestApiServer = () => {
-  const restApiServer = express();
-  restApiServer.use(express.json());
-  restApiServer.use(
+  const app = express();
+  app.use(express.json());
+  app.use(
     cors({
-      methods: envConstants.CORS_METHODS,
-      origin: envConstants.CORS_ORIGIN,
-      credentials: true,
+      methods: ENV.CORS_METHODS,
+      origin: ENV.CORS_ORIGIN,
     })
   );
-
-  return restApiServer;
+  return app;
 };

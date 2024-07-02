@@ -2,6 +2,23 @@ import { ObjectId } from 'mongodb';
 
 // https://docs.atlas.mongodb.com/sample-data/sample-mflix/#sample_mflix.movies
 
+export interface Genre {
+  id: ObjectId;
+  name: string;
+}
+
+export interface Award {
+  id: ObjectId;
+  name: string;
+  year: number;
+}
+
+export interface Director {
+  id: ObjectId;
+  name: string;
+  awards: Award[];
+}
+
 export interface Movie {
   _id: ObjectId;
   title: string;
@@ -13,9 +30,9 @@ export interface Movie {
   fullplot: string;
   lastupdated: Date;
   type: MovieType;
-  directors?: string[];
+  directors?: string[] | Director[];
   countries?: string[];
-  genres?: string[];
+  genres?: string[] | Genre[];
   cast?: string[];
   num_mflix_comments: number;
   imdb?: IMDB;
