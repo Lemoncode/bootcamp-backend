@@ -114,7 +114,7 @@ _./src/index.ts_
 - import { createRestApiServer } from "#core/servers/index.js";
 + import { createRestApiServer, dbServer } from "#core/servers/index.js";
 import { ENV } from "#core/constants/index.js";
-import { bookApi } from "./pods/book/index.js";
+import { bookApi } from "#pods/book/index.js";
 ...
 
 - app.listen(ENV.PORT, () => {
