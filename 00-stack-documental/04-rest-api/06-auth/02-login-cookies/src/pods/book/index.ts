@@ -1,1 +1,1 @@
-export * from "./book.rest-api.js";
+export * from "./book.api.js";
