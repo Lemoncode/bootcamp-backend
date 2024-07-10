@@ -3,7 +3,7 @@ import { getUserContext } from '../user.context.js';
 import { User } from '../user.model.js';
 import { UserRepository } from './user.repository.js';
 
-export const dbRepository: UserRepository = {
+export const mongoDBRepository: UserRepository = {
   getUserByEmailAndPassword: async (email: string, password: string) => {
     const user = await getUserContext().findOne({
       email,
