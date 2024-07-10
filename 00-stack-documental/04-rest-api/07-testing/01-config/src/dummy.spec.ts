@@ -14,7 +14,6 @@ describe('dummy specs', () => {
     // Act
 
     // Assert
-
     expect(true).toBeFalsy();
   });
 });
