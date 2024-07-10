@@ -165,6 +165,18 @@ _./tsconfig.json_
 
 ```
 
+Update specs:
+
+_./src/dummy.spec.ts_
+
+```diff
+- import { describe, it, expect } from 'vitest';
+
+describe('dummy specs', () => {
+  it('should pass spec', () => {
+...
+```
+
 Running specs again:
 
 ```bash
