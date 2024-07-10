@@ -1,35 +1,35 @@
-import '#core/load-env.js';
 import express from 'express';
-import path from 'path';
-import url from 'url';
+import path from 'node:path';
 import {
   logRequestMiddleware,
   logErrorRequestMiddleware,
 } from '#common/middlewares/index.js';
-import { createRestApiServer, connectToDBServer } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { booksApi } from '#pods/book/index.js';
-import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
+import { createRestApiServer, dbServer } from '#core/servers/index.js';
+import { ENV } from '#core/constants/index.js';
+import { authenticationMiddleware } from '#core/security/index.js';
+import { bookApi } from '#pods/book/index.js';
+import { securityApi } from '#pods/security/index.js';
 
-const restApiServer = createRestApiServer();
+const app = createRestApiServer();
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
-restApiServer.use('/', express.static(staticFilesPath));
+app.use(
+  '/',
+  express.static(path.resolve(import.meta.dirname, ENV.STATIC_FILES_PATH))
+);
 
-restApiServer.use(logRequestMiddleware);
+app.use(logRequestMiddleware);
 
-restApiServer.use('/api/security', securityApi);
-restApiServer.use('/api/books', authenticationMiddleware, booksApi);
+app.use('/api/security', securityApi);
+app.use('/api/books', authenticationMiddleware, bookApi);
 
-restApiServer.use(logErrorRequestMiddleware);
+app.use(logErrorRequestMiddleware);
 
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
-    console.log('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+    console.log('Running DataBase');
   } else {
-    console.log('Running API mock');
+    console.log('Running Mock API');
   }
-  console.log(`Server ready at port ${envConstants.PORT}`);
+  console.log(`Server ready at port ${ENV.PORT}`);
 });
