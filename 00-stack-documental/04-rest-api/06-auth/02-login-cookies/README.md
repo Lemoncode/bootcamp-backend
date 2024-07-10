@@ -28,32 +28,31 @@ _./src/core/servers/rest-api.server.ts_
 import express from 'express';
 import cors from 'cors';
 + import cookieParser from 'cookie-parser';
-import { envConstants } from "../constants/index.js";
+import { ENV } from "../constants/index.js";
 
 export const createRestApiServer = () => {
-  const restApiServer = express();
-  restApiServer.use(express.json());
-  restApiServer.use(
+  const app = express();
+  app.use(express.json());
+  app.use(
     cors({
-      methods: envConstants.CORS_METHODS,
-      origin: envConstants.CORS_ORIGIN,
-      credentials: true,
+      methods: ENV.CORS_METHODS,
+      origin: ENV.CORS_ORIGIN,
     })
   );
-+ restApiServer.use(cookieParser());
++ app.use(cookieParser());
 
-  return restApiServer;
+  return app;
 };
 
 ```
 
 Let's update `login` method:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 ...
-        const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
+        const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
           expiresIn: '1d',
           algorithm: 'HS256',
         });
@@ -61,7 +60,7 @@ _./src/pods/security/security.rest-api.ts_
 +       // TODO: Move to constants
 +       res.cookie('authorization', `Bearer ${token}`, {
 +         httpOnly: true,
-+         secure: envConstants.isProduction,
++         secure: ENV.IS_PRODUCTION,
 +       });
 +       res.sendStatus(204);
       } else {
@@ -79,7 +78,7 @@ _./src/pods/security/security.rest-api.ts_
 
 Now, we will update the `authentication` middleware:
 
-_./src/pods/security/security.middlewares.ts_
+_./src/core/security/security.middlewares.ts_
 
 ```diff
 ...
@@ -92,7 +91,7 @@ export const authenticationMiddleware: RequestHandler = async (
   try {
 -   const [, token] = req.headers.authorization?.split(' ') || [];
 +   const [, token] = req.cookies.authorization?.split(' ') || [];
-    const userSession = await verify(token, envConstants.AUTH_SECRET);
+    const userSession = await verify(token, ENV.AUTH_SECRET);
     req.userSession = userSession;
     next();
   } catch (error) {
@@ -124,17 +123,15 @@ METHOD: GET
 
 ```
 
-> We should install [Postman interceptor](https://chrome.google.com/webstore/detail/postman-interceptor/aicmkgpgakddgnaphhhpliifpcfhicfo) to check cookies on postman.
->
 > With cookies we could check it on browser too.
 
 Update `logout` method:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 ...
-  .post('/logout', authenticationMiddleware, async (req, res) => {
+  .post('/logout', async (req, res) => {
     // NOTE: We cannot invalidate token using jwt libraries.
     // Different approaches:
     // - Short expiration times in token

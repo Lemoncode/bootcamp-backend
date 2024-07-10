@@ -23,9 +23,9 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- API_MOCK=true
-+ API_MOCK=false
-MONGODB_URI=mongodb://localhost:27017/book-store
+- IS_API_MOCK=true
++ IS_API_MOCK=false
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
 ```
@@ -142,10 +142,10 @@ Finally, we need to create the `db context`:
 _./src/dals/user/user.context.ts_
 
 ```typescript
-import { db } from '#core/servers/index.js';
+import { dbServer } from '#core/servers/index.js';
 import { User } from './user.model.js';
 
-export const getUserContext = () => db?.collection<User>('users');
+export const getUserContext = () => dbServer.db?.collection<User>('users');
 
 ```
 
@@ -155,18 +155,11 @@ _./src/console-runners/seed-data.runner.ts_
 
 ```diff
 + import { generateSalt, hashPassword } from '#common/helpers/index.js';
-import {
-  connectToDBServer,
-  disconnectFromDBServer,
-} from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { getBookContext } from '#dals/book/book.context.js';
 + import { getUserContext } from '#dals/user/user.context.js';
+import { getBookContext } from '#dals/book/book.context.js';
 import { db } from '#dals/mock-data.js';
 
 export const run = async () => {
-  await connectToDBServer(envConstants.MONGODB_URI);
-
 + for (const user of db.users) {
 +   const salt = await generateSalt();
 +   const hashedPassword = await hashPassword(user.password, salt);
@@ -179,7 +172,6 @@ export const run = async () => {
 + }
 
   await getBookContext().insertMany(db.books);
-  await disconnect();
 };
 
 ```
@@ -195,7 +187,7 @@ npm run start:console-runners
 
 Let's implement the `user db repository`:
 
-_./src/dals/user/repositories/user.db-repository.ts_
+_./src/dals/user/repositories/user.mongodb-repository.ts_
 
 ```diff
 + import { hashPassword } from '#common/helpers/index.js';
@@ -203,9 +195,9 @@ _./src/dals/user/repositories/user.db-repository.ts_
 + import { User } from '../user.model.js';
 import { UserRepository } from './user.repository.js';
 
-export const dbRepository: UserRepository = {
-- getUserByEmailAndPassword: async (email: string, password: string) => null,
-+ getUserByEmailAndPassword: async (email: string, password: string) => {
+export const mongoDBRepository: UserRepository = {
+  getUserByEmailAndPassword: async (email: string, password: string) => {
+-   throw new Error('Not implemented');
 +   const user = await getUserContext().findOne({
 +     email,
 +   });
@@ -218,7 +210,7 @@ export const dbRepository: UserRepository = {
 +         role: user.role,
 +       } as User)
 +     : null;
-+ },
+  },
 };
 
 ```

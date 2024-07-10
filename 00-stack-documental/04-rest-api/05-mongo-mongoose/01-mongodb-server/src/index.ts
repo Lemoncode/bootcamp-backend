@@ -6,7 +6,7 @@ import {
 } from "#common/middlewares/index.js";
 import { createRestApiServer } from "#core/servers/index.js";
 import { ENV } from "#core/constants/index.js";
-import { bookApi } from "./pods/book/index.js";
+import { bookApi } from "#pods/book/index.js";
 
 const app = createRestApiServer();
 
