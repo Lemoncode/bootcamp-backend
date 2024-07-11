@@ -3,10 +3,11 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 export async function setup() {
   const dbServer = await MongoMemoryServer.create({
     instance: {
-      port: 27017,
       dbName: 'test-book-store',
     },
   });
+
+  process.env.MONGODB_URL = dbServer.getUri();
 
   return async () => {
     await dbServer.stop();

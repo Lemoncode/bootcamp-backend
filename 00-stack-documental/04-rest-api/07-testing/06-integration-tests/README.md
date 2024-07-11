@@ -135,10 +135,11 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 export async function setup() {
   const dbServer = await MongoMemoryServer.create({
     instance: {
-      port: 27017,
       dbName: 'test-book-store',
     },
   });
+
+  process.env.MONGODB_URL = dbServer.getUri();
 
   return async () => {
     await dbServer.stop();
@@ -181,7 +182,6 @@ CORS_METHODS=GET,POST,PUT,DELETE
 - IS_API_MOCK=true
 + IS_API_MOCK=false
 - MONGODB_URL=mongodb://localhost:27017/book-store
-+ MONGODB_URL=mongodb://localhost:27017/test-book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
 ```
