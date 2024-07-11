@@ -1,30 +1,14 @@
 import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-import {
-  createRestApiServer,
-  connectToDBServer,
-  disconnectFromDBServer,
-} from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
+import { createRestApiServer, dbServer } from '#core/servers/index.js';
+import { ENV } from '#core/constants/index.js';
 import { getBookContext } from '#dals/book/book.context.js';
 import { Book } from './book.api-model.js';
-import { booksApi } from './book.rest-api.js';
+import { bookApi } from './book.api.js';
 
-const app = createRestApiServer();
-app.use((req, res, next) => {
-  req.userSession = {
-    id: '1',
-    role: 'admin',
-  };
-  next();
-});
-app.use(booksApi);
-
-const MONGODB_URI = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
-
-describe('pods/book/book.rest-api specs', () => {
+describe('pods/book/book.api specs', () => {
   beforeAll(async () => {
-    await connectToDBServer(MONGODB_URI);
+    await dbServer.connect(ENV.MONGODB_URL);
   });
 
   beforeEach(async () => {
@@ -41,10 +25,16 @@ describe('pods/book/book.rest-api specs', () => {
   });
 
   afterAll(async () => {
-    await disconnectFromDBServer();
+    await dbServer.disconnect();
   });
 
   describe('get book list', () => {
+    const app = createRestApiServer();
+
+    beforeAll(() => {
+      app.use(bookApi);
+    });
+
     it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
       // Arrange
       const route = '/';
@@ -56,9 +46,21 @@ describe('pods/book/book.rest-api specs', () => {
       expect(response.statusCode).toEqual(200);
       expect(response.body).toHaveLength(1);
     });
+  });
 
-    it('should return return 201 when it inserts new book', async () => {
+  describe('insert book', () => {
+    it('should return 201 when an admin user inserts new book', async () => {
       // Arrange
+      const app = createRestApiServer();
+      app.use((req, res, next) => {
+        req.userSession = {
+          id: '1',
+          role: 'admin',
+        };
+        next();
+      });
+      app.use(bookApi);
+
       const route = '/';
       const newBook: Book = {
         id: undefined,
@@ -76,6 +78,33 @@ describe('pods/book/book.rest-api specs', () => {
       expect(response.body.title).toEqual(newBook.title);
       expect(response.body.author).toEqual(newBook.author);
       expect(response.body.releaseDate).toEqual(newBook.releaseDate);
+    });
+
+    it('should return 403 when a standard user try to insert new book', async () => {
+      // Arrange
+      const app = createRestApiServer();
+      app.use((req, res, next) => {
+        req.userSession = {
+          id: '1',
+          role: 'standard-user',
+        };
+        next();
+      });
+      app.use(bookApi);
+
+      const route = '/';
+      const newBook: Book = {
+        id: undefined,
+        title: 'book-2',
+        author: 'author-2',
+        releaseDate: '2021-07-29T00:00:00.000Z',
+      };
+
+      // Act
+      const response = await supertest(app).post(route).send(newBook);
+
+      // Assert
+      expect(response.statusCode).toEqual(403);
     });
   });
 });

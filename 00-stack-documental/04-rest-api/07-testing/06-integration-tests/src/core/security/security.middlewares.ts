@@ -1,7 +1,7 @@
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { verifyJWT } from '#common/helpers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { UserSession, Role } from '#common-app/models/index.js';
+import { ENV } from '#core/constants/index.js';
+import { UserSession, Role } from '#core/models/index.js';
 
 export const authenticationMiddleware = async (
   req: Request,
@@ -10,10 +10,7 @@ export const authenticationMiddleware = async (
 ) => {
   try {
     const [, token] = req.cookies.authorization?.split(' ') || [];
-    const userSession = await verifyJWT<UserSession>(
-      token,
-      envConstants.AUTH_SECRET
-    );
+    const userSession = await verifyJWT<UserSession>(token, ENV.AUTH_SECRET);
     req.userSession = userSession;
     next();
   } catch (error) {
@@ -21,12 +18,11 @@ export const authenticationMiddleware = async (
   }
 };
 
-const isAuthorized = (currentRole: Role, allowedRoles?: Role[]) =>
-  !Boolean(allowedRoles) ||
-  (Boolean(currentRole) && allowedRoles.some((role) => currentRole === role));
+const isAuthorized = (currentRole: Role, allowedRoles: Role[]) =>
+  Boolean(currentRole) && allowedRoles?.some((role) => currentRole === role);
 
 export const authorizationMiddleware =
-  (allowedRoles?: Role[]): RequestHandler =>
+  (allowedRoles: Role[]): RequestHandler =>
   async (req, res, next) => {
     if (isAuthorized(req.userSession?.role, allowedRoles)) {
       next();
