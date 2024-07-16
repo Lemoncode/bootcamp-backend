@@ -1,6 +1,6 @@
-# 03 DB implementation
+# 03 Hashing passwords
 
-In this example we are going to implement a login workflow in DB with mongoose/mongo.
+In this example we are going to implement the hashing password function.
 
 We will start from `02-login-cookies`.
 
