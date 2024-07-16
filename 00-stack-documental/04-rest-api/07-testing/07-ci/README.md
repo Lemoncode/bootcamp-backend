@@ -27,7 +27,7 @@ Create new branch on repository `feature/add-ci-file` and add ci config [Github 
 ### ./.github/workflows/ci.yml
 
 ```yml
-name: Ci workflow
+name: CI workflow
 
 on: pull_request
 

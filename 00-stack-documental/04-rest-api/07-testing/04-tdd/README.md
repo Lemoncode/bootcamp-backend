@@ -245,10 +245,7 @@ export const mapBookListFromApiToModel = (
 
 ```
 
-- Another tool provided by jest is the [each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) method.
-
-> We could have some issues typing arrays.
-> That's why the `any` casting
+Another tool provided by vitest is the [each](https://vitest.dev/api/#test-each) method.
 
 ### ./src/mapper.spec.ts
 
@@ -257,16 +254,21 @@ export const mapBookListFromApiToModel = (
 
 describe('mapper specs', () => {
   describe('mapBookListFromApiToModel', () => {
-+   it.each<apiModel.Book[]>([undefined, null, []])(
-+     'should return empty array when it feeds bookList equals %p',
-+     (bookList: any) => {
++   it.each<{ bookList: apiModel.Book[] }>([
++     { bookList: undefined },
++     { bookList: null },
++     { bookList: [] },
++   ])(
++     'should return empty array when it feeds bookList equals $bookList',
++     ({ bookList }) => {
 +       // Arrange
 
 +       // Act
-+       const result: model.Book[] = mapBookListFromApiToModel(bookList);
++       const result = mapBookListFromApiToModel(bookList);
 
 +       // Assert
-+       expect(result).toEqual([]);
++       const expectedResult: model.Book[] = [];
++       expect(result).toEqual(expectedResult);
 +     }
 +   );
 

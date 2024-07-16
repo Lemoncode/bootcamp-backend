@@ -23,7 +23,6 @@ _./src/calculator.ts_
 
 ```javascript
 export const add = (a, b) => a + b;
-
 ```
 
 Rename `dummy.spec.ts` to `calculator.spec.ts`:
@@ -34,7 +33,7 @@ _./src/calculator.spec.ts_
 + import * as calculator from "./calculator.js";
 
 - describe('dummy specs', () => {
-+ describe("Calculator tests", () => {
++ describe("Calculator specs", () => {
 +   describe("add", () => {
 -     it('should pass spec', () => {
 +     it("should return 4 when passing A equals 2 and B equals 2", () => {
@@ -63,37 +62,7 @@ _./src/calculator.spec.ts_
 
 ```
 
-> [Jest is not ready to support native ESM](https://jestjs.io/docs/ecmascript-modules) yet
-
-The best way to enable native ESM is using [ts-jest with ESM Support](https://kulshekhar.github.io/ts-jest/docs/guides/esm-support/):
-
-```bash
-npm install ts-jest --save-dev
-```
-
-Update jest.js config:
-
-_./config/test/jest.js_
-
-```diff
-export default {
-  rootDir: '../../',
-  verbose: true,
-+ transform: {
-+   '^.+\\.tsx?$': [
-+     'ts-jest',
-+     {
-+       useESM: true,
-+     },
-+   ],
-+ },
-+ extensionsToTreatAsEsm: ['.ts'],
-+ moduleNameMapper: {
-+   '^(\\.{1,2}/.*)\\.js$': '$1',
-+ },
-};
-
-```
+> Vitest is ready to support native ESM
 
 Let's check differences between `toEqual` vs `toBe` vs `toStrictEqual`:
 
@@ -171,7 +140,7 @@ describe("Calculator tests", () => {
 +     // Arrange
 +     const a = 2;
 +     const b = 2;
-+     const isLowerThanFive = jest.fn();
++     const isLowerThanFive = vi.fn();
 
 +     // Act
 +     const result = calculator.add(a, b, isLowerThanFive);
@@ -179,7 +148,7 @@ describe("Calculator tests", () => {
 +     // Assert
 +     expect(isLowerThanFive).toHaveBeenCalled();
 +     expect(isLowerThanFive).toHaveBeenCalledWith(4);
-+   })
++   });
   });
 });
 
@@ -192,10 +161,9 @@ Sometimes, we need to `import` dependencies that we can't pass throught function
 _./src/business/calculator.business.ts_
 
 ```javascript
-export const isLowerThanFive = value => {
+export const isLowerThanFive = (value) => {
   console.log(`The value: ${value} is lower than 5`);
 };
-
 ```
 
 - Add barrel file:
@@ -204,7 +172,6 @@ _./src/business/index.ts_
 
 ```javascript
 export * from './calculator.business.js';
-
 ```
 
 Use it:
@@ -255,8 +222,8 @@ describe('Calculator tests', () => {
       // Arrange
       const a = 2;
       const b = 2;
--     const isLowerThanFive = jest.fn();
-+     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive');
+-     const isLowerThanFive = vi.fn();
++     const isLowerThanFive = vi.spyOn(business, 'isLowerThanFive');
 
       // Act
 -     const result = calculator.add(a, b, isLowerThanFive);
@@ -271,23 +238,6 @@ describe('Calculator tests', () => {
 
 ```
 
-Why the second spec is failing? `TypeError: Cannot redefine property: isLowerThanFive`. We could find [many related issues](https://github.com/facebook/jest/issues/880) or [using Object.defineProperty](https://github.com/facebook/jest/issues/6914) like this one. We should update the code:
-
-_./src/calculator.spec.ts_
-
-```diff
-import * as calculator from './calculator.js';
-- import * as business from './business/index.js';
-+ import * as business from './business/calculator.business.js';
-
-...
-
-```
-
-> Note: As we see in `console`, the `stub` doesn't replace original function behaviour. We have to mock it if we need it.
->
-> [Alternative using jest.mock and __esModule: true](https://github.com/aelbore/esbuild-jest/issues/26#issuecomment-968853688)
-
 Mocking original behaviour:
 
 _./src/calculator.spec.ts_
@@ -299,8 +249,8 @@ _./src/calculator.spec.ts_
       // Arrange
       const a = 2;
       const b = 2;
--     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive');
-+     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive')
+-     const isLowerThanFive = vi.spyOn(business, 'isLowerThanFive');
++     const isLowerThanFive = vi.spyOn(business, 'isLowerThanFive')
 +       .mockImplementation((result) => console.log(`This is the result ${result}`));
 
       // Act
@@ -335,7 +285,7 @@ _./src/calculator.spec.ts_
 ```
 
 > console.log
->    This is the result 3
+> This is the result 3
 
 We should restore all mocks after run them:
 
@@ -346,7 +296,7 @@ _./src/calculator.spec.ts_
 
 describe('Calculator tests', () => {
 + afterEach(() => {
-+   jest.restoreAllMocks();
++   vi.restoreAllMocks();
 + });
 
   describe('add', () => {
@@ -356,18 +306,26 @@ describe('Calculator tests', () => {
 
 Instead of use `restoreAllMocks` on each spec file, we could configure it globally:
 
-_./config/test/jest.js_
+_./config/test/config.ts_
 
 ```diff
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
++   restoreMocks: true,
+  },
+});
 export default {
   rootDir: '../../',
   verbose: true,
-+ restoreMocks: true,
   ...
 };
 
 ```
-> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
+
+> [restoreMocks](https://vitest.dev/config/#restoremocks)
 
 _./src/calculator.spec.ts_
 
@@ -376,7 +334,7 @@ _./src/calculator.spec.ts_
 
 describe('Calculator tests', () => {
 - afterEach(() => {
--   jest.restoreAllMocks();
+-   vi.restoreAllMocks();
 - });
 
   describe('add', () => {
@@ -397,7 +355,7 @@ _./src/business/calculator.business.ts_
 + console.log(`The value: ${value} is lower than ${max}`)
 }
 
-+ export const max = 6
++ export const max: number = 6;
 
 ```
 
@@ -428,37 +386,22 @@ In this case, we need to mock the whole module:
 _./src/calculator.spec.ts_
 
 ```diff
-import * as calculator from './calculator.js';
-import * as business from './business/calculator.business.js';
-
-+ jest.mock('./business/calculator.business', () => ({
-+   isLowerThan: jest.fn().mockImplementation(() => {
-+     console.log('Another implementation');
-+   }),
-+   max: 7,
-+ }));
-
+...
 describe('Calculator tests', () => {
   describe('add', () => {
-    it('should return 4 when passing A equals 2 and B equals 2', () => {
-      // Arrange
-      const a = 2;
-      const b = 2;
-
-      // Act
-      const result = calculator.add(a, b);
-
-      // Assert
-      expect(result).toEqual(4)
-    })
+...
 
 -   it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
 +   it('should call to isLowerThan when passing A equals 2 and B equals 2', () => {
       // Arrange
       const a = 2;
       const b = 2;
--     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive')
+-     const isLowerThanFive = vi.spyOn(business, 'isLowerThanFive')
 -       .mockImplementation((result) => console.log(`This is the result ${result}`));
++     vi.spyOn(business, 'isLowerThan').mockImplementation((result) =>
++       console.log(`This is the result ${result}`)
++     );
++     vi.spyOn(business, 'max', 'get').mockReturnValue(7);
 
       // Act
       const result = calculator.add(a, b);
@@ -489,6 +432,103 @@ describe('Calculator tests', () => {
 
 > If we change max value to 3. spec fails.
 
+When to use `mock` instead of `spyOn` (stub)? If we need to replace original function behaviour or something special that we cannot reach with `spyOn`, for example if a third party library does not support ES Modules like [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken):
+
+_./src/calculator.ts_
+
+```diff
++ import { sign } from 'jsonwebtoken';
+import { isLowerThan, max } from './business/index.js';
+
+export const add = (a, b) => {
+  const result = a + b;
+
+  if (result < max) {
+    isLowerThan(result, max);
++   sign(result, 'my-secret');
+  }
+
+  return result;
+};
+
+```
+
+_./src/calculator.spec.ts_
+
+```diff
++ import * as jwt from 'jsonwebtoken';
+import * as calculator from './calculator.js';
+import * as business from './business/index.js';
+
+...
+
+    it('should call to isLowerThan when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+      vi.spyOn(business, 'isLowerThan').mockImplementation((result) =>
+        console.log(`This is the result ${result}`)
+      );
+      vi.spyOn(business, 'max', 'get').mockReturnValue(7);
++     vi.spyOn(jwt, 'sign').mockImplementation((result) => {
++       console.log(`Sign result ${result}`);
++     });
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+      expect(business.isLowerThan).toHaveBeenCalled();
+      expect(business.isLowerThan).toHaveBeenCalledWith(4, 7);
++     expect(jwt.sign).toHaveBeenCalledWith(4, 'my-secret');
+    });
+...
+
+```
+
+It throws the `TypeError: Cannot redefine property: sign` error. It means that we cannot replace the original function behaviour since it isn't a `ESM` module. We should update the code:
+
+_./src/calculator.spec.ts_
+
+```diff
+import * as jwt from 'jsonwebtoken';
+import * as calculator from './calculator.js';
+import * as business from './business/index.js';
+
++ vi.mock('jsonwebtoken', async (importOriginal) => {
++   const original: any = await importOriginal();
++   return {
++     ...original.default,
++     __esModule: true,
++   };
++ });
+
+...
+
+```
+
+> [Related issue](https://github.com/vitest-dev/vitest/issues/3680)
+
+
 # ¿Con ganas de aprender Backend?
 
 En Lemoncode impartimos un Bootcamp Backend Online, centrado en stack node y stack .net, en él encontrarás todos los recursos necesarios: clases de los mejores profesionales del sector, tutorías en cuanto las necesites y ejercicios para desarrollar lo aprendido en los distintos módulos. Si quieres saber más puedes pinchar [aquí para más información sobre este Bootcamp Backend](https://lemoncode.net/bootcamp-backend#bootcamp-backend/banner).
+
+<!-- // TODO -->
+
+Why the second spec is failing? `TypeError: Cannot redefine property: isLowerThanFive`. We could find [many related issues](https://github.com/facebook/jest/issues/880) or [using Object.defineProperty](https://github.com/facebook/jest/issues/6914) like this one. We should update the code:
+
+_./src/calculator.spec.ts_
+
+```diff
+import * as calculator from './calculator.js';
+- import * as business from './business/index.js';
++ import * as business from './business/calculator.business.js';
+
+...
+
+```
+
+> Note: As we see in `console`, the `stub` doesn't replace original function behaviour. We have to mock it if we need it.
+>
+> [Alternative using vi.mock and \_\_esModule: true](https://github.com/aelbore/esbuild-jest/issues/26#issuecomment-968853688)

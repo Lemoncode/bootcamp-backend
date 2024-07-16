@@ -16,7 +16,7 @@ Let's test an important piece of code, the async code. We will start with `authe
 
 Create specs file:
 
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```typescript
 describe('security.middlewares specs', () => {
@@ -32,28 +32,29 @@ describe('security.middlewares specs', () => {
 
 Should send 401 status code if it feeds authorization cookie equals undefined:
 
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```diff
 + import { Request, Response } from 'express';
 + import { authenticationMiddleware } from './security.middlewares.js';
 
-describe('pods/security/security.middlewares specs', () => {
+describe('core/security/security.middlewares specs', () => {
   describe('authorizationMiddleware', () => {
 -   it('', () => {
 +   it('should send 401 status code if it feeds authorization cookie equals undefined', () => {
       // Arrange
 +     const authorization = undefined;
 
++     const cookies: Record<string, any> = {
++       authorization,
++     };
 +     const req = {
-+       cookies: {
-+         authorization,
-+       },
++       cookies,
 +     } as Request;
 +     const res = {
-+       sendStatus: jest.fn() as any,
++       sendStatus: vi.fn() as any,
 +     } as Response;
-+     const next = jest.fn();
++     const next = vi.fn();
 
       // Act
 +     authenticationMiddleware(req, res, next);
@@ -73,73 +74,56 @@ npm run test:watch security.middlewares.spec
 
 ```
 
-If we have some conflicts with import alias
+Why is it failing? Because it's an async code and we have to tell `vitest` that it has to wait to resolve `promise`:
 
-_./config/test/jest.js_
-
-```diff
-...
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-+   '#(.*)\\.js$': '<rootDir>/src/$1',
-  },
-};
-
-```
-
-> [More info](https://www.basefactor.com/configuring-aliases-in-webpack-vs-code-typescript-jest)
-
-Why is it failing? Because it's an async code and we have to tell `jest` that it has to wait to resolve `promise`:
-
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```diff
 import { Request, Response } from 'express';
 import { authenticationMiddleware } from './security.middlewares.js';
 
-describe('pods/security/security.middlewares specs', () => {
+describe('security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
 -   it('should send 401 status code if it feeds authorization cookie equals undefined', () => {
-+   it('should send 401 status code if it feeds authorization cookie equals undefined', (done) => {
++   it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
       // Arrange
       const authorization = undefined;
 
+      const cookies: Record<string, any> = {
+        authorization,
+      };
       const req = {
-        cookies: {
-          authorization,
-        },
+        cookies,
       } as Request;
       const res = {
-        sendStatus: jest.fn() as any,
+        sendStatus: vi.fn() as any,
       } as Response;
-      const next = jest.fn();
+      const next = vi.fn();
 
       // Act
--     authenticationMiddleware(req, res, next);
-+     authenticationMiddleware(req, res, next).then(() => {
-        // Assert
-        expect(res.sendStatus).toHaveBeenCalled();
-        expect(res.sendStatus).toHaveBeenCalledWith(401);
-+       done();
++     await vi.waitFor(() => {
+        authenticationMiddleware(req, res, next);
 +     });
+
+      // Assert
+      expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
   });
 });
 
+
 ```
 
-> [Jest testing async code](https://jestjs.io/docs/en/asynchronous.html)
+Or we update the current type (which is returning a promise):
 
-Type implementation response:
-
-_./src/pods/security/security.middlewares.ts_
+_./src/core/security/security.middlewares.ts_
 
 ```diff
 - import { RequestHandler } from 'express';
 + import { RequestHandler, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from '#core/constants/index.js';
-import { UserSession, Role } from '#common-app/models/index.js'
+import { ENV } from '#core/constants/index.js';
+import { UserSession, Role } from '#core/models/index.js';
 
 ...
 
@@ -154,7 +138,7 @@ import { UserSession, Role } from '#common-app/models/index.js'
 ) => {
   try {
     const [, token] = req.cookies.authorization?.split(' ') || [];
-    const userSession = await verify(token, envConstants.AUTH_SECRET);
+    const userSession = await verify(token, ENV.AUTH_SECRET);
     req.userSession = userSession;
     next();
   } catch (error) {
@@ -165,40 +149,21 @@ import { UserSession, Role } from '#common-app/models/index.js'
 ...
 ```
 
-A second approach is using `async/await`:
+And wait the promise itself:
 
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```diff
-import { Request, Response } from 'express';
-import { authenticationMiddleware } from './security.middlewares';
-
-describe('pods/security/security.middlewares specs', () => {
-  describe('authenticationMiddleware', () => {
--   it('should send 401 status code if it feeds authorization cookie equals undefined', (done) => {
-+   it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
-      // Arrange
-      const authorization = undefined;
-
-      const req = {
-        cookies: {
-          authorization,
-        },
-      } as Request;
-      const res = {
-        sendStatus: jest.fn() as any,
-      } as Response;
-      const next = jest.fn();
+...
 
       // Act
--     authenticationMiddleware(req, res, next).then(() => {
+-     await vi.waitFor(() => {
+-       authenticationMiddleware(req, res, next);
+-     });
 +     await authenticationMiddleware(req, res, next);
 
-        // Assert
-        expect(res.sendStatus).toHaveBeenCalled();
-        expect(res.sendStatus).toHaveBeenCalledWith(401);
--       done();
--     });
+      // Assert
+      expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
   });
 });
@@ -207,12 +172,12 @@ describe('pods/security/security.middlewares specs', () => {
 
 Remember, we are executing the real implementation of `verify` function, if we want to provide different behaviour we need to mock it:
 
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```diff
 import { Request, Response } from 'express';
 + import jwt from 'jsonwebtoken';
-+ import { UserSession } from '#common-app/models/index.js';
++ import { UserSession } from '#core/models/index.js';
 import { authenticationMiddleware } from './security.middlewares.js';
 
 ...
@@ -224,21 +189,22 @@ import { authenticationMiddleware } from './security.middlewares.js';
 +       id: '1',
 +       role: 'admin',
 +     };
-+     const verifyStub = jest
++     const verifyStub = vi
 +       .spyOn(jwt, 'verify')
 +       .mockImplementation((token, secret, callback: any) => {
 +         callback(undefined, userSession);
 +       });
 
++     const cookies: Record<string, any> = {
++       authorization,
++     };
 +     const req = {
-+       cookies: {
-+         authorization,
-+       },
++       cookies,
 +     } as Request;
 +     const res = {
-+       sendStatus: jest.fn() as any,
++       sendStatus: vi.fn() as any,
 +     } as Response;
-+     const next = jest.fn();
++     const next = vi.fn();
 
 +     // Act
 +     await authenticationMiddleware(req, res, next);
@@ -288,14 +254,14 @@ export * from './hash-password.helpers.js';
 
 Update security middlewares:
 
-_./src/pods/security/security.middlewares.ts_
+_./src/core/security/security.middlewares.ts_
 
 ```diff
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 - import jwt from 'jsonwebtoken';
 + import { verifyJWT } from '#common/helpers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { UserSession, Role } from '#common-app/models/index.js';
+import { ENV } from '#core/constants/index.js';
+import { UserSession, Role } from '#core/models/index.js';
 
 - const verify = (token: string, secret: string): Promise<UserSession> =>
 -   new Promise((resolve, reject) => {
@@ -319,8 +285,8 @@ export const authenticationMiddleware = async (
 ) => {
   try {
     const [, token] = req.cookies.authorization?.split(' ') || [];
--   const userSession = await verify(token, envConstants.AUTH_SECRET);
-+   const userSession = await verifyJWT<UserSession>(token, envConstants.AUTH_SECRET);
+-   const userSession = await verify(token, ENV.AUTH_SECRET);
++   const userSession = await verifyJWT<UserSession>(token, ENV.AUTH_SECRET);
     req.userSession = userSession;
     next();
   } catch (error) {
@@ -334,29 +300,26 @@ export const authenticationMiddleware = async (
 
 Update specs:
 
-_./src/pods/security/security.middlewares.spec.ts_
+_./src/core/security/security.middlewares.spec.ts_
 
 ```diff
 import { Request, Response } from 'express';
 - import jwt from 'jsonwebtoken';
 + import * as helpers from '#common/helpers/jwt.helpers.js';
-import { UserSession } from '#common-app/models/index.js';
+import { UserSession } from '#core/models/index.js';
 import { authenticationMiddleware } from './security.middlewares.js';
 
-describe('pods/security/security.middlewares specs', () => {
+describe('core/security/security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('should send 401 status code if it feeds authorization cookie equals undefined', async () => {
       // Arrange
       const authorization = undefined;
-+     const verifyJWTStub = jest
-+       .spyOn(helpers, 'verifyJWT')
-+       .mockRejectedValue('Not valid token');
++     vi.spyOn(helpers, 'verifyJWT').mockRejectedValue('Not valid token');
 
 ...
       // Assert
-      expect(res.sendStatus).toHaveBeenCalled();
       expect(res.sendStatus).toHaveBeenCalledWith(401);
-+     expect(verifyJWTStub).toHaveBeenCalled();
++     expect(helpers.verifyJWT).toHaveBeenCalled();
     });
 
     it('should call next function and assign userSession if it feeds authorization cookie with token', async () => {
@@ -366,19 +329,17 @@ describe('pods/security/security.middlewares specs', () => {
         id: '1',
         role: 'admin',
       };
--     const verifyStub = jest
--       .spyOn(jwt, 'verify')
--       .mockImplementation((token, secret, callback: any) => {
+-     vi.spyOn(jwt, 'verify').mockImplementation(
+-       (token, secret, callback: any) => {
 -         callback(undefined, userSession);
--       });
-+     const verifyJWTStub = jest
-+       .spyOn(helpers, 'verifyJWT')
-+       .mockResolvedValue(userSession);
+-       }
+-     );
++     vi.spyOn(helpers, 'verifyJWT').mockResolvedValue(userSession);
 
 ...
 
       // Assert
--     expect(verifyStub).toHaveBeenCalled();
+-     expect(jwt.verify).toHaveBeenCalled();
 +     expect(helpers.verifyJWT).toHaveBeenCalled();
 +     expect(next).toHaveBeenCalled();
 +     expect(req.userSession).toEqual(userSession);
@@ -390,7 +351,7 @@ describe('pods/security/security.middlewares specs', () => {
 
 > NOTE: don't use barrels in spyOn methods.
 >
-> [Related issue](https://github.com/facebook/jest/issues/6914)
+> [Related issue](https://github.com/facebook/vi/issues/6914)
 
 # ¿Con ganas de aprender Backend?
 

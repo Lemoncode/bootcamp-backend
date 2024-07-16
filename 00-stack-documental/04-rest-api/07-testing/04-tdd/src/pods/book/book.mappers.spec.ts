@@ -3,18 +3,23 @@ import * as model from '#dals/index.js';
 import * as apiModel from './book.api-model.js';
 import { mapBookListFromApiToModel } from './book.mappers.js';
 
-describe('pods/book/book.mappers spec', () => {
+describe('book.mappers spec', () => {
   describe('mapBookListFromApiToModel', () => {
-    it.each<apiModel.Book[]>([undefined, null, []])(
-      'should return empty array when it feeds bookList equals %p',
-      (bookList: any) => {
+    it.each<{ bookList: apiModel.Book[] }>([
+      { bookList: undefined },
+      { bookList: null },
+      { bookList: [] },
+    ])(
+      'should return empty array when it feeds bookList equals $bookList',
+      ({ bookList }) => {
         // Arrange
 
         // Act
-        const result: model.Book[] = mapBookListFromApiToModel(bookList);
+        const result = mapBookListFromApiToModel(bookList);
 
         // Assert
-        expect(result).toEqual([]);
+        const expectedResult: model.Book[] = [];
+        expect(result).toEqual(expectedResult);
       }
     );
 

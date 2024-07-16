@@ -29,45 +29,49 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
 ```
 
-_./config/test/env.config.js_
+_./config/test/env.config.ts_
 
 ```javascript
-const { config } = require('dotenv');
-config({
-  path: './.env.test',
+import { config } from 'dotenv';
+
+export function setup() {
+  config({
+    path: './.env.test',
+  });
+}
+```
+
+Update config:
+
+_./config/test/config.ts_
+
+```diff
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    restoreMocks: true,
++   globalSetup: ['./config/test/env.config.ts'],
+  },
 });
 
 ```
 
-> NOTE: Jest is still running in CommonJS
+> [globalSetup](https://vitest.dev/config/#globalsetup)
 
-Update jest config:
+Add `book.api` specs:
 
-_./config/test/jest.js_
-
-```diff
-export default {
-  rootDir: '../../',
-  verbose: true,
-  restoreMocks: true,
-+ setupFiles: ['<rootDir>/config/test/env.config.js'],
-  ...
-};
-
-```
-
-Add `book.rest-api` specs:
-
-_./src/pods/book/book.rest-api.spec.ts_
+_./src/pods/book/book.api.spec.ts_
 
 ```typescript
-describe('pods/book/book.rest-api specs', () => {
+describe('pods/book/book.api specs', () => {
   describe('get book list', () => {
     it('', () => {
       // Arrange
@@ -76,22 +80,21 @@ describe('pods/book/book.rest-api specs', () => {
     });
   });
 });
-
 ```
 
 `Supertest` needs the app express instance to do a mock request:
 
-_./src/pods/book/book.rest-api.spec.ts_
+_./src/pods/book/book.api.spec.ts_
 
 ```diff
 + import supertest from 'supertest';
 + import { createRestApiServer } from '#core/servers/index.js';
-+ import { booksApi } from './book.rest-api.js';
++ import { bookApi } from './book.api.js';
 
 + const app = createRestApiServer();
-+ app.use(booksApi);
++ app.use(bookApi);
 
-describe('pods/book/book.rest-api specs', () => {
+describe('pods/book/book.api specs', () => {
   describe('get book list', () => {
 -   it('', () => {
 +   it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
@@ -113,68 +116,56 @@ describe('pods/book/book.rest-api specs', () => {
 Run specs:
 
 ```bash
-npm run test:watch book.rest-api
+npm run test:watch book.api
 ```
 
-As we see, we are running the app in `mock` mode. If we like to test our repository implementation with a MongoDB memory database, we need to install [jest-mongodb](https://github.com/shelfio/jest-mongodb) preset:
+As we see, we are running the app in `mock` mode. If we like to test our repository implementation with a MongoDB memory database, we need to install [mongodb-memory-server](https://github.com/nodkz/mongodb-memory-server):
 
 ```bash
-npm install @shelf/jest-mongodb --save-dev
+npm install mongodb-memory-server --save-dev
 ```
-
-> Use `-f` flag to force install the preset in a different version than peerDependencies.
 
 Add config file:
 
-_./jest-mongodb-config.cjs_
+_./config/test/db-server.config.ts_
 
-```javascript
-module.exports = {
-  mongodbMemoryServerOptions: {
-    binary: {
-      version: '6.0.10',
-      skipMD5: true,
-    },
+```typescript
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+export async function setup() {
+  const dbServer = await MongoMemoryServer.create({
     instance: {
       dbName: 'test-book-store',
     },
-    autoStart: false,
+  });
+
+  process.env.MONGODB_URL = dbServer.getUri();
+
+  return async () => {
+    await dbServer.stop();
+  };
+}
+```
+
+> [MongoDB In-Memory server](https://github.com/nodkz/mongodb-memory-server?tab=readme-ov-file#available-options-for-mongomemoryserver)
+
+Update `test/config.ts`:
+
+_./config/test/config.ts_
+
+```diff
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    restoreMocks: true,
+    globalSetup: [
+      './config/test/env.config.ts',
++     './config/test/db-server.config.ts',
+    ],
   },
-};
-
-```
-
-> [MongoDB In-Memory server](https://github.com/nodkz/mongodb-memory-server#available-options)
-
-Update jest config:
-
-_./config/test/jest.js_
-
-```diff
-export default {
-  rootDir: '../../',
-  verbose: true,
-  restoreMocks: true,
-  setupFiles: ['<rootDir>/config/test/env.config.js'],
-+ preset: '@shelf/jest-mongodb',
-+ watchPathIgnorePatterns: ['<rootDir>/globalConfig'],
-  ...
-};
-
-```
-
-> [Ignore globalConfig](https://github.com/shelfio/jest-mongodb#6-jest-watch-mode-gotcha)
-
-Ignore `globalConfig`:
-
-_./.gitignore_
-
-```diff
-node_modules
-dist
-.env
-mongo-data
-+ globalConfig.json
+});
 
 ```
 
@@ -188,55 +179,31 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-- API_MOCK=true
-+ API_MOCK=false
-- MONGODB_URI=mongodb://localhost:27017/book-store
+- IS_API_MOCK=true
++ IS_API_MOCK=false
+- MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 
 ```
 
-> NOTE: we will use the MONGODB_URI provided by jest-mongodb because it will be created in a different port each time.
-
-Install `cross-env` to feed config file (due to `.cjs` extension) and update `package.json`:
-
-```bash
-npm install cross-env --save-dev
-```
-
-```diff
-...
-  "scripts": {
-    ...
--   "test": "jest -c ./config/test/jest.js",
-+   "test": "cross-env MONGO_MEMORY_SERVER_FILE=jest-mongodb-config.cjs jest -c ./config/test/jest.js",
-    "test:watch": "npm run test -- --watchAll -i"
-  }
-...
-```
-
 Update spec to init MongoDB connection:
 
-_./src/pods/book/book.rest-api.spec.ts_
+_./src/pods/book/book.api.spec.ts_
 
 ```diff
 + import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-import {
-  createRestApiServer,
-+ connectToDBServer,
-+ disconnectFromDBServer,
-} from '#core/servers/index.js';
+- import { createRestApiServer } from '#core/servers/index.js';
++ import { createRestApiServer, dbServer } from '#core/servers/index.js';
++ import { ENV } from '#core/constants/index.js';
 + import { getBookContext } from '#dals/book/book.context.js';
-import { booksApi } from './book.rest-api.js';
+import { bookApi } from './book.api.js';
 
-const app = createRestApiServer();
-app.use(booksApi);
+...
 
-+   const MONGODB_URI = `${globalThis.__MONGO_URI__}${globalThis.__MONGO_DB_NAME__}`;
-
-describe('pods/book/book.rest-api specs', () => {
+describe('pods/book/book.api specs', () => {
 + beforeAll(async () => {
-+   await connectToDBServer(MONGODB_URI);
++   await dbServer.connect(ENV.MONGODB_URL);
 + });
 
 + beforeEach(async () => {
@@ -253,7 +220,7 @@ describe('pods/book/book.rest-api specs', () => {
 + });
 
 + afterAll(async () => {
-+   await disconnectFromDBServer();
++   await dbServer.disconnect();
 + });
 
   describe('get book list', () => {
@@ -274,44 +241,54 @@ describe('pods/book/book.rest-api specs', () => {
 
 ```
 
-> [More info](https://jestjs.io/docs/mongodb)
-
 Run specs:
 
 ```bash
-npm run test:watch book.rest-api
+npm run test:watch book.api
 ```
 
 If we want insert new book:
 
-_./src/pods/book/book.rest-api.spec.ts_
+_./src/pods/book/book.api.spec.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
 import supertest from 'supertest';
-import {
-  createRestApiServer,
-  connectToDBServer,
-  disconnectFromDBServer,
-} from '#core/servers/index.js';
+import { createRestApiServer, dbServer } from '#core/servers/index.js';
+import { ENV } from '#core/constants/index.js';
 import { getBookContext } from '#dals/book/book.context.js';
 + import { Book } from './book.api-model.js';
-import { booksApi } from './book.rest-api.js';
+import { bookApi } from './book.api.js';
 
 const app = createRestApiServer();
-+ app.use((req, res, next) => {
-+   req.userSession = {
-+     id: '1',
-+     role: 'admin',
-+   };
-+   next();
-+ });
-app.use(booksApi);
+- app.use(bookApi);
 
 ...
+  describe('get book list', () => {
++   const app = createRestApiServer();
 
-+   it('should return return 201 when it inserts new book', async () => {
++   beforeAll(() => {
++     app.use(bookApi);
++   });
+
+    it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
+      ...
+    });
+  });
+
++ describe('insert book', () => {
++   it('should return 201 when an admin user inserts new book', async () => {
 +     // Arrange
++     const app = createRestApiServer();
++     app.use((req, res, next) => {
++       req.userSession = {
++         id: '1',
++         role: 'admin',
++       };
++       next();
++     });
++     app.use(bookApi);
+
 +     const route = '/';
 +     const newBook: Book = {
 +       id: undefined,
@@ -330,6 +307,44 @@ app.use(booksApi);
 +     expect(response.body.author).toEqual(newBook.author);
 +     expect(response.body.releaseDate).toEqual(newBook.releaseDate);
 +   });
++ });
+
+```
+
+Check `standard-user`:
+
+_./src/pods/book/book.api.spec.ts_
+
+```diff
+...
+
++   it('should return 403 when a standard user try to insert new book', async () => {
++     // Arrange
++     const app = createRestApiServer();
++     app.use((req, res, next) => {
++       req.userSession = {
++         id: '1',
++         role: 'standard-user',
++       };
++       next();
++     });
++     app.use(bookApi);
+
++     const route = '/';
++     const newBook: Book = {
++       id: undefined,
++       title: 'book-2',
++       author: 'author-2',
++       releaseDate: '2021-07-29T00:00:00.000Z',
++     };
+
++     // Act
++     const response = await supertest(app).post(route).send(newBook);
+
++     // Assert
++     expect(response.statusCode).toEqual(403);
++   });
+  });
 ```
 
 # ¿Con ganas de aprender Backend?
