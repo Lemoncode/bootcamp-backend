@@ -180,6 +180,25 @@ export * from './security.api.js';
 
 ```
 
+Let's update the index with this new API:
+
+_./src/index.ts_
+
+```diff
+...
+import { booksApi } from '#pods/book/index.js';
++ import { securityApi } from '#pods/security/index.js';
+
+...
+app.use(logRequestMiddleware);
+
++ app.use('/api/security', securityApi);
+app.use('/api/books', booksApi);
+
+...
+
+```
+
 Let's implement `mock` method to check user's credentials:
 
 _./src/dals/user/repositories/user.repository.ts_
@@ -332,25 +351,6 @@ import { userRepository } from '#dals/index.js';
 > We could create a certificate with [OpenSSL tool](https://www.openssl.org/docs/manmaster/man1/openssl-req.html)
 >
 > [Authentication schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
-
-Let's update the index with this new API:
-
-_./src/index.ts_
-
-```diff
-...
-import { booksApi } from '#pods/book/index.js';
-+ import { securityApi } from '#pods/security/index.js';
-
-...
-app.use(logRequestMiddleware);
-
-+ app.use('/api/security', securityApi);
-app.use('/api/books', booksApi);
-
-...
-
-```
 
 Let's run app in `mock` mode:
 
