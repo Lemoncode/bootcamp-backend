@@ -108,7 +108,7 @@ npm start
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -142,7 +142,7 @@ _./src/pods/security/security.api.ts_
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/logout
 METHOD: POST
 
