@@ -10,11 +10,7 @@ securityApi
   .post('/login', async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const user = await userRepository.getUserByEmailAndPassword(
-        email,
-        password
-      );
-
+      const user = await userRepository.getUser(email, password);
       if (user) {
         const userSession: UserSession = {
           id: user._id.toHexString(),

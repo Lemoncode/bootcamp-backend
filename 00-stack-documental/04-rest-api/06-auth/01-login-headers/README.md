@@ -207,7 +207,7 @@ _./src/dals/user/repositories/user.repository.ts_
 import { User } from '../user.model';
 
 export interface UserRepository {
-+ getUserByEmailAndPassword: (email: string, password: string) => Promise<User>;
++ getUser: (email: string, password: string) => Promise<User>;
 }
 
 ```
@@ -219,7 +219,7 @@ import { UserRepository } from './user.repository.js';
 + import { db } from '../../mock-data.js';
 
 export const mockRepository: UserRepository = {
-+ getUserByEmailAndPassword: async (email: string, password: string) =>
++ getUser: async (email: string, password: string) =>
 +   db.users.find((u) => u.email === email && u.password === password),
 };
 
@@ -231,7 +231,7 @@ _./src/dals/user/repositories/user.mongodb-repository.ts_
 import { UserRepository } from './user.repository.js';
 
 export const dbRepository: UserRepository = {
-+ getUserByEmailAndPassword: async (email: string, password: string) => {
++ getUser: async (email: string, password: string) => {
 +   throw new Error('Not implemented');
 + },
 };
@@ -252,10 +252,7 @@ securityApi.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
 -   // Check is valid user
-+   const user = await userRepository.getUserByEmailAndPassword(
-+     email,
-+     password
-+   );
++   const user = await userRepository.getUser(email, password);
 
 +   if (user) {
       // Create token with user info
@@ -300,7 +297,7 @@ import { userRepository } from '#dals/index.js';
 
 Create `UserSession` model:
 
-_./src/core/models/user-session.ts_
+_./src/core/models/user-session.model.ts_
 
 ```typescript
 export interface UserSession {
@@ -314,7 +311,7 @@ Add barrel file:
 _./src/core/models/index.ts_
 
 ```typescript
-export * from './user-session.js';
+export * from './user-session.model.js';
 
 ```
 
@@ -358,7 +355,7 @@ Let's run app in `mock` mode:
 npm start
 ```
 
-```md
+```
 URL:http://localhost:3000/api/security/login
 METHOD: POST
 BODY:
@@ -412,7 +409,7 @@ booksApi
 >
 > `Authorization: Bearer my-token`
 
-```md
+```
 URL:http://localhost:3000/api/books
 METHOD: GET
 
@@ -468,6 +465,31 @@ export const ENV = {
 
 ```
 
+Update `security` rest-api:
+
+_./src/pods/security/security.api.ts_
+
+```diff
+import { Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { UserSession } from '#core/models/index.js';
++ import { ENV } from '#core/constants/index.js';
+import { userRepository } from '#dals/index.js';
+
+...
+    if (user) {
+      const userSession: UserSession = { id: user._id.toHexString() };
+-     const secret = 'my-secret'; // TODO: Move to env variable
+-     const token = jwt.sign(userSession, secret, {
++     const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
+        expiresIn: '1d',
+        algorithm: 'HS256',
+      });
+      res.send(`Bearer ${token}`);
+...
+
+```
+
 Create `security.middleware`:
 
 _./src/core/security/security.middlewares.ts_
@@ -515,15 +537,6 @@ export const authenticationMiddleware: RequestHandler = async (
 > import { promisify } from 'util';
 > const verify = promisify(jwt.verify);
 
-Add barrel file:
-
-_./src/core/security/index.ts_
-
-```typescript
-export * from './security.middlewares.js';
-
-```
-
 We could extend Express's Request types:
 
 _./src/global-types.d.ts_
@@ -541,28 +554,12 @@ declare namespace Express {
 
 ```
 
-Update `security` rest-api:
+Add barrel file:
 
-_./src/pods/security/security.api.ts_
+_./src/core/security/index.ts_
 
-```diff
-import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { UserSession } from '#core/models/index.js';
-+ import { ENV } from '#core/constants/index.js';
-import { userRepository } from '#dals/index.js';
-
-...
-    if (user) {
-      const userSession: UserSession = { id: user._id.toHexString() };
--     const secret = 'my-secret'; // TODO: Move to env variable
--     const token = jwt.sign(userSession, secret, {
-+     const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
-        expiresIn: '1d',
-        algorithm: 'HS256',
-      });
-      res.send(`Bearer ${token}`);
-...
+```typescript
+export * from './security.middlewares.js';
 
 ```
 
@@ -623,7 +620,7 @@ Let's try now `/api/books`:
 
 > Stop and run again to read new env variable
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -636,7 +633,7 @@ BODY:
 
 > Sign jwt with new env variable
 
-```md
+```
 URL: http://localhost:3000/api/books
 METHOD: GET
 
@@ -646,21 +643,41 @@ Authorization: Bearer my-token
 
 Let's add a role for each user:
 
-_./src/core/models/role.ts_
+_./src/core/models/role.model.ts_
 
 ```typescript
 export type Role = 'admin' | 'standard-user';
 
 ```
 
-_./src/core/models/user-session.ts_
+_./src/core/models/user-session.model.ts_
 
 ```diff
-+ import { Role } from './role.js';
++ import { Role } from './role.model.js';
 
 export interface UserSession {
   id: string;
 + role: Role;
+}
+
+```
+
+Update Express's Request:
+
+_./global-types.d.ts_
+
+```diff
+declare namespace Express {
++ export type Role = 'admin' | 'standard-user';
+
+  export interface UserSession {
+    id: string;
++   role: Role;
+  }
+
+  export interface Request {
+    userSession?: UserSession;
+  }
 }
 
 ```
@@ -670,8 +687,8 @@ Update barrel file:
 _./src/core/models/index.ts_
 
 ```diff
-export * from './user-session.js';
-+ export * from './role.js';
+export * from './user-session.model.js';
++ export * from './role.model.js';
 
 ```
 
@@ -718,26 +735,6 @@ export const db: DB = {
 
 ```
 
-Update Express's Request:
-
-_./global-types.d.ts_
-
-```diff
-declare namespace Express {
-+ export type Role = 'admin' | 'standard-user';
-
-  export interface UserSession {
-    id: string;
-+   role: Role;
-  }
-
-  export interface Request {
-    userSession?: UserSession;
-  }
-}
-
-```
-
 Update `login` method:
 
 _./src/pods/security/security.api.ts_
@@ -762,7 +759,7 @@ npm start
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -849,7 +846,7 @@ npm start
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
