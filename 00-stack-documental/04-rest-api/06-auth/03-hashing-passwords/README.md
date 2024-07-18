@@ -38,12 +38,12 @@ _./src/common/helpers/hash.helpers.ts_
 import crypto from 'node:crypto';
 
 const saltLenght = 32; // 16 bytes min recommended
-const passwordLength = 64; // 64 bytes = 512 bits
+const hashLength = 64; // 64 bytes = 512 bits
 
 const hashSaltAndPassword = (salt: string, password: string): Promise<string> =>
   new Promise((resolve, reject) => {
     // The default options values are using 2^14 = 16384 iterations and 16 MB of memory.
-    crypto.scrypt(password, salt, passwordLength, (error, hashedPassword) => {
+    crypto.scrypt(password, salt, hashLength, (error, hashedPassword) => {
       if (error) {
         reject(error);
       }
@@ -120,29 +120,7 @@ Let's implement the `verifyHash` function to compare plain password with hashed 
 _./src/common/helpers/hash.helpers.ts_
 
 ```diff
-import crypto from 'node:crypto';
-
-const saltLenght = 32; // 16 bytes min recommended
-const passwordLength = 64; // 64 bytes = 512 bits
-
-const hashSaltAndPassword = (salt: string, password: string): Promise<string> =>
-  new Promise((resolve, reject) => {
-    // The default options values are using 2^14 = 16384 iterations and 16 MB of memory.
-    crypto.scrypt(password, salt, passwordLength, (error, hashedPassword) => {
-      if (error) {
-        reject(error);
-      }
-
-      // salt:hash
-      resolve(`${salt}:${hashedPassword.toString('hex')}`);
-    });
-  });
-
-export const hash = async (password: string): Promise<string> => {
-  const salt = crypto.randomBytes(saltLenght).toString('hex');
-
-  return await hashSaltAndPassword(salt, password);
-};
+...
 
 + // Recommended comparison to protect against [timing attacks](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#compare-password-hashes-using-safe-functions)
 + const areEquals = (hashA: string, hashB: string): boolean =>
@@ -152,12 +130,11 @@ export const hash = async (password: string): Promise<string> => {
 +   password: string,
 +   hashedPassword: string
 + ): Promise<boolean> => {
-+   const [salt] = hashedPassword.split(':');
++   const [salt, hash] = hashedPassword.split(':');
 
-+   const newHashedPassword = await hashSaltAndPassword(salt, password);
++   const [_, newHash] = (await hashSaltAndPassword(salt, password)).split(':');
 +   return areEquals(newHashedPassword, hashedPassword);
 + };
-
 
 ```
 
@@ -172,13 +149,13 @@ _./src/dals/user/repositories/user.mongodb-repository.ts_
 import { UserRepository } from './user.repository.js';
 
 export const mongoDBRepository: UserRepository = {
-  getUserByEmailAndPassword: async (email: string, password: string) => {
+  getUser: async (email: string, password: string) => {
 -   throw new Error('Not implemented');
 +   const user = await getUserContext().findOne({
 +     email,
 +   });
 
-+   return verifyHash(password, user?.password)
++   return await verifyHash(password, user?.password)
 +     ? ({
 +         _id: user._id,
 +         email: user.email,
@@ -199,7 +176,7 @@ npm start
 
 > Run in Javascript Debug Terminal
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 

@@ -1,12 +1,12 @@
 import crypto from 'node:crypto';
 
 const saltLenght = 32; // 16 bytes min recommended
-const passwordLength = 64; // 64 bytes = 512 bits
+const hashLength = 64; // 64 bytes = 512 bits
 
 const hashSaltAndPassword = (salt: string, password: string): Promise<string> =>
   new Promise((resolve, reject) => {
     // The default options values are using 2^14 = 16384 iterations and 16 MB of memory.
-    crypto.scrypt(password, salt, passwordLength, (error, hashedPassword) => {
+    crypto.scrypt(password, salt, hashLength, (error, hashedPassword) => {
       if (error) {
         reject(error);
       }
@@ -30,8 +30,8 @@ export const verifyHash = async (
   password: string,
   hashedPassword: string
 ): Promise<boolean> => {
-  const [salt] = hashedPassword.split(':');
+  const [salt, hash] = hashedPassword.split(':');
 
-  const newHashedPassword = await hashSaltAndPassword(salt, password);
-  return areEquals(newHashedPassword, hashedPassword);
+  const [_, newHash] = (await hashSaltAndPassword(salt, password)).split(':');
+  return areEquals(newHash, hash);
 };

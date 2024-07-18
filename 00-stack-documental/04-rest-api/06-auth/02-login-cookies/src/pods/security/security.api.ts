@@ -27,6 +27,7 @@ securityApi
         });
         res.sendStatus(204);
       } else {
+        res.clearCookie('authorization');
         res.sendStatus(401);
       }
     } catch (error) {

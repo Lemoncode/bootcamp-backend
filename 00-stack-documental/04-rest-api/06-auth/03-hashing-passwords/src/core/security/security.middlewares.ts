@@ -29,6 +29,7 @@ export const authenticationMiddleware: RequestHandler = async (
     req.userSession = userSession;
     next();
   } catch (error) {
+    res.clearCookie('authorization');
     res.sendStatus(401);
   }
 };
