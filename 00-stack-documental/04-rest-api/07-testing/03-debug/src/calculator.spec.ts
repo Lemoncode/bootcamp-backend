@@ -34,6 +34,7 @@ describe('Calculator specs', () => {
       vi.spyOn(business, 'max', 'get').mockReturnValue(7);
       vi.spyOn(jwt, 'sign').mockImplementation((result) => {
         console.log(`Sign result ${result}`);
+        return '';
       });
 
       // Act
