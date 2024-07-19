@@ -260,7 +260,7 @@ import { getBookContext } from '#dals/book/book.context.js';
 + import { Book } from './book.api-model.js';
 import { bookApi } from './book.api.js';
 
-const app = createRestApiServer();
+- const app = createRestApiServer();
 - app.use(bookApi);
 
 ...
