@@ -1,2 +1,2 @@
-export * from './user-session.js';
-export * from './role.js';
+export * from './user-session.model.js';
+export * from './role.model.js';

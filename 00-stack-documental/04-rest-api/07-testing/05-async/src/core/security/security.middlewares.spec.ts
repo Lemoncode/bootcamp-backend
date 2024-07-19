@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as helpers from '#common/helpers/jwt.helpers.js';
+import * as helpers from '#common/helpers/index.js';
 import { UserSession } from '#core/models/index.js';
 import { authenticationMiddleware } from './security.middlewares.js';
 
@@ -18,6 +18,7 @@ describe('security.middlewares specs', () => {
       } as Request;
       const res = {
         sendStatus: vi.fn() as any,
+        clearCookie: vi.fn() as any,
       } as Response;
       const next = vi.fn();
 
@@ -26,6 +27,7 @@ describe('security.middlewares specs', () => {
 
       // Assert
       expect(res.sendStatus).toHaveBeenCalledWith(401);
+      expect(res.clearCookie).toHaveBeenCalledWith('authorization');
       expect(helpers.verifyJWT).toHaveBeenCalled();
     });
 

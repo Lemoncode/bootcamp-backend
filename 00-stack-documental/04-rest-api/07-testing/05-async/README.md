@@ -53,6 +53,7 @@ describe('core/security/security.middlewares specs', () => {
 +     } as Request;
 +     const res = {
 +       sendStatus: vi.fn() as any,
++       clearCookie: vi.fn() as any,
 +     } as Response;
 +     const next = vi.fn();
 
@@ -61,6 +62,7 @@ describe('core/security/security.middlewares specs', () => {
 
       // Assert
 +     expect(res.sendStatus).toHaveBeenCalledWith(401);
++     expect(res.clearCookie).toHaveBeenCalledWith('authorization');
     });
   });
 });
@@ -97,6 +99,7 @@ describe('security.middlewares specs', () => {
       } as Request;
       const res = {
         sendStatus: vi.fn() as any,
+        clearCookie: vi.fn() as any,
       } as Response;
       const next = vi.fn();
 
@@ -107,6 +110,7 @@ describe('security.middlewares specs', () => {
 
       // Assert
       expect(res.sendStatus).toHaveBeenCalledWith(401);
+      expect(res.clearCookie).toHaveBeenCalledWith('authorization');
     });
   });
 });
@@ -189,11 +193,11 @@ import { authenticationMiddleware } from './security.middlewares.js';
 +       id: '1',
 +       role: 'admin',
 +     };
-+     const verifyStub = vi
-+       .spyOn(jwt, 'verify')
-+       .mockImplementation((token, secret, callback: any) => {
++     vi.spyOn(jwt, 'verify').mockImplementation(
++       (token, secret, callback: any) => {
 +         callback(undefined, userSession);
-+       });
++       }
++     );
 
 +     const cookies: Record<string, any> = {
 +       authorization,
@@ -203,6 +207,7 @@ import { authenticationMiddleware } from './security.middlewares.js';
 +     } as Request;
 +     const res = {
 +       sendStatus: vi.fn() as any,
++       clearCookie: vi.fn() as any,
 +     } as Response;
 +     const next = vi.fn();
 
@@ -210,7 +215,7 @@ import { authenticationMiddleware } from './security.middlewares.js';
 +     await authenticationMiddleware(req, res, next);
 
 +     // Assert
-+     expect(verifyStub).toHaveBeenCalled();
++     expect(jwt.verify).toHaveBeenCalled();
 +   });
 
 ...
@@ -247,7 +252,7 @@ Update barrel file:
 _./src/common/helpers/index.ts_
 
 ```diff
-export * from './hash-password.helpers.js';
+export * from './hash.helpers.js';
 + export * from './jwt.helpers.js';
 
 ```
@@ -305,7 +310,7 @@ _./src/core/security/security.middlewares.spec.ts_
 ```diff
 import { Request, Response } from 'express';
 - import jwt from 'jsonwebtoken';
-+ import * as helpers from '#common/helpers/jwt.helpers.js';
++ import * as helpers from '#common/helpers/index.js';
 import { UserSession } from '#core/models/index.js';
 import { authenticationMiddleware } from './security.middlewares.js';
 
@@ -319,6 +324,7 @@ describe('core/security/security.middlewares specs', () => {
 ...
       // Assert
       expect(res.sendStatus).toHaveBeenCalledWith(401);
+      expect(res.clearCookie).toHaveBeenCalledWith('authorization');
 +     expect(helpers.verifyJWT).toHaveBeenCalled();
     });
 
@@ -348,10 +354,6 @@ describe('core/security/security.middlewares specs', () => {
 });
 
 ```
-
-> NOTE: don't use barrels in spyOn methods.
->
-> [Related issue](https://github.com/facebook/vi/issues/6914)
 
 # ¿Con ganas de aprender Backend?
 
