@@ -132,8 +132,8 @@ _./src/common/helpers/hash.helpers.ts_
 + ): Promise<boolean> => {
 +   const [salt, hash] = hashedPassword.split(':');
 
-+   const [_, newHash] = (await hashSaltAndPassword(salt, password)).split(':');
-+   return areEquals(newHashedPassword, hashedPassword);
++   const [, newHash] = (await hashSaltAndPassword(salt, password)).split(':');
++   return areEquals(hash, newHash);
 + };
 
 ```
