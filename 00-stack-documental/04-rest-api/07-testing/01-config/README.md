@@ -133,6 +133,20 @@ _./config/test/config.d.ts_
 
 ```
 
+Update `tsconfig.json`:
+
+_./tsconfig.json_
+
+```diff{
+  "compilerOptions": {
+    ...
+  },
+- "include": ["src/**/*"]
++ "include": ["src/**/*", "config/test/config.d.ts"]
+}
+
+```
+
 Update package.json:
 
 _./package.json_
@@ -149,20 +163,6 @@ _./package.json_
   },
   ...
 }
-```
-
-Update `tsconfig.json`:
-
-_./tsconfig.json_
-
-```diff{
-  "compilerOptions": {
-    ...
-  },
-- "include": ["src/**/*"]
-+ "include": ["src/**/*", "config/test/config.d.ts"]
-}
-
 ```
 
 Update specs:
