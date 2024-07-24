@@ -61,19 +61,19 @@ Para que sea más sencillo modificar el nombre que le des a las cosas, utiliza l
 
 ```bash
 # Generales
-RESOURCE_GROUP=tour-of-heroes-2
-LOCATION=westeurope
+RESOURCE_GROUP=tour-of-heroes
+LOCATION=spaincentral
 
 # Base de datos
-SQL_SERVER_NAME=tour-of-heroes-sql-2
+SQL_SERVER_NAME=tour-of-heroes-sql
 SQL_SERVER_USERNAME=sqladmin
 SQL_SERVER_PASSWORD=Password1!
 
 # Backend
-BACK_END_NAME=tour-of-heroes-api-2
+BACK_END_NAME=tour-of-heroes-api
 
 # Front-end
-FRONT_END_NAME=tour-of-heroes-web-2
+FRONT_END_NAME=tour-of-heroes-web
 ```
 
 ## Creación de un grupo de recursos
@@ -212,7 +212,7 @@ az staticwebapp create \
 --resource-group $RESOURCE_GROUP \
 --source https://github.com/$GITHUB_USER_NAME/bootcamp-backend \
 --location "westeurope" \
---branch gisela/azure \
+--branch main \
 --app-location "/01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/front-end" \
 --output-location "dist/angular-tour-of-heroes" \
 --login-with-github
