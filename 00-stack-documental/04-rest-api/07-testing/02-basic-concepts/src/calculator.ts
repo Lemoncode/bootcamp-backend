@@ -6,7 +6,8 @@ export const add = (a, b) => {
 
   if (result < max) {
     isLowerThan(result, max);
-    sign(result, 'my-secret');
+    const token = sign(result, 'my-secret');
+    console.log({ token });
   }
 
   return result;

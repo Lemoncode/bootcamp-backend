@@ -12,13 +12,13 @@ We will start from `02-basic-concepts`.
 npm install
 ```
 
-## Debugging Jest
+## Debugging Vitest
 
-Jest is running over node, so we could use VS Code for debugging jest specs:
+Vitest is running over node, so we could use VS Code for debugging jest specs:
 
 ### Using JavaScript Debug Terminal
 
-Since `jest` is a nodejs process, we could use the integraded `JavaScript Debug Terminal` provided by VS Code.
+Since `Vitest` is a nodejs process, we could use the integraded `JavaScript Debug Terminal` provided by VS Code.
 
 > More info [here](https://www.lemoncode.tv/curso/vs-code-js-debugging/leccion/javascript-debug-terminal)
 
