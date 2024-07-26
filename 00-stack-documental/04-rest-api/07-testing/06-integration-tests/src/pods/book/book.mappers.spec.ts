@@ -38,14 +38,15 @@ describe('book.mappers spec', () => {
       const result: model.Book[] = mapBookListFromApiToModel(bookList);
 
       // Assert
-      expect(result).toEqual([
+      const expectedResult: model.Book[] = [
         {
           _id: new ObjectId('60c20a334bec6a37b08acec9'),
           title: 'test-title',
           releaseDate: new Date('2021-07-28T12:30:00'),
           author: 'test-author',
         },
-      ]);
+      ];
+      expect(result).toEqual(expectedResult);
     });
   });
 });
