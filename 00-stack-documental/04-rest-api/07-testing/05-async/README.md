@@ -19,6 +19,8 @@ Create specs file:
 _./src/core/security/security.middlewares.spec.ts_
 
 ```typescript
+import { authenticationMiddleware } from './security.middlewares.js';
+
 describe('security.middlewares specs', () => {
   describe('authenticationMiddleware', () => {
     it('', () => {
@@ -36,7 +38,7 @@ _./src/core/security/security.middlewares.spec.ts_
 
 ```diff
 + import { Request, Response } from 'express';
-+ import { authenticationMiddleware } from './security.middlewares.js';
+import { authenticationMiddleware } from './security.middlewares.js';
 
 describe('core/security/security.middlewares specs', () => {
   describe('authorizationMiddleware', () => {
@@ -231,20 +233,24 @@ _./src/common/helpers/jwt.helpers.ts_
 ```typescript
 import jwt from 'jsonwebtoken';
 
-export const verifyJWT = <T>(token: string, secret: string): Promise<T> =>
-  new Promise<T>((resolve, reject) => {
-    jwt.verify(token, secret, (error, payload) => {
+export const verifyJWT = <Payload>(
+  token: string,
+  secret: string
+): Promise<Payload> =>
+  new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (error, payload: Payload) => {
       if (error) {
         reject(error);
       }
 
       if (payload) {
-        resolve(payload as unknown as T);
+        resolve(payload);
       } else {
         reject();
       }
     });
   });
+
 ```
 
 Update barrel file:
