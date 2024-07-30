@@ -266,10 +266,7 @@ import { bookApi } from './book.api.js';
 ...
   describe('get book list', () => {
 +   const app = createRestApiServer();
-
-+   beforeAll(() => {
-+     app.use(bookApi);
-+   });
++   app.use(bookApi);
 
     it('should return the whole bookList with values when it request "/" endpoint without query params', async () => {
       ...
