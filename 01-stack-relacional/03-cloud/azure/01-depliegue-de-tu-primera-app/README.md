@@ -166,6 +166,7 @@ az webapp create \
 Ahora que ya tienes el App Service creado, necesitas desplegar el back-end en él. Para ello ejecuta los siguientes comandos, dentro de la carpeta `back-end` de este repositorio:
 
 ```bash
+cd 01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/back-end
 dotnet publish -o ./publish
 
 cd publish
@@ -221,7 +222,7 @@ Para crear un App Service Static Web Apps ejecuta el siguiente comando:
 az staticwebapp create \
 --name $FRONT_END_NAME \
 --resource-group $RESOURCE_GROUP \
---source https://github.com/$GITHUB_USER_NAME/bootcamp-backend \
+--source https://github.com/$GITHUB_USER_NAME/tour-of-heroes-angular \
 --location "westeurope" \
 --branch main \
 --app-location "/01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/front-end" \

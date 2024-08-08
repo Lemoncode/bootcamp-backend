@@ -1,0 +1,21 @@
+name: Prettier Workflow
+on:
+  workflow_call:
+
+env:
+  NODE_VERSION: 18.x
+
+jobs:
+  # Confirm that prettier was run on the changes
+  prettier:
+    name: Prettier Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.5.2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies and run prettier-check
+        run: |
+          npm install --force
+          npm run prettier-check

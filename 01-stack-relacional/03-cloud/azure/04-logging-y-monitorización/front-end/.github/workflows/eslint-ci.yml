@@ -1,0 +1,25 @@
+name: ESLint Workflow
+
+on:
+  workflow_call:
+env:
+  NODE_VERSION: 18.x
+jobs:
+  # Make sure eslint passes
+  eslint:
+    name: ESLint Check
+    runs-on: ubuntu-latest
+    env:
+      # Use the git sha as a unique token for Turbo Repo
+      SERVER_TOKEN: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.5.2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+      - name: Run ESLint
+        run: |
+          npm install --force       
+          npm run lint

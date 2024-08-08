@@ -1,0 +1,29 @@
+// See https://containers.dev/implementors/json_reference/ for configuration reference
+{
+  "name": "Tour of heroes - Angular",
+  "dockerComposeFile": "docker-compose.yaml",
+  "containerEnv": {},
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "remoteUser": "node",
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/angular-cli:2": {}
+  },
+  "forwardPorts": [   
+    4200, // Angular
+    5010 // Web API    
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot",
+        "dbaeumer.vscode-eslint",
+        "DavidAnson.vscode-markdownlint",
+        "eamodio.gitlens",
+        "humao.rest-client"
+      ]
+    }
+  },
+  "postCreateCommand": "envsubst < src/assets/env.template.js > src/assets/env.js && npm install && npm run start"
+}

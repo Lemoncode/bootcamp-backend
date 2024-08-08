@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "tour-of-heroes-api"
+    static_configs:
+      - targets: ["api:5000"] # Replace with actual container hostname and port
+
+  - job_name: "tour-of-heroes-angular"
+    static_configs:
+      - targets: ["workspace:4200"] # Replace with actual container hostname and port

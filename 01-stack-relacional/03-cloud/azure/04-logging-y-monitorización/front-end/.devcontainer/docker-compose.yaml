@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  workspace:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    environment:      
+      API_URL: https://${CODESPACE_NAME}-5010.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}/api/hero
+    command: sleep infinity
+  api:
+    image: ghcr.io/0gis0/tour-of-heroes-dotnet-api/tour-of-heroes-api:6b947c4
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Initial Catalog=heroes;Persist Security Info=False;User ID=sa;Password=P@ssword;TrustServerCertificate=True;
+    ports:
+      - "5010:5000"
+  db:
+    image:  mcr.microsoft.com/azure-sql-edge
+    restart: unless-stopped
+    environment:
+      SA_PASSWORD: P@ssword
+      ACCEPT_EULA: Y
