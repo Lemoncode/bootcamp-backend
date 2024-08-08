@@ -94,3 +94,9 @@ ClientBin/
 *.jfm
 *.pfx
 01-stack-relacional/04-containers/00-dockerizar-una-app/app/.dockerignore
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.AssemblyInfoInputs.cache
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.assets.cache
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.csproj.AssemblyReference.cache
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.csproj.CoreCompileInputs.cache
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.csproj.FileListAbsolute.txt
+01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/QueueProcessor/obj/Debug/net8.0/QueueProcessor.sourcelink.json
