@@ -18,7 +18,14 @@ Add `mock-db` files:
 _./src/mock-db.ts_
 
 ```typescript
-let mockBookList = [
+interface Book {
+  id: number;
+  title: string;
+  releaseDate: string;
+  author: string;
+}
+
+let mockBookList: Book[] = [
   {
     id: 1,
     title: "Choque de reyes",
@@ -67,11 +74,11 @@ export const getBookList = async () => {
   return mockBookList;
 };
 
-export const getBook = async (id) => {
+export const getBook = async (id: number) => {
   return mockBookList.find((book) => book.id === id);
 };
 
-export const insertBook = async (book) => {
+export const insertBook = async (book: Book) => {
   const id = mockBookList.length + 1;
   const newBook = {
     ...book,
@@ -82,7 +89,7 @@ export const insertBook = async (book) => {
   return newBook;
 };
 
-export const updateBook = async (id, updatedBook) => {
+export const updateBook = async (id: number, updatedBook: Book) => {
   mockBookList = mockBookList.map((book) =>
     book.id === id
       ? {
@@ -94,10 +101,11 @@ export const updateBook = async (id, updatedBook) => {
   );
 };
 
-export const deleteBook = async (id) => {
+export const deleteBook = async (id: number) => {
   mockBookList = mockBookList.filter((book) => book.id !== id);
   return true;
 };
+
 ```
 
 Let's try to implement the books portal methods that we saw in previous section. We will start with "Get available book list":

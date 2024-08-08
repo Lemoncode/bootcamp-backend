@@ -109,10 +109,11 @@ _./src/pods/book/book.mappers.spec.ts_
 +     const bookList: apiModel.Book[] = null;
 
 +     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     const result = mapBookListFromApiToModel(bookList);
 
 +     // Assert
-+     expect(result).toEqual([]);
++     const expectedResult: model.Book[] = [];
++     expect(result).toEqual(expectedResult);
 +   });
   });
 });
@@ -131,10 +132,11 @@ _./src/pods/book/book.mappers.spec.ts_
 +     const bookList: apiModel.Book[] = [];
 
 +     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     const result = mapBookListFromApiToModel(bookList);
 
 +     // Assert
-+     expect(result).toEqual([]);
++     const expectedResult: model.Book[] = [];
++     expect(result).toEqual(expectedResult);
 +   });
   });
 });
@@ -165,17 +167,18 @@ import { mapBookListFromApiToModel } from './book.mappers.js';
 +     ];
 
 +     // Act
-+     const result: model.Book[] = mapBookListFromApiToModel(bookList);
++     const result = mapBookListFromApiToModel(bookList);
 
 +     // Assert
-+     expect(result).toEqual([
++     const expectedResult: model.Book[] = [
 +       {
 +         _id: new ObjectId('60c20a334bec6a37b08acec9'),
 +         title: 'test-title',
 +         releaseDate: new Date('2021-07-28T12:30:00'),
 +         author: 'test-author',
 +       },
-+     ]);
++     ];
++     expect(result).toEqual(expectedResult);
 +   });
   });
 });
@@ -245,28 +248,30 @@ export const mapBookListFromApiToModel = (
 
 ```
 
-- Another tool provided by jest is the [each](https://jestjs.io/docs/api#testeachtablename-fn-timeout) method.
+Another tool provided by vitest is the [each](https://vitest.dev/api/#test-each) method.
 
-> We could have some issues typing arrays.
-> That's why the `any` casting
-
-### ./src/mapper.spec.ts
+_./src/pods/book/book.mappers.spec.ts_
 
 ```diff
 ...
 
 describe('mapper specs', () => {
   describe('mapBookListFromApiToModel', () => {
-+   it.each<apiModel.Book[]>([undefined, null, []])(
-+     'should return empty array when it feeds bookList equals %p',
-+     (bookList: any) => {
++   it.each<{ bookList: apiModel.Book[] }>([
++     { bookList: undefined },
++     { bookList: null },
++     { bookList: [] },
++   ])(
++     'should return empty array when it feeds bookList equals $bookList',
++     ({ bookList }) => {
 +       // Arrange
 
 +       // Act
-+       const result: model.Book[] = mapBookListFromApiToModel(bookList);
++       const result = mapBookListFromApiToModel(bookList);
 
 +       // Assert
-+       expect(result).toEqual([]);
++       const expectedResult: model.Book[] = [];
++       expect(result).toEqual(expectedResult);
 +     }
 +   );
 

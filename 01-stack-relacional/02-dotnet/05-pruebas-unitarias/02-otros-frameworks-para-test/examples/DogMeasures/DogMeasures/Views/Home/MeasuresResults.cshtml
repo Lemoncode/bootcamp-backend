@@ -1,0 +1,9 @@
+﻿@model DogMeasures.Models.DogWeightInfo
+@{
+    ViewData["Title"] = "Resultados de la consulta de medidas de tu perro";
+}
+<h2>@ViewData["Title"]</h2>
+<div>
+    <p>@Model.Message</p>
+</div>
+<p><a asp-action="Index">Volver a realizar otra consulta</a></p>

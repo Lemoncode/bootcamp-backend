@@ -53,7 +53,7 @@ También vamos a cargar una variable con el nombre de la cuenta de Azure Storage
 
 ```bash
 STORAGE_ACCOUNT="heroespics"
-LOCATION="westeurope"
+LOCATION="spaincentral"
 ```
 
 Ahora vamos a crear la cuenta de Azure Storage. Abre una terminal y ejecuta el siguiente comando:

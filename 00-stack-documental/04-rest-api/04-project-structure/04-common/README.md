@@ -53,36 +53,32 @@ Update `index` file:
 _./src/index.ts_
 
 ```diff
-import "#core/load-env.js";
 import express from "express";
-import path from "path";
-import url from "url";
+import path from "node:path";
 + import {
 +   logRequestMiddleware,
 +   logErrorRequestMiddleware,
 + } from "#common/middlewares/index.js";
 import { createRestApiServer } from "#core/servers/index.js";
-import { envConstants } from "#core/constants/index.js";
-import { booksApi } from "#pods/book/index.js";
+import { ENV } from "#core/constants/index.js";
+import { bookApi } from "#pods/book/index.js";
 
 ...
 
-- restApiServer.use(async (req, res, next) => {
+- app.use(async (req, res, next) => {
 -   console.log(req.url);
 -   next();
 - });
-+ restApiServer.use(logRequestMiddleware);
++ app.use(logRequestMiddleware);
 
-restApiServer.use("/api/books", booksApi);
+app.use("/api/books", bookApi);
 
-- restApiServer.use(async (error, req, res, next) => {
+- app.use(async (error, req, res, next) => {
 -   console.error(error);
 -   res.sendStatus(500);
 - });
-+ restApiServer.use(logErrorRequestMiddleware);
-
++ app.use(logErrorRequestMiddleware);
 ...
-
 ```
 
 # ¿Con ganas de aprender Backend?

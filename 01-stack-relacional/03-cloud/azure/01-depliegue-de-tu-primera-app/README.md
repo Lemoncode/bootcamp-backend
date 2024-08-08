@@ -62,10 +62,10 @@ Para que sea más sencillo modificar el nombre que le des a las cosas, utiliza l
 ```bash
 # Generales
 RESOURCE_GROUP=tour-of-heroes
-LOCATION=westeurope
+LOCATION=spaincentral
 
 # Base de datos
-SQL_SERVER_NAME=tour-of-heroes-sql
+SQL_SERVER_NAME=tour-of-heroes-sql-server
 SQL_SERVER_USERNAME=sqladmin
 SQL_SERVER_PASSWORD=Password1!
 
@@ -112,9 +112,20 @@ Reemplaza la misma en el archivo de configuración `appsettings.Development.json
 
 Si ahora vuelves a acceder a la API te darás cuenta de que te encuentras con un error parecido al siguiente:
 
-`SqlException: Cannot open server 'tour-of-heroes-sql' requested by the login. Client with IP address 'XX.XXX.XXX.XXX' is not allowed to access the server. To enable access, use the Azure Management Portal or run sp_set_firewall_rule on the master database to create a firewall rule for this IP address or address range. It may take up to five minutes for this change to take effect.`
+`SqlException: Reason: An instance-specific error occurred while establishing a connection to SQL Server. Connection was denied since Deny Public Network Access is set to Yes (https://docs.microsoft.com/azure/azure-sql/database/connectivity-settings#deny-public-network-access). To connect to this server, use the Private Endpoint from inside your virtual network (https://docs.microsoft.com/azure/sql-database/sql-database-private-endpoint-overview#how-to-set-up-private-link-for-azure-sql-database).`
 
-Esto es debido a que Azure SQL Server tiene un firewall que por defecto no permite el acceso a nadie. Para solucionar esto necesitas añadir una regla de firewall que permita el acceso a tu IP. Puedes hacerlo con el siguiente comando:
+Esto es debido a que Azure SQL Server no permite el acceso público por defecto. Para solucionar esto necesitas hacer dos cosas.
+
+Por un lado debemos habilitar el acceso publico a nuestro SQL Server:
+
+```bash
+az sql server update \
+--resource-group $RESOURCE_GROUP \
+--name $SQL_SERVER_NAME \
+--enable-public-network true
+```
+
+Y en segundo lugar, necesitas añadir una regla de firewall para permitir el acceso desde tu IP. Puedes hacerlo con el siguiente comando:
 
 ```bash
 az sql server firewall-rule create \
@@ -214,7 +225,7 @@ az staticwebapp create \
 --source https://github.com/$GITHUB_USER_NAME/tour-of-heroes-angular \
 --location "westeurope" \
 --branch main \
---app-location "/" \
+--app-location "/01-stack-relacional/03-cloud/azure/01-depliegue-de-tu-primera-app/front-end" \
 --output-location "dist/angular-tour-of-heroes" \
 --login-with-github
 ```

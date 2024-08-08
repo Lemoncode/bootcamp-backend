@@ -1,5 +1,5 @@
-import http2 from "http2";
-import fs from "fs";
+import http2 from "node:http2";
+import fs from "node:fs";
 
 const serverOptions = {
   key: fs.readFileSync("certificate/key.pem"),

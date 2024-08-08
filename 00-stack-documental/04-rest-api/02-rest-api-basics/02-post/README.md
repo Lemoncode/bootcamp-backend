@@ -30,8 +30,7 @@ const handleRequest = (req, res) => {
 +     res.write(url);
 +     res.end();
 +   }
-  } else if (/\/api\/books\/\d$/.test(url) && method === "GET") {
-    const [, bookId] = url.match(/\/api\/books\/(\d)$/);
+  } else if (url.startsWith("/api/books/") && method === "GET") {
 ...
 
 ```
@@ -92,8 +91,7 @@ const handleRequest = (req, res) => {
 +       res.end();
 +     });
     }
-  } else if (/\/api\/books\/\d$/.test(url) && method === "GET") {
-    const [, bookId] = url.match(/\/api\/books\/(\d)$/);
+  } else if (url.startsWith("/api/books/") && method === "GET") {
 ...
 
 ```

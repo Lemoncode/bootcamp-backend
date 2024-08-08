@@ -24,7 +24,6 @@ export interface Book {
   releaseDate: Date;
   author: string;
 }
-
 ```
 
 Add barrel file:
@@ -33,7 +32,6 @@ _./dals/book/index.ts_
 
 ```typescript
 export * from "./book.model.js";
-
 ```
 
 Let's create the `mock-data` file that it will be represent the database in memory:
@@ -93,7 +91,6 @@ export const db: DB = {
     },
   ],
 };
-
 ```
 
 Let's create `repositories`, they are interfaces to getting entities as well as creating and changing them, etc.
@@ -109,7 +106,6 @@ export interface BookRepository {
   saveBook: (book: Book) => Promise<Book>;
   deleteBook: (id: string) => Promise<boolean>;
 }
-
 ```
 
 Let's implement `mock-repository`:
@@ -141,24 +137,26 @@ export const mockRepository: BookRepository = {
   getBookList: async () => db.books,
   getBook: async (id: string) => db.books.find((b) => b.id === id),
   saveBook: async (book: Book) =>
-    Boolean(book.id) ? updateBook(book) : insertBook(book),
+    db.books.some((b) => b.id === book.id)
+      ? updateBook(book)
+      : insertBook(book),
   deleteBook: async (id: string) => {
+    const exists = db.books.some((b) => b.id === id);
     db.books = db.books.filter((b) => b.id !== id);
-    return true;
+    return exists;
   },
 };
-
 ```
 
-We could create the empty `db repository` pending to implement:
+We could create the empty `mongodb repository` pending to implement:
 
-_./dals/book/repositories/book.db-repository.ts_
+_./dals/book/repositories/book.mongodb-repository.ts_
 
 ```typescript
 import { BookRepository } from "./book.repository.js";
 import { Book } from "../book.model.js";
 
-export const dbRepository: BookRepository = {
+export const mongoDBRepository: BookRepository = {
   getBookList: async () => {
     throw new Error("Not implemented");
   },
@@ -172,7 +170,6 @@ export const dbRepository: BookRepository = {
     throw new Error("Not implemented");
   },
 };
-
 ```
 
 Add barrel file:
@@ -181,13 +178,12 @@ _./dals/book/repositories/index.ts_
 
 ```typescript
 import { mockRepository } from "./book.mock-repository.js";
-import { dbRepository } from "./book.db-repository.js";
+import { mongoDBRepository } from "./book.mongodb-repository.js";
 
 // TODO: Create env variable
 const isApiMock = true;
 
-export const bookRepository = isApiMock ? mockRepository : dbRepository;
-
+export const bookRepository = isApiMock ? mockRepository : mongoDBRepository;
 ```
 
 Update barrel file:
@@ -210,7 +206,7 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-+ API_MOCK=true
++ IS_API_MOCK=true
 
 ```
 
@@ -222,7 +218,7 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-+ API_MOCK=true
++ IS_API_MOCK=true
 
 ```
 
@@ -231,13 +227,13 @@ Update constants:
 _./src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
-  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH, 
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === "production",
+  PORT: Number(process.env.PORT),
+  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
-+ isApiMock: process.env.API_MOCK === 'true',
++ IS_API_MOCK: process.env.IS_API_MOCK === "true",
 };
 
 ```
@@ -248,15 +244,14 @@ _./dals/book/repositories/index.ts_
 
 ```diff
 import { mockRepository } from "./book.mock-repository.js";
-import { dbRepository } from "./book.db-repository.js";
-+ import { envConstants } from "../../../core/constants/index.js";
+import { mongoDBRepository } from "./book.mongodb-repository.js";
++ import { ENV } from "../../../core/constants/index.js";
 
 - // TODO: Create env variable
 - const isApiMock = true;
 
-- export const bookRepository = isApiMock ? mockRepository : dbRepository;
-+ export const bookRepository = envConstants.isApiMock ? mockRepository : dbRepository;
-
+- export const bookRepository = isApiMock ? mockRepository : mongoDBRepository;
++ export const bookRepository = ENV.IS_API_MOCK ? mockRepository : mongoDBRepository;
 ```
 
 Let's try using the repository:
@@ -265,10 +260,9 @@ _./src/dals/index.ts_
 
 ```typescript
 export * from "./book/index.js";
-
 ```
 
-_./src/books.api.ts_
+_./src/book.api.ts_
 
 ```diff
 import { Router } from "express";
@@ -281,9 +275,9 @@ import {
   deleteBook,
 } from "./mock-db.js";
 
-export const booksApi = Router();
+export const bookApi = Router();
 
-booksApi
+bookApi
   .get("/", async (req, res, next) => {
     try {
       const page = Number(req.query.page);
@@ -302,7 +296,7 @@ As a great improvement, we will configure our project to allow import aliases, N
 
 Let's add main aliases:
 
-_./pacakge.json_
+_./package.json_
 
 ```diff
 {
@@ -310,56 +304,44 @@ _./pacakge.json_
   "scripts": {
   },
 + "imports": {
-+   "#common/*": "./src/common/*",
-+   "#common-app/*": "./src/common-app/*",
-+   "#core/*": "./src/core/*",
-+   "#dals/*": "./src/dals/*",
-+   "#pods/*": "./src/pods/*"
++   "#*": "./src/*"
 + },
   ...
 }
 
 ```
 
-> NOTE: Entries in the "imports" field must always start with # to ensure they are disambiguated from external package specifiers.
+> NOTES:
+>
+> Entries in the "imports" field must always start with # to ensure they are disambiguated from external package specifiers.
+>
+> Since [TypeScript 5.4]((https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/#auto-import-support-for-subpath-imports)) is supporting subpath imports without configure `tsconfig.json` `paths`.
 
-Configure typescript:
-
-_./tsconfig.json_
-
-```diff{
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "NodeNext",
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-+   "baseUrl": "./src",
-+   "paths": {
-+     "#*": ["*"]
-+   }
-  },
-  "include": ["src/**/*"]
-}
-
-```
 
 Update imports with aliases:
 
 _./src/index.ts_
 
 ```diff
-- import "./core/load-env.js";
-+ import "#core/load-env.js";
 import express from "express";
-import path from "path";
-import url from "url";
+import path from "node:path";
 - import { createRestApiServer } from "./core/servers/index.js";
 + import { createRestApiServer } from "#core/servers/index.js";
-- import { envConstants } from "./core/constants/index.js";
-+ import { envConstants } from "#core/constants/index.js";
-import { booksApi } from "./books.api.js";
+- import { ENV } from "./core/constants/index.js";
++ import { ENV } from "#core/constants/index.js";
+import { bookApi } from "./book.api.js";
+...
+
+```
+
+_./src/book.api.ts_
+
+```diff
+import { Router } from "express";
+- import { bookRepository } from "./dals/index.js";
++ import { bookRepository } from "#dals/index.js";
+import { getBook, insertBook, updateBook, deleteBook } from "./mock-db.js";
+
 ...
 
 ```
@@ -371,18 +353,6 @@ import { mockRepository } from "./book.mock-repository.js";
 import { dbRepository } from "./book.db-repository.js";
 - import { envConstants } from "../../../core/constants/index.js";
 + import { envConstants } from "#core/constants/index.js";
-
-...
-
-```
-
-_./src/books.api.ts_
-
-```diff
-import { Router } from "express";
-- import { bookRepository } from "./dals/index.js";
-+ import { bookRepository } from "#dals/index.js";
-import { getBook, insertBook, updateBook, deleteBook } from "./mock-db.js";
 
 ...
 

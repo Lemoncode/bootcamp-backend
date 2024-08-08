@@ -1,15 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "baseUrl": "./src",
-    "paths": {
-      "#*": ["*"]
-    }
+    "esModuleInterop": true
   },
-  "include": ["src/**/*", "./global-types.d.ts"]
+  "include": ["src/**/*", "config/test/config.d.ts"]
 }

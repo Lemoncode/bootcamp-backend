@@ -1,3 +1,4 @@
+import { sign } from 'jsonwebtoken';
 import { isLowerThan, max } from './business/index.js';
 
 export const add = (a, b) => {
@@ -5,6 +6,8 @@ export const add = (a, b) => {
 
   if (result < max) {
     isLowerThan(result, max);
+    const token = sign(result, 'my-secret');
+    console.log({ token });
   }
 
   return result;

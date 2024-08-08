@@ -1,4 +1,4 @@
-import http from "http";
+import http from "node:http";
 import { getBookList, getBook } from "./mock-db.mjs";
 
 const handleRequest = (req, res) => {
@@ -8,8 +8,8 @@ const handleRequest = (req, res) => {
     res.write(JSON.stringify(getBookList()));
     res.statusCode = 200;
     res.end();
-  } else if (/\/api\/books\/\d$/.test(url) && method === "GET") {
-    const [, bookId] = url.match(/\/api\/books\/(\d)$/);
+  } else if (url.startsWith("/api/books/") && method === "GET") {
+    const bookId = url.split("/")[3];
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 200;
     const book = getBook(Number(bookId));

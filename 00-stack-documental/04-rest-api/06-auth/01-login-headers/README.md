@@ -111,12 +111,12 @@ export const mockRepository: UserRepository = {
 
 ```
 
-_./src/dals/user/repositories/user.db-repository.ts_
+_./src/dals/user/repositories/user.mongodb-repository.ts_
 
 ```typescript
 import { UserRepository } from './user.repository.js';
 
-export const dbRepository: UserRepository = {
+export const mongoDBRepository: UserRepository = {
 
 };
 
@@ -126,12 +126,12 @@ _./src/dals/user/repositories/index.ts_
 
 ```typescript
 import { mockRepository } from './user.mock-repository.js';
-import { dbRepository } from './user.db-repository.js';
-import { envConstants } from '#core/constants/index.js';
+import { mongoDBRepository } from './user.mongodb-repository.js';
+import { ENV } from '#core/constants/index.js';
 
-export const userRepository = envConstants.isApiMock
+export const userRepository = ENV.IS_API_MOCK
   ? mockRepository
-  : dbRepository;
+  : mongoDBRepository;
 
 ```
 
@@ -147,7 +147,7 @@ export * from './user.model.js';
 
 Let's create the `login` method:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```typescript
 import { Router } from 'express';
@@ -176,7 +176,26 @@ Add barrel file:
 _./src/pods/security/index.ts_
 
 ```typescript
-export * from './security.rest-api.js';
+export * from './security.api.js';
+
+```
+
+Let's update the index with this new API:
+
+_./src/index.ts_
+
+```diff
+...
+import { booksApi } from '#pods/book/index.js';
++ import { securityApi } from '#pods/security/index.js';
+
+...
+app.use(logRequestMiddleware);
+
++ app.use('/api/security', securityApi);
+app.use('/api/books', booksApi);
+
+...
 
 ```
 
@@ -188,7 +207,7 @@ _./src/dals/user/repositories/user.repository.ts_
 import { User } from '../user.model';
 
 export interface UserRepository {
-+ getUserByEmailAndPassword: (email: string, password: string) => Promise<User>;
++ getUser: (email: string, password: string) => Promise<User>;
 }
 
 ```
@@ -200,28 +219,28 @@ import { UserRepository } from './user.repository.js';
 + import { db } from '../../mock-data.js';
 
 export const mockRepository: UserRepository = {
-+ getUserByEmailAndPassword: async (email: string, password: string) =>
++ getUser: async (email: string, password: string) =>
 +   db.users.find((u) => u.email === email && u.password === password),
 };
 
 ```
 
-_./src/dals/user/repositories/user.db-repository.ts_
+_./src/dals/user/repositories/user.mongodb-repository.ts_
 
 ```diff
 import { UserRepository } from './user.repository.js';
 
 export const dbRepository: UserRepository = {
-+ getUserByEmailAndPassword: async (email: string, password: string) => null,
++ getUser: async (email: string, password: string) => {
++   throw new Error('Not implemented');
++ },
 };
 
 ```
 
-> NOTE: We can throw a not implemented error too.
-
 Getting valid user:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 import { Router } from 'express';
@@ -233,10 +252,7 @@ securityApi.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
 -   // Check is valid user
-+   const user = await userRepository.getUserByEmailAndPassword(
-+     email,
-+     password
-+   );
++   const user = await userRepository.getUser(email, password);
 
 +   if (user) {
       // Create token with user info
@@ -262,7 +278,7 @@ npm install @types/jsonwebtoken --save-dev
 
 Generate JWT token with user info:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 import { Router } from 'express';
@@ -281,7 +297,7 @@ import { userRepository } from '#dals/index.js';
 
 Create `UserSession` model:
 
-_./src/common-app/models/user-session.ts_
+_./src/core/models/user-session.model.ts_
 
 ```typescript
 export interface UserSession {
@@ -292,21 +308,21 @@ export interface UserSession {
 
 Add barrel file:
 
-_./src/common-app/models/index.ts_
+_./src/core/models/index.ts_
 
 ```typescript
-export * from './user-session.js';
+export * from './user-session.model.js';
 
 ```
 
 Update endpoint:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-+ import { UserSession } from '#common-app/models/index.js';
++ import { UserSession } from '#core/models/index.js';
 import { userRepository } from '#dals/index.js';
 
 ...
@@ -333,32 +349,13 @@ import { userRepository } from '#dals/index.js';
 >
 > [Authentication schemes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes)
 
-Let's update the index with this new API:
-
-_./src/index.ts_
-
-```diff
-...
-import { booksApi } from '#pods/book/index.js';
-+ import { securityApi } from '#pods/security/index.js';
-
-...
-restApiServer.use(logRequestMiddleware);
-
-+ restApiServer.use('/api/security', securityApi);
-restApiServer.use('/api/books', booksApi);
-
-...
-
-```
-
 Let's run app in `mock` mode:
 
 ```bash
 npm start
 ```
 
-```md
+```
 URL:http://localhost:3000/api/security/login
 METHOD: POST
 BODY:
@@ -372,7 +369,7 @@ BODY:
 
 On the other hand, we will secure the `book` api:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from 'express';
@@ -412,7 +409,7 @@ booksApi
 >
 > `Authorization: Bearer my-token`
 
-```md
+```
 URL:http://localhost:3000/api/books
 METHOD: GET
 
@@ -430,8 +427,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 + AUTH_SECRET=MY_AUTH_SECRET
 
 ```
@@ -444,8 +441,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 + AUTH_SECRET=MY_AUTH_SECRET
 
 ```
@@ -455,28 +452,53 @@ Create `env constant`:
 _./src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === 'production',
+  PORT: Number(process.env.PORT),
   STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
-  isApiMock: process.env.API_MOCK === 'true',
-  MONGODB_URI: process.env.MONGODB_URI,
+  IS_API_MOCK: process.env.IS_API_MOCK === 'true',
+  MONGODB_URL: process.env.MONGODB_URL,
 + AUTH_SECRET: process.env.AUTH_SECRET,
 };
 
 ```
 
+Update `security` rest-api:
+
+_./src/pods/security/security.api.ts_
+
+```diff
+import { Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { UserSession } from '#core/models/index.js';
++ import { ENV } from '#core/constants/index.js';
+import { userRepository } from '#dals/index.js';
+
+...
+    if (user) {
+      const userSession: UserSession = { id: user._id.toHexString() };
+-     const secret = 'my-secret'; // TODO: Move to env variable
+-     const token = jwt.sign(userSession, secret, {
++     const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
+        expiresIn: '1d',
+        algorithm: 'HS256',
+      });
+      res.send(`Bearer ${token}`);
+...
+
+```
+
 Create `security.middleware`:
 
-_./src/pods/security/security.middlewares.ts_
+_./src/core/security/security.middlewares.ts_
 
 ```typescript
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from '#core/constants/index.js';
-import { UserSession } from '#common-app/models/index.js';
+import { ENV } from '#core/constants/index.js';
+import { UserSession } from '#core/models/index.js';
 
 const verify = (token: string, secret: string): Promise<UserSession> =>
   new Promise((resolve, reject) => {
@@ -500,7 +522,7 @@ export const authenticationMiddleware: RequestHandler = async (
 ) => {
   try {
     const [, token] = req.headers.authorization?.split(' ') || [];
-    const userSession = await verify(token, envConstants.AUTH_SECRET);
+    const userSession = await verify(token, ENV.AUTH_SECRET);
     req.userSession = userSession;
     next();
   } catch (error) {
@@ -517,7 +539,7 @@ export const authenticationMiddleware: RequestHandler = async (
 
 We could extend Express's Request types:
 
-_./global-types.d.ts_
+_./src/global-types.d.ts_
 
 ```typescript
 declare namespace Express {
@@ -532,57 +554,18 @@ declare namespace Express {
 
 ```
 
-_./tsconfig.json_
+Add barrel file:
 
-```diff
-{
-  "compilerOptions": {
-    ...
-  },
-- "include": ["src/**/*"]
-+ "include": ["src/**/*", "./global-types.d.ts"]
-}
+_./src/core/security/index.ts_
 
-```
-
-Update `security` rest-api:
-
-_./src/pods/security/security.rest-api.ts_
-
-```diff
-import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { UserSession } from '#common-app/models/index.js';
-+ import { envConstants } from '#core/constants/index.js';
-import { userRepository } from '#dals/index.js';
-
-...
-    if (user) {
-      const userSession: UserSession = { id: user._id.toHexString() };
--     const secret = 'my-secret'; // TODO: Move to env variable
--     const token = jwt.sign(userSession, secret, {
-+     const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
-        expiresIn: '1d',
-        algorithm: 'HS256',
-      });
-      res.send(`Bearer ${token}`);
-...
-
-```
-
-Update barrel file:
-
-_./src/pods/security/index.ts_
-
-```diff
-export * from './security.rest-api.js';
-+ export * from './security.middlewares.js';
+```typescript
+export * from './security.middlewares.js';
 
 ```
 
 Update `book` rest-api:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from 'express';
@@ -618,15 +601,16 @@ _./src/index.ts_
 
 ```diff
 ...
+import { ENV } from '#core/constants/index.js';
++ import { authenticationMiddleware } from '#core/security/index.js';
 import { booksApi } from '#pods/book/index.js';
-- import { securityApi } from '#pods/security/index.js';
-+ import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
+import { securityApi } from '#pods/security/index.js';
 
 ...
 
-restApiServer.use('/api/security', securityApi);
-- restApiServer.use('/api/books', booksApi);
-+ restApiServer.use('/api/books', authenticationMiddleware, booksApi);
+app.use('/api/security', securityApi);
+- app.use('/api/books', booksApi);
++ app.use('/api/books', authenticationMiddleware, booksApi);
 
 ...
 
@@ -636,7 +620,7 @@ Let's try now `/api/books`:
 
 > Stop and run again to read new env variable
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -649,7 +633,7 @@ BODY:
 
 > Sign jwt with new env variable
 
-```md
+```
 URL: http://localhost:3000/api/books
 METHOD: GET
 
@@ -659,17 +643,17 @@ Authorization: Bearer my-token
 
 Let's add a role for each user:
 
-_./src/common-app/models/role.ts_
+_./src/core/models/role.model.ts_
 
 ```typescript
 export type Role = 'admin' | 'standard-user';
 
 ```
 
-_./src/common-app/models/user-session.ts_
+_./src/core/models/user-session.model.ts_
 
 ```diff
-+ import { Role } from './role.js';
++ import { Role } from './role.model.js';
 
 export interface UserSession {
   id: string;
@@ -678,13 +662,33 @@ export interface UserSession {
 
 ```
 
-Update barrel file:
+Update Express's Request:
 
-_./src/common-app/models/index.ts_
+_./global-types.d.ts_
 
 ```diff
-export * from './user-session.js';
-+ export * from './role.js';
+declare namespace Express {
++ export type Role = 'admin' | 'standard-user';
+
+  export interface UserSession {
+    id: string;
++   role: Role;
+  }
+
+  export interface Request {
+    userSession?: UserSession;
+  }
+}
+
+```
+
+Update barrel file:
+
+_./src/core/models/index.ts_
+
+```diff
+export * from './user-session.model.js';
++ export * from './role.model.js';
 
 ```
 
@@ -694,7 +698,7 @@ _./src/dals/user/user.model.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-+ import { Role } from '#common-app/models/index.js';
++ import { Role } from '#core/models/index.js';
 
 export interface User {
   _id: ObjectId;
@@ -731,29 +735,9 @@ export const db: DB = {
 
 ```
 
-Update Express's Request:
-
-_./global-types.d.ts_
-
-```diff
-declare namespace Express {
-+ export type Role = 'admin' | 'standard-user';
-
-  export interface UserSession {
-    id: string;
-+   role: Role;
-  }
-
-  export interface Request {
-    userSession?: UserSession;
-  }
-}
-
-```
-
 Update `login` method:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
 ...
@@ -763,7 +747,7 @@ _./src/pods/security/security.rest-api.ts_
         id: user._id.toHexString(),
 +       role: user.role,
       };
-      const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
+      const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
         expiresIn: '1d',
 ...
 ```
@@ -775,7 +759,7 @@ npm start
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -788,14 +772,14 @@ BODY:
 
 Now, we could create a new `authorization middleware`:
 
-_./src/pods/security/security.middlewares.ts_
+_./src/core/security/security.middlewares.ts_
 
 ```diff
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { envConstants } from '#core/constants/index.js';
-- import { UserSession } from '#common-app/models/index.js';
-+ import { UserSession, Role } from '#common-app/models/index.js';
+import { ENV } from '#core/constants/index.js';
+- import { UserSession } from '#core/models/index.js';
++ import { UserSession, Role } from '#core/models/index.js';
 
 ...
 
@@ -816,12 +800,12 @@ import { envConstants } from '#core/constants/index.js';
 
 Let's use this new `middleware` in book rest-api:
 
-_./src/pods/book/book.rest-api.ts_
+_./src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from 'express';
 import { bookRepository } from '#dals/index.js';
-+ import { authorizationMiddleware } from '#pods/security/index.js';
++ import { authorizationMiddleware } from '#core/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
@@ -834,27 +818,13 @@ export const booksApi = Router();
 - .post('/', async (req, res, next) => {
 + .post('/', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
-      const book = mapBookFromApiToModel(req.body);
-      const newBook = await bookRepository.saveBook(book);
-      res.status(201).send(mapBookFromModelToApi(newBook));
-    } catch (error) {
-      next(error);
-    }
+      ...
   })
 - .put('/:id', async (req, res, next) => {
 + .put('/:id', authorizationMiddleware(['admin']), async (req, res, next) => {
     try {
       const { id } = req.params;
-      if (await bookRepository.getBook(id)) {
-        const book = mapBookFromApiToModel({ ...req.body, id });
-        await bookRepository.saveBook(book);
-        res.sendStatus(204);
-      } else {
-        res.sendStatus(404);
-      }
-    } catch (error) {
-      next(error);
-    }
+      ...
   })
 - .delete('/:id', async (req, res, next) => {
 + .delete(
@@ -863,11 +833,7 @@ export const booksApi = Router();
 +   async (req, res, next) => {
       try {
         const { id } = req.params;
-        const isDeleted = await bookRepository.deleteBook(id);
-        res.sendStatus(isDeleted ? 204 : 404);
-      } catch (error) {
-        next(error);
-      }
+        ...
     }
   );
 
@@ -880,7 +846,7 @@ npm start
 
 ```
 
-```md
+```
 URL: http://localhost:3000/api/security/login
 METHOD: POST
 
@@ -893,16 +859,9 @@ BODY:
 
 Finally, we will implement the `logout` method:
 
-_./src/pods/security/security.rest-api.ts_
+_./src/pods/security/security.api.ts_
 
 ```diff
-import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { UserSession } from '#common-app/models/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { userRepository } from '#dals/index.js';
-+ import { authenticationMiddleware } from './security.middlewares.js';
-
 ...
 
   } catch (error) {
@@ -910,7 +869,7 @@ import { userRepository } from '#dals/index.js';
   }
 - });
 + })
-+ .post('/logout', authenticationMiddleware, async (req, res) => {
++ .post('/logout', async (req, res) => {
 +   // NOTE: We cannot invalidate token using jwt libraries.
 +   // Different approaches:
 +   // - Short expiration times in token

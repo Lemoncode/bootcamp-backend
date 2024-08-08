@@ -15,38 +15,28 @@ npm install
 
 # Libraries
 
-We are going to install the main library which we base all our unit tests, [Jest](https://facebook.github.io/jest/en/).
+We are going to install the main library which we base all our unit tests, [Vitest](https://vitest.dev/).
 
-- [jest](https://github.com/facebook/jest): JavaScript Testing library with runner, assertion, mocks, etc.
-- [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/df38f202a0185eadfb6012e47dd91f8975eb6151/types/jest): Typings for jest.
+- [vitest]https://vitest.dev/): JavaScript Testing library with runner, assertion, mocks, etc.
+> It includes typings.
 
 ```bash
-npm install jest @types/jest --save-dev
+npm install vitest --save-dev
 ```
-
-> [NodeJS 18 has a test runner](https://nodejs.org/dist/latest-v18.x/docs/api/test.html) tool but it's experimental.
->
-> [Since Jest v24 is TypeScript-friendly](https://jestjs.io/blog/2019/01/25/jest-24-refreshing-polished-typescript-friendly), it is not necessary install [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
->
-> [Official docs](https://jestjs.io/docs/getting-started)
 
 # Config
 
-Jest test commands:
+Test commands:
   - `npm test`: to single run
   - `npm run test:watch`: to run all specs after changes.
 
 > NOTE:
 
-> [Jest CLI options](https://facebook.github.io/jest/docs/en/cli.html#options)
+> [CLI options](https://vitest.dev/guide/cli.html)
 
-> --watchAll To rerun all tests.
+> `run`: single run.
 
-> --watch To rerun tests related to changed files.
-
-> --verbose Display individual test results with the test suite hierarchy.
-
-> -i or --runInBand Run all tests serially in the current process, rather than creating a worker pool of child processes that run tests. This can be useful for debugging
+> `watch`: rerun tests when they change.
 
 _./package.json_
 
@@ -55,8 +45,8 @@ _./package.json_
   ...
   "scripts": {
     ...
-+   "test": "jest --verbose",
-+   "test:watch": "npm test -- --watchAll -i"
++   "test": "vitest run",
++   "test:watch": "vitest watch"
   },
   ...
 }
@@ -70,11 +60,13 @@ Let's launch tests in watch mode:
 npm run test:watch
 ```
 
-- Adding success spec:
+Adding success spec:
 
 _./src/dummy.spec.ts_
 
 ```javascript
+import { describe, it, expect } from 'vitest';
+
 describe('dummy specs', () => {
   it('should pass spec', () => {
     // Arrange
@@ -92,15 +84,7 @@ Adding failed spec:
 _./src/dummy.spec.ts_
 
 ```diff
-describe('dummy specs', () => {
-  it('should pass spec', () => {
-    // Arrange
-
-    // Act
-
-    // Assert
-    expect(true).toBeTruthy();
-  });
+...
 
 + it('should fail spec', () => {
 +   // Arrange
@@ -110,44 +94,87 @@ describe('dummy specs', () => {
 +   // Assert
 +   expect(true).toBeFalsy();
 + });
+
 });
 ```
 
 # External config
 
-We could create a jest config outside `package.json` to improve maintainability.
+We could create a vitest config outside `package.json` to improve maintainability.
 
-> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
+> [Configuring vitest](https://vitest.dev/guide/#configuring-vitest)
+>
+> [Configuration options](https://vitest.dev/config)
 
-- Create config in `config/test/jest.js` file:
+Create config in `config/test/config.ts` file:
 
-_./config/test/jest.js_
+_./config/test/config.ts_
 
 ```js
-export default {
-  rootDir: '../../',
-  verbose: true,
-};
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+  },
+});
 
 ```
-> Check `verbose: false` to see differences
-> We will add some configuration in next examples when needed
+> Enable [globals](https://vitest.dev/config/#globals)
+>
+> We will add more configuration properties in next examples when we needed
 
-- And use that file:
+Enable types for globals:
 
-### ./package.json
+_./config/test/config.d.ts_
+
+```typescript
+/// <reference types="vitest/globals" />
+
+```
+
+Update `tsconfig.json`:
+
+_./tsconfig.json_
+
+```diff{
+  "compilerOptions": {
+    ...
+  },
+- "include": ["src/**/*"]
++ "include": ["src/**/*", "config/test/config.d.ts"]
+}
+
+```
+
+Update package.json:
+
+_./package.json_
 
 ```diff
 {
   ...
   "scripts": {
     ...
--   "test": "jest --verbose",
-+   "test": "jest -c ./config/test/jest.js",
-    "test:watch": "npm run test -- --watchAll -i"
+-   "test": "vitest run",
++   "test": "vitest run -c ./config/test/config.ts",
+-   "test:watch": "vitest watch"
++   "test:watch": "vitest watch -c ./config/test/config.ts"
   },
   ...
 }
+```
+
+Update specs:
+
+_./src/dummy.spec.ts_
+
+```diff
+- import { describe, it, expect } from 'vitest';
+
+describe('dummy specs', () => {
+  it('should pass spec', () => {
+...
 ```
 
 Running specs again:
