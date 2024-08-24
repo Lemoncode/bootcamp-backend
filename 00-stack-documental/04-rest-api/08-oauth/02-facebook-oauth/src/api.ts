@@ -20,7 +20,7 @@ api.get(
 api.get(
   '/facebook',
   passport.authenticate('facebook', {
-    scope: ['public_profile', 'email'],
+    scope: ['public_profile'],
     session: false, // Default value: true
   })
 );
