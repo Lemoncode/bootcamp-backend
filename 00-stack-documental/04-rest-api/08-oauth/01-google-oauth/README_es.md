@@ -1,6 +1,6 @@
 # OAUTH2 + Google Passport + Cookie + JWT
 
-En este ejemplo vamos a ver como autenticarnos usando Google Accounts (OAUTH2) y crear una cookie y token JWT para seguir autenticados.
+En este ejemplo vamos a ver como autenticarnos usando el servicio OAuth2 de Google Cloud. Además, vamos a crear una cookie y token JWT para seguir autenticados.
 
 ## Pasos
 
@@ -16,7 +16,7 @@ Y arrancamos el proyecto.
 npm start
 ```
 
-Al arrancar el proyecto se creará de forma automática un fichero `.env` con una serie de variables de entorno.
+Al arrancar el proyecto se creará de forma automática un fichero `.env` con una serie de variables de entorno que la aplicación necesita para funcionar.
 
 También podemos ver que hay dos endpoints interesantes. En uno se muestra una página, y en la otra tenemos un endpoint que devuelve un json:
 
@@ -25,9 +25,9 @@ También podemos ver que hay dos endpoints interesantes. En uno se muestra una p
 
 Ahora vamos a parar la ejecución e instalar las dependencias que necesitamos, que en este caso son las siguientes:
 
-- Vamos a trabajar con cookies y token jwt para guardar el id del usuario autenticado.
-- Vamos a usar passport para gestionar la autenticación.
-- Vamos a usar la extension de passport para gestionar la autenticación con Google
+- Vamos a trabajar con cookies (`cookie-parser`) y token jwt (`jsonwebtoken`) para guardar el id del usuario autenticado.
+- Vamos a usar passport (`passport`) para gestionar la autenticación.
+- Vamos a usar la estrategia de passport para gestionar la autenticación con Google (`passport-google-oauth20`).
 
 ```bash
 npm install cookie-parser jsonwebtoken passport passport-google-oauth20
@@ -170,11 +170,6 @@ Vamos a hacer el setup de _Passport_ y definir la estrategia para trabajar con l
 - Recibimos la respuesta de google cuando se ha autenticado con éxito.
 - Ahí tenemos la info de la cuenta, profile Id, EMail...
 - Lo guardamos en una supuesta base de datos de usuarios (si no existe ya).
-- El identificador del usuario lo almacena en una cookie (httpOnly) en el navegador, cuyo valor será un token JWT.
-- Después solamente tenemos que:
-  - Recuperar el valor de la cookie, es decir, obtener el token JWT y verificar que el token es correcto.
-  - Extraer el id del usuario de ese token.
-  - Recuperar los datos del perfil de usuario en base a ese id.
 
 _./src/setup/passport-config.ts_:
 
@@ -307,9 +302,7 @@ import { Router } from 'express';
 export const api = Router();
 ```
 
-- Añadimos el endpoint _/google_ que es donde arrancamos
-  el proceso con passport para que conecte con google account
-  (redirect a su página).
+- Añadimos el endpoint _/google_ que es donde arrancamos el proceso con Passport para que conecte con Google Accounts (redirect a su página).
 
 _./src/api.ts_:
 
@@ -325,7 +318,7 @@ api.get(
 );
 ```
 
-- Añadimos un segundo el de _callback_ que será el que Google Accounts invocará cuando de la respuesta al login (ojo, que este endpoint lo tenemos que tener como válido en nuestra consola de administración de Google)
+- Añadimos un segundo endpoint, el del _callback_, que será el que Google Accounts invocará cuando de la respuesta al login (ojo, que este endpoint lo tenemos que tener como válido en nuestra consola de administración de Google). El identificador del usuario lo almacena en una cookie (httpOnly) en el navegador, cuyo valor será un token JWT.
 
 _./src/api.ts_:
 
@@ -363,7 +356,10 @@ api.get(
 );
 ```
 
-- Añadimos un tercer endpoint que va a ser el que nos de la información del usuario logado cuando la pidamos vía fetch desde nuestra página principal (una vez que ya nos hemos logado)
+- Añadimos un tercer endpoint que va a ser el que nos de la información del usuario logado cuando la pidamos vía fetch desde nuestra página principal (una vez que ya nos hemos logado). En este endpoint además vamos a:
+  - Recuperar el valor de la cookie, es decir, obtener el token JWT y verificar que el token es correcto.
+  - Extraer el id del usuario de ese token.
+  - Recuperar los datos del perfil de usuario en base a ese id.
 
 _./src/api.ts_:
 
@@ -387,7 +383,7 @@ api.get('/user-profile', async (req, res) => {
 });
 ```
 
-Para finalizar vamos hacer configurar la sesión y passport en nuestro punto de entrada (index.ts_)
+Para finalizar, vamos a hacer uso de la configuración del middleware Passport.js en nuestro punto de entrada (index.ts_).
 
 _./src/index.ts_:
 
@@ -427,9 +423,7 @@ app.listen(envConstants.PORT, () => {
 npm start
 ```
 
-Lo ideal aquí es, después de probar el funcionamiento de nuestro ejemplo.
-
-Algunos sitios interesantes donde poner breakpoints:
+Lo ideal aquí es, después de probar el funcionamiento de nuestro ejemplo, hacer debug en algunos sitios interesantes. Por ejemplo, poner breakpoints en:
 
 _./setup/passport-config.ts_:
 

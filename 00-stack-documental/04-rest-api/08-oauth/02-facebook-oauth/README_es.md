@@ -1,6 +1,6 @@
 # OAUTH2 + Facebook Passport + Cookie + JWT
 
-En este ejemplo vamos a ver como autenticarnos usando Meta for Developers/Facebook (OAUTH2) y crear una cookie y token JWT para seguir autenticados.
+En este ejemplo vamos a ampliar el ejemplo anterior añadiendo la opción de autenticarnos usando el login de Facebook.
 
 ## Pasos
 
@@ -22,10 +22,11 @@ npm i -D @types/passport-facebook
 ```diff
 NODE_ENV=development
 PORT=3000
-GOOGLE_CLIENT_ID = <pega aquí tu client Id de tu panel de Google accounts>
-GOOGLE_CLIENT_SECRET = <pega aquí tu client Secret de tu panel de Google accounts>
-+ FACEBOOK_APP_ID = <pega aquí tu App Id>
-+ FACEBOOK_APP_SECRET = <pega aquí App Secret>
+STATIC_FILES_PATH=../public
+GOOGLE_CLIENT_ID= <pega aquí tu client Id de tu panel de Google accounts>
+GOOGLE_CLIENT_SECRET= <pega aquí tu client Secret de tu panel de Google accounts>
++ FACEBOOK_APP_ID= <pega aquí tu App Id>
++ FACEBOOK_APP_SECRET= <pega aquí App Secret>
 ```
 
 - Y añadimos los nuevos valores al _./src/env.constants.ts_
@@ -34,8 +35,9 @@ GOOGLE_CLIENT_SECRET = <pega aquí tu client Secret de tu panel de Google accoun
 export const envConstants = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
+  STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 + FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
 + FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET,
 };
@@ -206,7 +208,7 @@ api.get(
 + api.get(
 +   '/facebook',
 +   passport.authenticate('facebook', {
-+     scope: ['public_profile', 'email'],
++     scope: ['public_profile'],
 +     session: false, // Default value: true
 +   })
 + );
@@ -243,8 +245,10 @@ api.get(
   <body>
     <section>
       <a id="login-button" href="/api/google">Login using Google</a>
-+     <a id="login-button" href="/api/facebook">Login using Facebook</a>
     </section>
++   <section>
++     <a id="login-button-fb" href="/api/facebook">Login using Facebook</a>
++   </section>
   </body>
 </html>
 ```

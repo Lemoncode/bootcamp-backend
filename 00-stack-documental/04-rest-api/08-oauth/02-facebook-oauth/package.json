@@ -7,14 +7,14 @@
   "scripts": {
     "prestart": "sh ./create-dev-env.sh",
     "start": "run-p -l type-check:watch start:dev",
-    "start:dev": "nodemon --transpileOnly --esm src/index.ts",
+    "start:dev": "tsx --watch src/index.ts",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     "type-check:watch": "npm run type-check -- --watch"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
@@ -26,9 +26,8 @@
     "@types/passport": "^1.0.16",
     "@types/passport-facebook": "^3.0.3",
     "@types/passport-google-oauth20": "^2.0.16",
-    "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
   }
 }
