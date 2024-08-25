@@ -24,7 +24,7 @@ Para los heroes:
 ```bash
 az storage blob upload-batch \
 --destination heroes \
---source 01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/assets/heroes/. \
+--source assets/heroes/. \
 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 ```
 
@@ -33,7 +33,7 @@ Para los alter egos:
 ```bash
 az storage blob upload-batch \
 --destination alteregos \
---source 01-stack-relacional/03-cloud/azure/03-procesos-en-segundo-plano/assets/alteregos/png/. \
+--source assets/alteregos/png/. \
 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 ```
 
@@ -240,6 +240,40 @@ Si todo ha ha ido bien deberías de ver algo como lo siguiente en el terminal:
 Ahora la prueba de fuego 🔥 sería subir una imagen al contenedor de alter egos y comprobar que efectivamente esta función se ejecuta y que tenemos en el propio contenedor el resultado guardado en png. Para ello, elimina todas las imagenes que hay en el contenedor con Azure Storage Explorer y utiliza las imágenes guardadas en `assets/alteregos/jpeg`.
 
 También puedes probar desde la interfaz en Angular.
+
+
+### Desplegar esta función en Azure
+
+Una vez que hemos probado que nuestra función localmente funciona, vamos a desplegarla en Azure. Para ello podemos utilizar el siguiente comando:
+
+```bash
+RESOURCE_GROUP=tour-of-heroes
+LOCATION=spaincentral
+APP_SERVICE_PLAN_NAME=tour-of-heroes-api
+FUNCTION_APP_NAME=tour-of-heroes-func
+STORAGE_ACCOUNT="heroespics"
+```
+
+```bash
+az functionapp create \
+--resource-group $RESOURCE_GROUP \
+-p $APP_SERVICE_PLAN_NAME \
+-n $FUNCTION_APP_NAME \
+--storage-account $STORAGE_ACCOUNT \
+--runtime dotnet
+```
+
+> [!IMPORTANT]
+> Si estás usando un App Service Plan de tipo grauito (F1) no te va a dejar crear una función en el mismo, por lo que tendrás que actualizar el plan a uno de pago. Para ello puedes utilizar el siguiente comando: `az appservice plan update -n $APP_SERVICE_PLAN_NAME --resource-group $RESOURCE_GROUP --sku S1`
+
+
+Y después utilizando func podemos desplegar la función:
+
+```bash
+func azure functionapp publish $FUNCTION_APP_NAME
+```
+
+
 
 ## Azure Logic Apps
 

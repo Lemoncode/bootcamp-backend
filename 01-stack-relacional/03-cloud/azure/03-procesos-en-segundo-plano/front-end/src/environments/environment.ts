@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   containerName: "alteregos",
-  apiUrl: "https://localhost:5001/api/hero",
+  apiUrl: "http://localhost:5000/api/hero",
   storageUrl: "http://localhost:10000/devstoreaccount1"
 };
 
