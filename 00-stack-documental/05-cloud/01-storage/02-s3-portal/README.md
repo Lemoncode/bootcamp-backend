@@ -71,24 +71,28 @@ Let's start with the first one:
 
 **Block public access (bucket settings)**
 
-First, disable `Block all public access`:
+Uncheck `Block all public access` and the two latest options:
 
 ![Make bucket public](./readme-resources/07-make-bucket-public.png)
 
 **Bucket policy**
 
+Edit bucket policy:
+
+![Edit bucket policy](./readme-resources/08-edit-bucket-policy.png)
+
 Then, give read-only permission:
 
 ```json
 {
-  "Version":"2012-10-17",
-  "Statement":[
+  "Version": "2012-10-17",
+  "Statement": [
     {
-      "Sid":"PublicRead",
-      "Effect":"Allow",
+      "Sid": "PublicRead",
+      "Effect": "Allow",
       "Principal": "*",
-      "Action":["s3:GetObject","s3:GetObjectVersion"],
-      "Resource":["arn:aws:s3:::DOC-EXAMPLE-BUCKET/*"]
+      "Action": ["s3:GetObject", "s3:GetObjectVersion"],
+      "Resource": ["arn:aws:s3:::DOC-EXAMPLE-BUCKET/*"]
     }
   ]
 }
