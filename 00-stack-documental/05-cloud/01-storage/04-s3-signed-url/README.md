@@ -38,8 +38,8 @@ import {
   GetObjectCommand,
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
-- import fs from 'fs';
-- import path from 'path';
+- import fs from 'node:fs';
+- import path from 'node:path';
 + import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export const run = async () => {
@@ -141,9 +141,9 @@ import * as apiModel from './user.api-model.js';
 
 ```
 
-Update `rest-api`:
+Update `user.api`:
 
-_./back/src/pods/user/user.rest-api.ts_
+_./back/src/pods/user/user.api.ts_
 
 ```diff
 import { Router } from 'express';
