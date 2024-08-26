@@ -1,6 +1,6 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { LoginScene, UserScene } from '@/scenes';
+import { LoginScene, UserScene } from '#scenes';
 import { routes } from './routes';
 
 export const RouterComponent: React.FC = () => {

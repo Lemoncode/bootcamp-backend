@@ -1,4 +1,4 @@
-import { Role } from '#common-app/models/index.js';
+import { Role } from '#core/models/index.js';
 
 export interface User {
   email: string;
