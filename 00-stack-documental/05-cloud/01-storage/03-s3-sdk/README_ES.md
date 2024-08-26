@@ -58,6 +58,8 @@ Vamos a eliminar la policy que hacía el bucket público y desactivar el check d
 
 Eliminamos la bucket policy
 
+![Delete bucket policy](./readme-resources/00-delete-bucket-policy.png)
+
 ```diff
 - {
 -   "Version":"2012-10-17",

@@ -48,6 +48,8 @@ But how could we provide credentials for our S3 bucket? We will follow the secon
 
 **Bucket policy**
 
+![Delete bucket policy](./readme-resources/00-delete-bucket-policy.png)
+
 Remove bucket policy
 
 ```diff
@@ -68,7 +70,7 @@ Remove bucket policy
 
 **Block public access (bucket settings)**
 
-Enable it:
+Enable it again:
 
 ![Block public access](./readme-resources/01-enable-bucket-private-access.png)
 
@@ -114,8 +116,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 + AWS_ACCESS_KEY_ID=value
 + AWS_SECRET_ACCESS_KEY=value
@@ -130,8 +132,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 + AWS_ACCESS_KEY_ID=<use-real-values>
 + AWS_SECRET_ACCESS_KEY=<use-real-values>
@@ -189,8 +191,8 @@ import {
   ListObjectsCommand,
 + GetObjectCommand,
 } from '@aws-sdk/client-s3';
-+ import fs from 'fs';
-+ import { Readable } from 'stream';
++ import fs from 'node:fs';
++ import { Readable } from 'node:stream';
 
 export const run = async () => {
   try {
@@ -229,9 +231,9 @@ import {
   GetObjectCommand,
 + PutObjectCommand,
 } from '@aws-sdk/client-s3';
-import fs from 'fs';
-- import { Readable } from 'stream';
-+ import path from 'path';
+import fs from 'node:fs';
+- import { Readable } from 'node:stream';
++ import path from 'node:path';
 
 export const run = async () => {
   try {
