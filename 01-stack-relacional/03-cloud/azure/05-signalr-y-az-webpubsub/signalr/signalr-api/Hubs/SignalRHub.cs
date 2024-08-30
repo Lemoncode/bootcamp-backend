@@ -9,20 +9,20 @@ namespace SignalRMessagingTourOfHeroes.Hubs
 
         public void SendToTheServer(string message)
         {
-            // Clients.All.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}");
-            Clients.Caller.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}");
+            Clients.All.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}");
+            // Clients.Caller.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}");
 
-            var important = false;
+            // var important = false;
 
-            if (message.Contains("updated") || message.Contains("added") || message.Contains("delete"))
-            {
-                important = true;
-                Clients.All.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}", important);
-            }
-            else
-            {
-                Clients.Caller.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}", important);
-            }
+            // if (message.Contains("updated") || message.Contains("added") || message.Contains("delete"))
+            // {
+            //     important = true;
+            //     Clients.All.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}", important);
+            // }
+            // else
+            // {
+            //     Clients.Caller.SendAsync(CLIENT_METHOD, $"{Context.ConnectionId}: {message}", important);
+            // }
         }
 
         public override Task OnConnectedAsync()

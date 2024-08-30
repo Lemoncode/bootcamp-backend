@@ -37,7 +37,7 @@ dotnet run --urls=https://localhost:7238
 
 ```bash
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/signalr/back-end
-dotnet run --urls=https://localhost:5001
+dotnet run --urls=http://localhost:5000
 ```
 
 5. Ejecuta el siguiente comando para levantar la aplicación web:
