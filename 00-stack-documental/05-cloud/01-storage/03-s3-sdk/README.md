@@ -82,11 +82,51 @@ Add user name and access type:
 
 ![Creating user](./readme-resources/03-creating-user.png)
 
-Set `S3 Full Access` permissions:
+Select `Attach policies directly` and filter by `S3`:
+
+- We could set `S3 Full Access` permissions but it allows to list all buckets and objects in the account, but we only need to list and get objects from a specific bucket.
 
 ![Set S3 Full Access permissions](./readme-resources/04-set-permissions.png)
 
-We create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
+A better approach is create a custom policy:
+
+![Create custom policy](./readme-resources/04-1-create-policy.png)
+
+Define it using a JSON format:
+
+![Define policy in JSON format](./readme-resources/04-2-define-json.png)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::BUCKET-NAME",
+        "arn:aws:s3:::BUCKET-NAME/*"
+      ]
+    }
+  ]
+}
+```
+
+> NOTE: Replace `BUCKET-NAME` with your bucket name.
+
+Continue with the next step and give a name to the policy and create it:
+
+![Give a name to custom policy](./readme-resources/04-3-give-a-name.png)
+
+Come back to the user config and click on `refresh`button:
+
+![Refresh button](./readme-resources/04-4-click-on-refresh.png)
+
+And filter by `Customer managed` and select the new policy:
+
+![Filter by customer managed](./readme-resources/04-5-filter-by-policy.png)
+
+Clicks on next and we can create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
 
 Let's select the new user and click on `Security credentials`
 

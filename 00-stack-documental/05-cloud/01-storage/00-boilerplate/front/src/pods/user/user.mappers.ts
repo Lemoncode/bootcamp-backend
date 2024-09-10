@@ -7,6 +7,6 @@ export const mapUserFromApiToVm = (user: apiModel.User): viewModel.User => ({
   role: user.role,
   avatar:
     Boolean(envConstants.IMAGES_BASE_URL) && !user.avatar?.includes('http')
-      ? `${envConstants.IMAGES_BASE_URL}/${user.avatar}`
+      ? `${envConstants.IMAGES_BASE_URL}${user.avatar}`
       : user.avatar,
 });
