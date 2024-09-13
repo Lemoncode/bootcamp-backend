@@ -138,7 +138,6 @@ import * as apiModel from './user.api-model.js';
 +   };
 + };
 
-
 ```
 
 Update `user.api`:

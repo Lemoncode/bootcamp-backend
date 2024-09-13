@@ -270,7 +270,7 @@ import {
   ListObjectsCommand,
   GetObjectCommand,
 + PutObjectCommand,
-} from '@aws-sdk/client-s3';
+} from '@aws-sdk/clie0nt-s3';
 import fs from 'node:fs';
 - import { Readable } from 'node:stream';
 + import path from 'node:path';

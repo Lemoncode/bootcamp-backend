@@ -6,7 +6,7 @@ Tomamos como punto de partida el ejemplo `03-s3-sdk`.
 
 # Pasos
 
-Si no lo tuvieras funcionando, ... toca hacer lo _install_ pertinentes.
+Si no lo tuvieras funcionando, ... toca hacer los _install_ pertinentes.
 
 `npm install` to install previous sample packages:
 
@@ -24,7 +24,7 @@ npm install
 
 ```
 
-Nos toca instalar una librerías más de [@aws-sdk/s3-request-presigner](https://www.npmjs.com/package/@aws-sdk/s3-request-presigner) en este caso la que nos va a permitir firmar urls.
+Nos toca instalar una librería más de [@aws-sdk/s3-request-presigner](https://www.npmjs.com/package/@aws-sdk/s3-request-presigner) en este caso la que nos va a permitir firmar urls.
 
 ** nos ponemos debajo de _back_ **
 
@@ -157,7 +157,7 @@ import * as apiModel from './user.api-model.js';
 
 Update `rest-api`:
 
-_./back/src/pods/user/user.rest-api.ts_
+_./back/src/pods/user/user.api.ts_
 
 ```diff
 import { Router } from 'express';
