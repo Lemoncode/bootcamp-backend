@@ -37,7 +37,7 @@ _back terminal_
 npm start
 ```
 
-> Acuerdate de que en las _env_ decir que tiramos de API_MOCK `API_MOCK=true`
+> Acuerdate de que en las _env_ decir que tiramos de IS_API_MOCK `IS_API_MOCK=true`
 
 _./back/.env_
 
@@ -47,8 +47,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-+ API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
++ IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 ```
 
@@ -70,13 +70,12 @@ _.back/src/dals/user/user.model.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-import { Role } from 'common-app/models';
+import { Role } from '#core/models/index.js';
 
 export interface User {
   _id: ObjectId;
   email: string;
   password: string;
-  salt: string;
   role: Role;
 + avatar: string;
 }
@@ -94,7 +93,6 @@ export const db: DB = {
       _id: new ObjectId(),
       email: 'admin@email.com',
       password: 'test',
-      salt: '',
       role: 'admin',
 +     avatar: '/admin-avatar.png',
     },
@@ -102,13 +100,13 @@ export const db: DB = {
       _id: new ObjectId(),
       email: 'user@email.com',
       password: 'test',
-      salt: '',
       role: 'standard-user',
 +     avatar: '/user-avatar.png',
     },
   ],
 
 ...
+
 ```
 
 Actualizamos el `api model`:
@@ -116,7 +114,7 @@ Actualizamos el `api model`:
 _.back/src/pods/user/user.api-model.ts_
 
 ```diff
-import { Role } from 'common-app/models';
+import { Role } from '#core/models/index.js';
 
 export interface User {
   email: string;
@@ -131,8 +129,8 @@ Y el `mapper`:
 _.back/src/pods/user/user.mappers.ts_
 
 ```diff
-import * as model from 'dals/user';
-import * as apiModel from './user.api-model';
+import * as model from '#dals/index.js';
+import * as apiModel from './user.api-model.js';
 
 export const mapUserFromModelToApi = (user: model.User): apiModel.User => ({
   email: user.email,

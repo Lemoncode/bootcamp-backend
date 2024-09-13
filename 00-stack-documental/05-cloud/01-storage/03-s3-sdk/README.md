@@ -48,6 +48,8 @@ But how could we provide credentials for our S3 bucket? We will follow the secon
 
 **Bucket policy**
 
+![Delete bucket policy](./readme-resources/00-delete-bucket-policy.png)
+
 Remove bucket policy
 
 ```diff
@@ -68,7 +70,7 @@ Remove bucket policy
 
 **Block public access (bucket settings)**
 
-Enable it:
+Enable it again:
 
 ![Block public access](./readme-resources/01-enable-bucket-private-access.png)
 
@@ -80,11 +82,51 @@ Add user name and access type:
 
 ![Creating user](./readme-resources/03-creating-user.png)
 
-Set `S3 Full Access` permissions:
+Select `Attach policies directly` and filter by `S3`:
+
+- We could set `S3 Full Access` permissions but it allows to list all buckets and objects in the account, but we only need to list and get objects from a specific bucket.
 
 ![Set S3 Full Access permissions](./readme-resources/04-set-permissions.png)
 
-We create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
+A better approach is create a custom policy:
+
+![Create custom policy](./readme-resources/04-1-create-policy.png)
+
+Define it using a JSON format:
+
+![Define policy in JSON format](./readme-resources/04-2-define-json.png)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::BUCKET-NAME",
+        "arn:aws:s3:::BUCKET-NAME/*"
+      ]
+    }
+  ]
+}
+```
+
+> NOTE: Replace `BUCKET-NAME` with your bucket name.
+
+Continue with the next step and give a name to the policy and create it:
+
+![Give a name to custom policy](./readme-resources/04-3-give-a-name.png)
+
+Come back to the user config and click on `refresh`button:
+
+![Refresh button](./readme-resources/04-4-click-on-refresh.png)
+
+And filter by `Customer managed` and select the new policy:
+
+![Filter by customer managed](./readme-resources/04-5-filter-by-policy.png)
+
+Clicks on next and we can create the user in `step 3` (Review and create). It almost done, we need to create some credentials to use in our app.
 
 Let's select the new user and click on `Security credentials`
 
@@ -114,8 +156,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 + AWS_ACCESS_KEY_ID=value
 + AWS_SECRET_ACCESS_KEY=value
@@ -130,8 +172,8 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 + AWS_ACCESS_KEY_ID=<use-real-values>
 + AWS_SECRET_ACCESS_KEY=<use-real-values>
@@ -189,8 +231,8 @@ import {
   ListObjectsCommand,
 + GetObjectCommand,
 } from '@aws-sdk/client-s3';
-+ import fs from 'fs';
-+ import { Readable } from 'stream';
++ import fs from 'node:fs';
++ import { Readable } from 'node:stream';
 
 export const run = async () => {
   try {
@@ -228,10 +270,10 @@ import {
   ListObjectsCommand,
   GetObjectCommand,
 + PutObjectCommand,
-} from '@aws-sdk/client-s3';
-import fs from 'fs';
-- import { Readable } from 'stream';
-+ import path from 'path';
+} from '@aws-sdk/clie0nt-s3';
+import fs from 'node:fs';
+- import { Readable } from 'node:stream';
++ import path from 'node:path';
 
 export const run = async () => {
   try {

@@ -79,11 +79,14 @@ Lo primero, desmarcamos `Block all public access`:
 
 ![Make bucket public](./readme-resources/07-make-bucket-public.png)
 
-**Bucket policy**
-
 Aquí nos saldrá un mensaje del tipo ¿Estás seguro? Y nos hará meter un texto de confirmación.
 
+
+**Bucket policy**
+
 Y en el _bucket-policy_ (política del bucket) le damos permisos de sólo lectura:
+
+![Edit bucket policy](./readme-resources/08-edit-bucket-policy.png)
 
 ** OJO PON AQUI EL NOMBRE DE TU BUCKET, cambia `NOMBRE-DEL-BUCKET` por el tuyo**
 

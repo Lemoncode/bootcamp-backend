@@ -1,4 +1,4 @@
-import { db } from '#core/servers/index.js';
+import { dbServer } from '#core/servers/index.js';
 import { Book } from './book.model.js';
 
-export const getBookContext = () => db?.collection<Book>('books');
+export const getBookContext = () => dbServer.db?.collection<Book>('books');

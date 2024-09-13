@@ -13,15 +13,14 @@ export const db: DB = {
       _id: new ObjectId(),
       email: 'admin@email.com',
       password: 'test',
-      salt: '',
       role: 'admin',
-      avatar: 'https://<bucket-name>.s3.<region>.amazonaws.com/admin-avatar-in-s3.png',
+      avatar:
+        'https://<bucket-name>.s3.<region>.amazonaws.com/admin-avatar-in-s3.png',
     },
     {
       _id: new ObjectId(),
       email: 'user@email.com',
       password: 'test',
-      salt: '',
       role: 'standard-user',
       avatar: '/user-avatar.png',
     },

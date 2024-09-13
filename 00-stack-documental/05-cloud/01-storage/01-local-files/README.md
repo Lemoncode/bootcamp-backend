@@ -38,7 +38,7 @@ npm start
 
 ```
 
-> Remember run backend server with `API_MOCK=true`
+> Remember run backend server with `IS_API_MOCK=true`
 
 Open browser in `http://localhost:8080`
 
@@ -50,13 +50,12 @@ _.back/src/dals/user/user.model.ts_
 
 ```diff
 import { ObjectId } from 'mongodb';
-import { Role } from 'common-app/models';
+import { Role } from '#core/models/index.js';
 
 export interface User {
   _id: ObjectId;
   email: string;
   password: string;
-  salt: string;
   role: Role;
 + avatar: string;
 }
@@ -74,7 +73,6 @@ export const db: DB = {
       _id: new ObjectId(),
       email: 'admin@email.com',
       password: 'test',
-      salt: '',
       role: 'admin',
 +     avatar: '/admin-avatar.png',
     },
@@ -82,7 +80,6 @@ export const db: DB = {
       _id: new ObjectId(),
       email: 'user@email.com',
       password: 'test',
-      salt: '',
       role: 'standard-user',
 +     avatar: '/user-avatar.png',
     },
@@ -97,7 +94,7 @@ Update `api model`:
 _.back/src/pods/user/user.api-model.ts_
 
 ```diff
-import { Role } from 'common-app/models';
+import { Role } from '#core/models/index.js';
 
 export interface User {
   email: string;
@@ -112,8 +109,8 @@ Update `mapper`:
 _.back/src/pods/user/user.mappers.ts_
 
 ```diff
-import * as model from 'dals/user';
-import * as apiModel from './user.api-model';
+import * as model from '#dals/index.js';
+import * as apiModel from './user.api-model.js';
 
 export const mapUserFromModelToApi = (user: model.User): apiModel.User => ({
   email: user.email,
@@ -130,7 +127,7 @@ It means we have published the users's images in:
 
 Since, we have configured a proxy to avoid `CORS` configuration:
 
-_./front/vite.config.js_
+_./front/vite.config.ts_
 
 ```javascript
 ...

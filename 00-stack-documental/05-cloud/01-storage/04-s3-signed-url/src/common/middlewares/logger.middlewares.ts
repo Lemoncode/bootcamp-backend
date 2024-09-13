@@ -1,4 +1,4 @@
-import { RequestHandler, ErrorRequestHandler } from "express";
+import { RequestHandler, ErrorRequestHandler } from 'express';
 
 export const logRequestMiddleware: RequestHandler = async (req, res, next) => {
   console.log(req.url);

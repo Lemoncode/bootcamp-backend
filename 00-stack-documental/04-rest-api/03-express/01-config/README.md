@@ -141,7 +141,7 @@ Let's install necessary dev libraries:
 - [npm-run-all](https://github.com/mysticatea/npm-run-all): is a tool that helps you run multiple npm scripts commands in parallel
 
 ```bash
-npm install typescript ts-node npm-run-all --save-dev
+npm install typescript tsx npm-run-all --save-dev
 
 ```
 

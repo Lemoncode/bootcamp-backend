@@ -1,14 +1,17 @@
 import jwt from 'jsonwebtoken';
 
-export const verifyJWT = <T>(token: string, secret: string): Promise<T> =>
-  new Promise<T>((resolve, reject) => {
-    jwt.verify(token, secret, (error, payload) => {
+export const verifyJWT = <Payload>(
+  token: string,
+  secret: string
+): Promise<Payload> =>
+  new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (error, payload: Payload) => {
       if (error) {
         reject(error);
       }
 
       if (payload) {
-        resolve(payload as unknown as T);
+        resolve(payload);
       } else {
         reject();
       }

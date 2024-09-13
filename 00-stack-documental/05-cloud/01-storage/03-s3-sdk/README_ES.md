@@ -58,6 +58,8 @@ Vamos a eliminar la policy que hacía el bucket público y desactivar el check d
 
 Eliminamos la bucket policy
 
+![Delete bucket policy](./readme-resources/00-delete-bucket-policy.png)
+
 ```diff
 - {
 -   "Version":"2012-10-17",
@@ -101,11 +103,11 @@ Antes de seguir, esto de darle permiso a todos los buckets te puede abrir una br
 
 Para ello vamos a crear una regla custom, hay un botón a la izquierda arriba que pone _agregar permisos_, en inglés "create policy", y lo que haremo será crear una politica custom (esto nos abrirá un nuevo tab, trabajaremos en él hasta que tengamos la regla creada y entonces volveremos al tab de usuario para asignarselo)
 
-![Create custom policy](./readme-resources/4_1_crearpolitica.png)
+![Create custom policy](./readme-resources/04-1-create-policy.png)
 
 Para definirla, vamos a hacerlo en formato JSON:
 
-![Cambiamos a formato JSON](./readme-resources/4_2_pinchamos_json.png)
+![Cambiamos a formato JSON](./readme-resources/04-2-define-json.png)
 
 Vamos a definirla (contenido del JSON):
 
@@ -130,31 +132,21 @@ Vamos a definirla (contenido del JSON):
 
 Le damos a siguiente.
 
-Y vamos a dar el siguiente nombre: `S3BucketTemporalPermiso`
+Y vamos a dar un nombre:
 
-![Le damos nombre a la política](./readme-resources/4_3_nombre_politica.png)
+![Le damos nombre a la política](./readme-resources/04-3-give-a-name.png)
 
-Y le damos a crear política.
+Y ya podemos crear la política.
 
-![Le damos nombre a la política](./readme-resources/4_4_crear_politica_boton.png)
-
-Una vez que nos vuelve a mostrar la lista de políticas, podemos ver que está existe (si elegimos en filtro , "Administrada por el cliente").
-
-![Filtro administrada por cliente](./readme-resources/4_5_administrada_cliente.png)
-
-Volvemos al usuario, desmarcamos AmazonS3FullAccess y marcamos la política que acabamos de crear (Ojo, de primeras no aparece tenemos que darle al boton de refresh):
+Una vez creada, volvemos a la configuración del usuario y marcamos la política que acabamos de crear (Ojo, de primeras no aparece tenemos que darle al boton de refresh):
 
 Botón refresh:
 
-![Botón refresh](./readme-resources/4_6_refresh_en_usuario.png)
+![Botón refresh](./readme-resources/04-4-click-on-refresh.png)
 
-En usuairo / politica de permisos, filtramos por _Administrada por el cliente_:
+Filtramos por _Customer managed_ y seleccionamos la política que acabamos de crear:
 
-![Filtramos por administrada por el cliente](./readme-resources/4_7_filtro_usuario_administrada_cliente.png)
-
-Elegimos la política que acabamos de crear:
-
-![Elegimos la policy en el tab de usuario](./readme-resources/4_8_elegir_policy.png)
+![Filtramos por administrada por el cliente](./readme-resources/04-5-filter-by-policy.png)
 
 Ya lo tenemos casí listo, en el paso 3 `step 3` lo revisamos y creamos, ahora tenemos que crear unas credenciales para poder usarlo en nuestra aplicación (y va a ser un access key, para usarlo desde código).
 
@@ -263,8 +255,8 @@ import {
   ListObjectsCommand,
 + GetObjectCommand,
 } from '@aws-sdk/client-s3';
-+ import fs from 'fs';
-+ import { Readable } from 'stream';
++ import fs from 'node:fs';
++ import { Readable } from 'node:stream';
 
 export const run = async () => {
   try {
