@@ -15,7 +15,7 @@ export type Column = string | CellHeaderProps;
 export interface RowRendererProps<T = {}> {
   row: T;
   index: number;
-  key: string | number;
+  key: React.Key;
   onEdit?: (id: string) => void;
   onDelete?: (lookup: Lookup) => void;
 }

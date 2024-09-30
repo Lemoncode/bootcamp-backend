@@ -7,7 +7,7 @@ export interface RowProps extends TableRowProps {
   className?: string;
 }
 
-export const RowComponent: React.FunctionComponent<RowProps> = React.forwardRef(
+export const RowComponent = React.forwardRef<HTMLTableRowElement, RowProps>(
   (props, ref) => {
     const { className, children, ...rest } = props;
     return (
