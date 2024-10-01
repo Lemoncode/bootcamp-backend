@@ -3,7 +3,7 @@ import { BookRepository } from './book.repository.js';
 import { Book } from '../book.model.js';
 import { getBookContext } from '../book.context.js';
 
-export const dbRepository: BookRepository = {
+export const mongoDBRepository: BookRepository = {
   getBookList: async (page?: number, pageSize?: number) => {
     const skip = Boolean(page) ? (page - 1) * pageSize : 0;
     const limit = pageSize ?? 0;
