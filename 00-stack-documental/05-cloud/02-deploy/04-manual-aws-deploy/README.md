@@ -36,7 +36,43 @@ Choose NodeJS platform:
 
 ![03-choose-platform](./readme-resources/03-choose-platform.png)
 
-Before upload the code, we will create a `zip` file with same files that we previously deploy on the `Render` example. Let's copy all necessary files:
+Before upload the code, we will create a `zip` file with same files that we previously deploy on the `Render` example.
+
+_front terminal_
+
+```bash
+npm run build
+
+```
+
+Let's copy the `front/dist` folder in the `back/public` folder.
+
+Build the back project:
+
+_back terminal_
+
+```bash
+npm run build
+
+```
+
+Now we have something like:
+
+_./back_
+
+```
+|-- config/
+|-- dist/
+|-- node_module/
+|-- public/
+|-- src/
+|-- ...
+|-- package-lock.json
+|-- package.json
+
+```
+
+Copy the necessary files to deploy:
 
 - `dist` folder content.
 - `public` folder.
