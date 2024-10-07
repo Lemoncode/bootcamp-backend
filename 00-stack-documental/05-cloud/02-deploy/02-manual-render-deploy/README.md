@@ -75,77 +75,63 @@ git clone git@github.com<url> .
 
 Let's copy all necessary files:
 
-- `back/dist` folder content.
-- `back/public` folder.
-- `back/package.json` file. Let's copy and update with necessary dependencies.
+- Copy `back/dist` into `./`
+- Copy `back/public` into `./public`
+- And copy `back/package.json` into `./package.json`. Let's update imports and remove unnecessary dependencies.
 
 _./package.json_
 
 ```diff
 {
-  "name": "bootcamp-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "bootcamp-backend-lemoncode",
   "type": "module",
   "scripts": {
--   "prestart": "sh ./create-dev-env.sh",
+-   "prestart": "node ./create-dev-env.js && docker compose down --remove-orphans",
 -   "start": "run-p -l type-check:watch start:dev start:local-db",
--   "start:dev": "nodemon --transpileOnly --esm src/index.ts",
--   "start:console-runners": "run-p -l type-check:watch console-runners start:local-db",
--   "console-runners": "nodemon --no-stdin --transpileOnly --esm src/console-runners/index.ts",
--   "start:local-db": "docker-compose up -d",
+-   "start:dev": "tsx --require dotenv/config --watch src/index.ts",
+-   "prestart:console-runners": "npm run prestart",
+-   "start:console-runners": "run-p type-check:watch console-runners start:local-db",
+-   "console-runners": "tsx --require dotenv/config --watch src/console-runners/index.ts",
+-   "start:local-db": "docker compose up -d",
 -   "clean": "rimraf dist",
 -   "build": "npm run clean && tsc --project tsconfig.prod.json",
 -   "type-check": "tsc --noEmit --preserveWatchOutput",
 -   "type-check:watch": "npm run type-check -- --watch",
--   "test": "jest -c ./config/test/jest.js",
--   "test:watch": "npm run test -- --watchAll -i"
+-   "test": "vitest run -c ./config/test/config.ts",
+-   "test:watch": "vitest watch -c ./config/test/config.ts"
 +   "start": "node index.js"
   },
   "imports": {
--   "#common/*.js": "./src/common/*.js",
-+   "#common/*.js": "./common/*.js",
--   "#common-app/*.js": "./src/common-app/*.js",
-+   "#common-app/*.js": "./common-app/*.js",
--   "#core/*.js": "./src/core/*.js",
-+   "#core/*.js": "./core/*.js",
--   "#dals/*.js": "./src/dals/*.js",
-+   "#dals/*.js": "./dals/*.js",
--   "#pods/*.js": "./src/pods/*.js"
-+   "#pods/*.js": "./pods/*.js"
+-   "#*": "./src/*"
++   "#*": "./*"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.360.0",
-    "@aws-sdk/s3-request-presigner": "^3.360.0",
+    "@aws-sdk/client-s3": "^3.658.1",
+    "@aws-sdk/s3-request-presigner": "^3.658.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.0",
-    "mongodb": "^5.6.0"
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.9.0"
 - },
 + }
 - "devDependencies": {
--   "@types/cookie-parser": "^1.4.3",
--   "@types/cors": "^2.8.13",
--   "@types/express": "^4.17.17",
--   "@types/inquirer": "^9.0.3",
--   "@types/jest": "^29.5.2",
--   "@types/jsonwebtoken": "^9.0.2",
--   "@types/supertest": "^2.0.12",
--   "inquirer": "^9.2.7",
--   "jest": "^29.5.0",
--   "nodemon": "^2.0.22",
+-   "@types/cookie-parser": "^1.4.7",
+-   "@types/cors": "^2.8.17",
+-   "@types/express": "^5.0.0",
+-   "@types/jsonwebtoken": "^9.0.7",
+-   "@types/node": "^22.7.4",
+-   "@types/prompts": "^2.4.9",
+-   "@types/supertest": "^6.0.2",
+-   "dotenv": "^16.4.5",
+-   "mongodb-memory-server": "^10.0.1",
 -   "npm-run-all": "^4.1.5",
--   "rimraf": "^5.0.1",
--   "supertest": "^6.3.3",
--   "ts-jest": "^29.1.0",
--   "ts-node": "^10.9.1",
--   "typescript": "^5.1.3"
+-   "prompts": "^2.4.2",
+-   "rimraf": "^6.0.1",
+-   "supertest": "^7.0.0",
+-   "tsx": "^4.19.1",
+-   "typescript": "^5.6.2",
+-   "vitest": "^2.1.1"
 - }
 }
 
@@ -186,9 +172,11 @@ Configure web service:
 
 ![05-configure-runtime](./readme-resources/05-configure-runtime.png)
 
+![06-build-start-commands-and-instance-type](./readme-resources/06-build-start-commands-and-instance-type.png)
+
 Add environment variables (Advanced settings):
 
-![06-add-env-vars](./readme-resources/06-add-env-vars.png)
+![07-add-env-vars](./readme-resources/07-add-env-vars.png)
 
 > [Specifying a Node Version in Render](https://render.com/docs/node-version)
 
