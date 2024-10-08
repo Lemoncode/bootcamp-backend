@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useSnackbarContext } from '@/common/components';
+import { useSnackbarContext } from '#common/components';
 import * as api from './api';
 import { Book, createEmptyBook } from './book.vm';
 import { BookComponent } from './book.component';

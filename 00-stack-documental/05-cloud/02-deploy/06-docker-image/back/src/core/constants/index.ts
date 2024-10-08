@@ -1,1 +1,1 @@
-export * from "./env.constants.js";
+export * from './env.constants.js';
