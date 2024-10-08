@@ -36,7 +36,7 @@ Choose NodeJS platform:
 
 ![03-choose-platform](./readme-resources/03-choose-platform.png)
 
-Before upload the code, we will create a `zip` file with same files that we previously deploy on the `Render` example.
+Before upload the code, we will create a `zip` file with same files as the same way we did previously to deploy on the `Render` example.
 
 _front terminal_
 
@@ -72,9 +72,9 @@ _./back_
 
 ```
 
-Copy the necessary files to deploy:
+Copy the necessary files in a new folder:
 
-- `dist` folder content.
+- `dist` folder `content`.
 - `public` folder.
 
 Copy backend `package.json` and update it:
@@ -151,6 +151,8 @@ Result:
 
 ```
 
+> NOTE: Not necessary to include `node_modules` folder.
+
 Create `zip` file:
 
 ![04-create-zip-file](./readme-resources/04-create-zip-file.png)
@@ -163,7 +165,8 @@ Continue to next steps:
 
 ![06-preset](./readme-resources/06-preset.png)
 
-Let's continue with default values and let's add `env variables` in step 5:
+
+We will skip next steps until `Step 5: Configure updates, monitoring, and logging` because we will configure `env variables`:
 
 ![07-add-env-variables](./readme-resources/07-add-env-variables.png)
 
