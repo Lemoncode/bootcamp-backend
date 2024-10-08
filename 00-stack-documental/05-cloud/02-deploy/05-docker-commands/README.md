@@ -96,7 +96,7 @@ docker run -it ubuntu sh
 >
 > NOTE: Open new terminal and write `docker ps`.
 >
-> sh: bash terminal
+> sh: like bash terminal
 >
 > We will see in next examples how to connect with interactive mode to a running container using `docker exec -it <Container ID> sh
 
