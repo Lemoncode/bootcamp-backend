@@ -39,6 +39,7 @@ docker tag <app-name>:<tag> <registry>/<path-to-repository>
 
 # Docker Hub case
 docker tag book-store-app:2 <user-name>/<app-name>
+docker images
 
 ```
 
@@ -110,6 +111,7 @@ docker push <user-name>/<app-name>:latest
 We could remove all local images:
 
 ```bash
+docker stop book-container
 docker image rm book-store-app:1 book-store-app:2 <user-name>/<app-name>:2 <user-name>/<app-name>:3 <user-name>/<app-name>:latest
 
 docker images
