@@ -6,8 +6,8 @@ interface Props extends IconButtonProps {
   tooltip?: string;
 }
 
-export const IconButtonComponent: React.FunctionComponent<Props> =
-  React.forwardRef((props, ref) => {
+export const IconButtonComponent = React.forwardRef<HTMLButtonElement, Props>(
+  (props, ref) => {
     const { tooltip, children, ...otherProps } = props;
 
     return Boolean(tooltip) && !otherProps.disabled ? (
@@ -21,7 +21,8 @@ export const IconButtonComponent: React.FunctionComponent<Props> =
         {children}
       </IconButton>
     );
-  });
+  }
+);
 
 IconButtonComponent.defaultProps = {
   color: 'primary',
