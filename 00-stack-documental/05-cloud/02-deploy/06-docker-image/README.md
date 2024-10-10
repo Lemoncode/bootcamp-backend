@@ -27,7 +27,7 @@ We can create our custom images. In this case, we will use [the node image](http
 _./Dockerfile_
 
 ```Docker
-FROM node:18-alpine
+FROM node:22-alpine
 ```
 
 > You can use [Docker VSCode extension](https://code.visualstudio.com/docs/containers/overview)
@@ -37,7 +37,7 @@ Let's create the path where we are going to copy our app:
 _./Dockerfile_
 
 ```diff
-FROM node:18-alpine
+FROM node:22-alpine
 + RUN mkdir -p /usr/app
 + WORKDIR /usr/app
 
@@ -61,15 +61,16 @@ back/.env
 back/.env.example
 back/.env.test
 back/.gitignore
-back/create-dev-env.sh
+back/.prettierrc
+back/create-dev-env.js
 back/docker-compose.yml
-back/globalConfig.json
-back/jest-mongodb-config.js
 
 front/node_modules
 front/dist
 front/.editorconfig
 front/.gitignore
+front/.prettierrc
+front/.env.development
 
 ```
 
@@ -78,7 +79,7 @@ Copy all files:
 _./Dockerfile_
 
 ```diff
-FROM node:18-alpine
+FROM node:22-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -91,7 +92,7 @@ Execute install and build:
 _./Dockerfile_
 
 ```diff
-FROM node:18-alpine
+FROM node:22-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -119,14 +120,14 @@ docker run --name book-container -it book-store-app:1 sh
 
 > Tag is optional.
 >
-> We can see the files after build in `cd ./dist && ls`
+> We can see the files after build using `ls dist`
 
 We could run this server after build it:
 
 _./Dockerfile_
 
 ```diff
-FROM node:18-alpine
+FROM node:22-alpine
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -136,18 +137,19 @@ RUN npm run build
 
 + ENV PORT=3000
 + ENV STATIC_FILES_PATH=./public
-+ ENV API_MOCK=true
++ ENV IS_API_MOCK=true
 + ENV AUTH_SECRET=MY_AUTH_SECRET
 
 + RUN apk update && apk add jq
 + RUN updatedImports="$(jq '.imports[]|=sub("./src"; "./dist")' ./package.json)" && echo "${updatedImports}" > ./package.json
-+ CMD node dist/index
++ CMD ["node", "dist/index"]
 
 ```
-
+> We will provide AUTH_SECRET from Cloud platform.
+>
 > RUN vs CMD: I don't want to run `node server` when we build the image, we want to run it when run the container.
 >
-> [CMD VS ENTRYPOINT](https://docs.doppler.com/docs/dockerfile)
+> [CMD VS ENTRYPOINT](https://codewithyury.com/docker-run-vs-cmd-vs-entrypoint/)
 >
 > We can provide env variables with `ENV` (not include secrets in this file because we will upload to github repository).
 >
@@ -158,7 +160,9 @@ Build image again:
 ```bash
 docker build -t book-store-app:1 .
 docker images
+docker image prune
 
+docker ps -a
 docker container rm book-container
 docker image prune
 
@@ -172,7 +176,10 @@ Run new container:
 ```bash
 docker ps -a
 docker run --name book-container book-store-app:1
-docker exec -it book-container sh
+
+docker exec -it book-container sh // in another terminal
+  cat package.json
+  exit
 ```
 
 Open browser in `http://localhost:3000` and `http://localhost:3000/api/books`. Why can't we access to these URLs? Because this process is executing itself inside container, we need to expose to our machine:
@@ -217,18 +224,20 @@ ENV PORT=3000
 If we check `docker images` we can see dangling images, due to use same tags for each build.
 
 ```bash
+docker ps
+docker stop book-container
+docker ps -a
+
 docker images
-docker rm book-container
-docker image prune
 ```
 
-On the other hand, we have an image with `~326MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
+On the other hand, we have an image with `~270MB`, too much size isn't it?. We should use [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to decrease this size, with only the necessary info:
 
 _./Dockerfile_
 
 ```diff
-- FROM node:18-alpine
-+ FROM node:18-alpine AS base
+- FROM node:22-alpine
++ FROM node:22-alpine AS base
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 
@@ -252,7 +261,7 @@ RUN npm run build
 + RUN apk update && apk add jq
 + RUN updatedImports="$(jq '.imports[]|=sub("./src"; ".")' ./package.json)" && echo "${updatedImports}" > ./package.json
 + COPY ./back/package-lock.json ./
-+ RUN npm ci --only=production
++ RUN npm ci --omit=dev
 
 EXPOSE 3000
 ENV PORT=3000
@@ -262,8 +271,8 @@ ENV AUTH_SECRET=MY_AUTH_SECRET
 
 - RUN apk update && apk add jq
 - RUN updatedImports="$(jq '.imports[]|=sub("./src"; "./dist")' ./package.json)" && echo "${updatedImports}" > ./package.json
-- CMD node dist/index
-+ CMD node index
+- CMD ["node", "dist/index"]
++ CMD ["node", "index"]
 
 ```
 
