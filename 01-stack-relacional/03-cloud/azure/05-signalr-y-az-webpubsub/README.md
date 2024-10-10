@@ -37,7 +37,7 @@ dotnet run --urls=https://localhost:7238
 
 ```bash
 cd 01-stack-relacional/03-cloud/azure/05-signalr-y-az-webpubsub/signalr/back-end
-dotnet run --urls=https://localhost:5001
+dotnet run --urls=http://localhost:5000
 ```
 
 5. Ejecuta el siguiente comando para levantar la aplicación web:
@@ -186,7 +186,7 @@ Para que puedas probar Azure Web PubSub hemos dejado dentro del directorio `webp
 
 - `front-end`: nuestra queria aplicación web en Angular con nuestros Tour of Heroes.
 - `back-end`: nuestra API en .NET Core que nos permite gestionar los héroes.
-- `webpubsub-az-func`: Para este ejemplo he implementado las llamadas que necesito para este servicio utilizanod Azure Functions y Node.js para que veas que no necesitas .NET para utilizar este servicio.
+- `webpubsub-az-func`: Para este ejemplo he implementado las llamadas que necesito para este servicio utilizanod Azure Functions y Node.js para que veas que no necesitas .NET para utilizar este servicio. Además he utilizado este artículo de la documentación para implementar la lógica: [Tutorial: Creación de una aplicación de notificación sin servidor con Azure Functions y el servicio Azure Web PubSub.](https://learn.microsoft.com/es-es/azure/azure-web-pubsub/tutorial-serverless-notification?tabs=javascript-v4)
 
 Para arrancar todo esto, sigue los siguientes pasos:
 
@@ -213,3 +213,5 @@ npm install && npm start
 ```
 
 Con todo levantado, podrás ver que la aplicación web sigue funcionando como antes, pero ahora con Azure Web PubSub. En este ejemplo mientras que navegas por la web te irá dando el tiempo ☀️.
+
+Happy coding! 🚀
