@@ -48,7 +48,7 @@ Continue to next steps:
 
 ![06-preset](./readme-resources/06-preset.png)
 
-Let's continue with default values and let's add `env variables` in step 5:
+We will skip next steps until `Step 5: Configure updates, monitoring, and logging` because we will configure `env variables`:
 
 ![07-add-env-variables](./readme-resources/07-add-env-variables.png)
 
@@ -127,10 +127,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
 -     - name: Log in to GitHub container registry
--       uses: docker/login-action@v2
+-       uses: docker/login-action@v3
 -       with:
 -         registry: ghcr.io
 -         username: ${{ github.actor }}
@@ -142,7 +142,7 @@ jobs:
 -         docker push ${{env.IMAGE_NAME}}
 
 -     - name: Deploy to Azure
--       uses: azure/webapps-deploy@v2
+-       uses: azure/webapps-deploy@v3
 -       with:
 -         app-name: ${{ secrets.AZURE_APP_NAME }}
 -         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
@@ -229,10 +229,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
 +     - name: AWS login
-+       uses: aws-actions/configure-aws-credentials@v2
++       uses: aws-actions/configure-aws-credentials@v4
 +       with:
 +         aws-access-key-id: ${{ secrets.AWS_DEPLOY_ACCESS_KEY_ID }}
 +         aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET_ACCESS_KEY }}

@@ -40,7 +40,7 @@ npm start
 
 Open browser in `http://localhost:8080`
 
-Since we are using `restApiServer.use('/', express.static(staticFilesPath));` we can build `front` app and place all files there:
+Since we are using `express.static` we can build `front` app and place all files in `ENV.STATIC_FILES_PATH` path:
 
 _front terminal_
 
@@ -60,7 +60,6 @@ node_modules
 dist
 .env
 mongo-data
-globalConfig.json
 + public
 
 ```
@@ -78,6 +77,22 @@ Open browser in `http://localhost:3000`
 
 The second step is create a new `npm command` in `back` project to compile `ts` into `js` files, in this case, we will use `tsc`(the TypeScript Compiler):
 
+Add `tsconfig.prod.json` file:
+
+_./back/tsconfig.prod.json_
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist"
+  }
+}
+```
+
+_back terminal_
+
 ```bash
 npm install rimraf --save-dev
 
@@ -91,7 +106,7 @@ _./back/package.json_
     ...
     "start:local-db": "docker-compose up -d",
 +   "clean": "rimraf dist",
-+   "build": "npm run clean && tsc --outDir dist",
++   "build": "npm run clean && tsc --project tsconfig.prod.json",
     "type-check": "tsc --noEmit --preserveWatchOutput",
     ...
   },
@@ -111,31 +126,17 @@ A nice improvement is ignore not necessary files for production:
 
 _./back/tsconfig.prod.json_
 
-```json
+```diff
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "dist"
   },
-  "exclude": ["**/*.spec.ts", "./src/console-runners"]
++ "exclude": ["**/*.spec.ts", "./src/console-runners"]
 }
 ```
 
-Update script command:
-
-_./back/package.json_
-
-```diff
-"scripts": {
-  ...
-- "build": "npm run clean && tsc --outDir dist",
-+ "build": "npm run clean && tsc --project tsconfig.prod.json",
-  ...
-},
-
-```
-
-Let's try it:
+Let's check it:
 
 _back terminal_
 
@@ -149,11 +150,13 @@ We could run this `production` version using node:
 _back terminal_
 
 ```bash
-node dist
+node --require dotenv/config dist
 
 ```
 
-Why is it failing? Because we are using Node.js `alias imports` targetting `src` folder, let's manually create a package.json inside `dist` folder:
+> NOTE: We are using dontenv to load environment variables from `.env` file.
+
+Why is it failing? Because we are using Node.js `alias imports` targeting `src` folder, let's manually create a package.json inside `dist` folder:
 
 _./dist/package.json_
 
@@ -161,14 +164,9 @@ _./dist/package.json_
 {
   "type": "module",
   "imports": {
-    "#common/*": "./common/*",
-    "#common-app/*": "./common-app/*",
-    "#core/*": "./core/*",
-    "#dals/*": "./dals/*",
-    "#pods/*": "./pods/*"
+    "#*": "./*"
   }
 }
-
 ```
 
 Run it again:
@@ -176,11 +174,11 @@ Run it again:
 _back terminal_
 
 ```bash
-node dist
+node --require dotenv/config dist
 
 ```
 
-> NOTE: Since `src` has same path route level as `dist` we provide valid env variables with `.env` file like public folder path, etc.
+Open browser in `http://localhost:3000` and you will see the app running including the frontend part.
 
 # ¿Con ganas de aprender Backend?
 

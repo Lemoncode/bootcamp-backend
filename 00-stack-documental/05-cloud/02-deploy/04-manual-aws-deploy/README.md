@@ -36,47 +36,104 @@ Choose NodeJS platform:
 
 ![03-choose-platform](./readme-resources/03-choose-platform.png)
 
-Before upload the code, we will create a `zip` file with same files that we previously deploy on the `Render` example. Let's copy all necessary files:
+Before upload the code, we will create a `zip` file with same files as the same way we did previously to deploy on the `Render` example.
 
-- `dist` folder content.
+_front terminal_
+
+```bash
+npm run build
+
+```
+
+Let's copy the `front/dist` folder in the `back/public` folder.
+
+Build the back project:
+
+_back terminal_
+
+```bash
+npm run build
+
+```
+
+Now we have something like:
+
+_./back_
+
+```
+|-- config/
+|-- dist/
+|-- node_module/
+|-- public/
+|-- src/
+|-- ...
+|-- package-lock.json
+|-- package.json
+
+```
+
+Copy the necessary files in a new folder:
+
+- `dist` folder `content`.
 - `public` folder.
 
-Create `package.json`:
+Copy backend `package.json` and update it:
 
 _./package.json_
 
-```json
+```diff
 {
-  "name": "bootcamp-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "bootcamp-backend-lemoncode",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+-   "prestart": "node ./create-dev-env.js && docker compose down --remove-orphans",
+-   "start": "run-p -l type-check:watch start:dev start:local-db",
+-   "start:dev": "tsx --require dotenv/config --watch src/index.ts",
+-   "prestart:console-runners": "npm run prestart",
+-   "start:console-runners": "run-p type-check:watch console-runners start:local-db",
+-   "console-runners": "tsx --require dotenv/config --watch src/console-runners/index.ts",
+-   "start:local-db": "docker compose up -d",
+-   "clean": "rimraf dist",
+-   "build": "npm run clean && tsc --project tsconfig.prod.json",
+-   "type-check": "tsc --noEmit --preserveWatchOutput",
+-   "type-check:watch": "npm run type-check -- --watch",
+-   "test": "vitest run -c ./config/test/config.ts",
+-   "test:watch": "vitest watch -c ./config/test/config.ts"
++   "start": "node index.js"
   },
   "imports": {
-    "#common/*": "./common/*",
-    "#common-app/*": "./common-app/*",
-    "#core/*": "./core/*",
-    "#dals/*": "./dals/*",
-    "#pods/*": "./pods/*"
+-   "#*": "./src/*"
++   "#*": "./*"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.281.0",
-    "@aws-sdk/s3-request-presigner": "^3.282.0",
+    "@aws-sdk/client-s3": "^3.658.1",
+    "@aws-sdk/s3-request-presigner": "^3.658.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.12.1"
-  }
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.9.0"
+- },
++ }
+- "devDependencies": {
+-   "@types/cookie-parser": "^1.4.7",
+-   "@types/cors": "^2.8.17",
+-   "@types/express": "^5.0.0",
+-   "@types/jsonwebtoken": "^9.0.7",
+-   "@types/node": "^22.7.4",
+-   "@types/prompts": "^2.4.9",
+-   "@types/supertest": "^6.0.2",
+-   "dotenv": "^16.4.5",
+-   "mongodb-memory-server": "^10.0.1",
+-   "npm-run-all": "^4.1.5",
+-   "prompts": "^2.4.2",
+-   "rimraf": "^6.0.1",
+-   "supertest": "^7.0.0",
+-   "tsx": "^4.19.1",
+-   "typescript": "^5.6.2",
+-   "vitest": "^2.1.1"
+- }
 }
-
 
 ```
 
@@ -94,6 +151,8 @@ Result:
 
 ```
 
+> NOTE: Not necessary to include `node_modules` folder.
+
 Create `zip` file:
 
 ![04-create-zip-file](./readme-resources/04-create-zip-file.png)
@@ -106,7 +165,8 @@ Continue to next steps:
 
 ![06-preset](./readme-resources/06-preset.png)
 
-Let's continue with default values and let's add `env variables` in step 5:
+
+We will skip next steps until `Step 5: Configure updates, monitoring, and logging` because we will configure `env variables`:
 
 ![07-add-env-variables](./readme-resources/07-add-env-variables.png)
 

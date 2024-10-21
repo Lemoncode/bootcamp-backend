@@ -1,7 +1,7 @@
 import { mockRepository } from './user.mock-repository.js';
-import { dbRepository } from './user.db-repository.js';
-import { envConstants } from '#core/constants/index.js';
+import { mongoDBRepository } from './user.mongodb-repository.js';
+import { ENV } from '#core/constants/index.js';
 
-export const userRepository = envConstants.isApiMock
+export const userRepository = ENV.IS_API_MOCK
   ? mockRepository
-  : dbRepository;
+  : mongoDBRepository;
