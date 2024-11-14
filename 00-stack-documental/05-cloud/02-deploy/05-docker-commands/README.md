@@ -100,6 +100,15 @@ docker run -it ubuntu sh
 >
 > We will see in next examples how to connect with interactive mode to a running container using `docker exec -it <Container ID> sh
 
+If the container is already running and we want to connect to it, we can use the `exec` command:
+
+_another terminal_
+
+```bash
+docker ps
+docker exec -it <CONTAINER ID> sh
+```
+
 # ¿Con ganas de aprender Backend?
 
 En Lemoncode impartimos un Bootcamp Backend Online, centrado en stack node y stack .net, en él encontrarás todos los recursos necesarios: clases de los mejores profesionales del sector, tutorías en cuanto las necesites y ejercicios para desarrollar lo aprendido en los distintos módulos. Si quieres saber más puedes pinchar [aquí para más información sobre este Bootcamp Backend](https://lemoncode.net/bootcamp-backend#bootcamp-backend/banner).
