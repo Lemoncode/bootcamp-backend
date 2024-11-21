@@ -27,6 +27,7 @@ export const mongoDBRepository: UserRepository = {
         projection: {
           email: 1,
           role: 1,
+          avatar: 1,
         },
       }
     ),

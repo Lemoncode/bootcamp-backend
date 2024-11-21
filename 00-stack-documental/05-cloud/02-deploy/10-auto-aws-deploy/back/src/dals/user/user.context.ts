@@ -1,4 +1,4 @@
-import { db } from '#core/servers/index.js';
+import { dbServer } from '#core/servers/index.js';
 import { User } from './user.model.js';
 
-export const getUserContext = () => db?.collection<User>('users');
+export const getUserContext = () => dbServer?.db.collection<User>('users');
