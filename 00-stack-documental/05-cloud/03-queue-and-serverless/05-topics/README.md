@@ -66,7 +66,7 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
 +       );
 ...
 
-await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
 channel.prefetch(1);
 - await channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });

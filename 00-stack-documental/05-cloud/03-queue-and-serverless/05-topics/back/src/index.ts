@@ -37,6 +37,6 @@ restApiServer.listen(envConstants.PORT, async () => {
   } else {
     console.log('Running API mock');
   }
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+  await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
   console.log(`Server ready at port ${envConstants.PORT}`);
 });

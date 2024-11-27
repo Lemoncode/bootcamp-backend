@@ -38,7 +38,7 @@ restApiServer.listen(envConstants.PORT, async () => {
   } else {
     console.log('Running API mock');
   }
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+  await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 - const channel = await messageBroker.channel();
 - const queue = await channel.queue('hello-queue', { durable: false });
 - await queue.publish('Hello Rabbit!');
@@ -208,7 +208,7 @@ import {
 + };
 
 - try {
-    await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+    await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 +   const channel = await messageBroker.channel(2);
 +   const queueName = 'price-archive-queue';
 +   const queueParams: QueueParams = { durable: true };
@@ -275,7 +275,7 @@ _./consumers/src/index.ts_
 ```diff
 ...
 
-await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
 + channel.prefetch(1);
 const queueName = 'price-archive-queue';

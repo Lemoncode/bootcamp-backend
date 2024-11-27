@@ -89,7 +89,7 @@ const priceArchiveConsumerTwo = async (
     await queue.subscribe(
 ...
 
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+  await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
   const channel = await messageBroker.channel(2);
   channel.prefetch(1);
 + channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
@@ -173,7 +173,7 @@ const priceArchiveConsumerTwo = async (
 };
 ...
 
-await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
 channel.prefetch(1);
 channel.exchangeDeclare(exchangeName, 'direct', { durable: true });

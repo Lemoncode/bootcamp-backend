@@ -8,5 +8,5 @@ export const envConstants = {
   MONGODB_URI: process.env.MONGODB_URI,
   AUTH_SECRET: process.env.AUTH_SECRET,
   AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
-  RABBITMQ_URI: process.env.RABBITMQ_URI,
+  RABBITMQ_URL: process.env.RABBITMQ_URL,
 };

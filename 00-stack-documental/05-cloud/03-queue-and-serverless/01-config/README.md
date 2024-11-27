@@ -1,6 +1,6 @@
 # 01 Config
 
-In this example we are going to config a message broker server.
+In this example we are going to config a message broker server with [RabbitMQ](https://www.rabbitmq.com/).
 
 We will start from `00-boilerplate`.
 
@@ -22,20 +22,17 @@ Update docker-compose with [rabbitmq image](https://hub.docker.com/_/rabbitmq/ta
 _./docker-compose.yml_
 
 ```diff
-version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:6
+    image: mongo:7
     ports:
       - '27017:27017'
     volumes:
-      - type: bind
-        source: ./mongo-data
-        target: /data/db
+      - ./mongo-data:/data/db
 + message-broker:
 +   container_name: message-broker
-+   image: rabbitmq:3.12-management-alpine
++   image: rabbitmq:4.0-management-alpine
 +   ports:
 +     - '5672:5672'
 +     - '15672:15672'
@@ -51,7 +48,7 @@ volumes:
 Run both services (mongo and rabbitmq):
 
 ```bash
-docker-compose up -d
+docker compose up -d
 
 ```
 
@@ -81,30 +78,31 @@ PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 AWS_ACCESS_KEY_ID=value
 AWS_SECRET_ACCESS_KEY=value
 AWS_S3_BUCKET=value
-+ RABBITMQ_URI=amqp://guest:guest@localhost:5672
++ RABBITMQ_URL=amqp://guest:guest@localhost:5672
 
 ```
 
 _./back/.env_
 
 ```diff
+NODE_ENV=development
 PORT=3000
 STATIC_FILES_PATH=../public
 CORS_ORIGIN=*
 CORS_METHODS=GET,POST,PUT,DELETE
-API_MOCK=true
-MONGODB_URI=mongodb://localhost:27017/book-store
+IS_API_MOCK=true
+MONGODB_URL=mongodb://localhost:27017/book-store
 AUTH_SECRET=MY_AUTH_SECRET
 AWS_ACCESS_KEY_ID=value
 AWS_SECRET_ACCESS_KEY=value
 AWS_S3_BUCKET=value
-+ RABBITMQ_URI=amqp://guest:guest@localhost:5672
++ RABBITMQ_URL=amqp://guest:guest@localhost:5672
 
 ```
 
@@ -113,17 +111,17 @@ Update `env.constants`:
 _./back/src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-  PORT: process.env.PORT,
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === 'production',
+  PORT: Number(process.env.PORT),
   STATIC_FILES_PATH: process.env.STATIC_FILES_PATH,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   CORS_METHODS: process.env.CORS_METHODS,
-  isApiMock: process.env.API_MOCK === 'true',
-  MONGODB_URI: process.env.MONGODB_URI,
+  IS_API_MOCK: process.env.IS_API_MOCK === 'true',
+  MONGODB_URL: process.env.MONGODB_URL,
   AUTH_SECRET: process.env.AUTH_SECRET,
   AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
-+ RABBITMQ_URI: process.env.RABBITMQ_URI,
++ RABBITMQ_URL: process.env.RABBITMQ_URL,
 };
 
 ```
@@ -134,35 +132,10 @@ _./back/src/core/servers/message-broker.server.ts_
 
 ```typescript
 import { AMQPClient } from '@cloudamqp/amqp-client';
-import { AMQPBaseClient } from '@cloudamqp/amqp-client/types/amqp-base-client';
+import { ENV } from '#core/constants/index.js';
 
-export let messageBroker: AMQPBaseClient;
+export const messageBroker = new AMQPClient(ENV.RABBITMQ_URL);
 
-export const connectToMessageBrokerServer = async (connectionURI: string) => {
-  const client = new AMQPClient(connectionURI);
-  messageBroker = await client.connect();
-};
-
-```
-
-> [Related Github issue](https://github.com/cloudamqp/amqp-client.js/issues/63)
-
-With the current TS configuration it cannot resolve the `AMQPBaseClient` type, we need to add the following to `tsconfig.json`:
-
-_./back/tsconfig.json_
-
-```diff
-{
-  "compilerOptions": {
-    ...
-    "baseUrl": "./src",
-    "paths": {
-      "#*": ["*"],
-+     "@cloudamqp/amqp-client/types/amqp-base-client": [
-+       "../node_modules/@cloudamqp/amqp-client/types/amqp-base-client.d.ts"
-+     ]
-    }
-...
 ```
 
 Update barrel file:
@@ -184,21 +157,21 @@ _./back/src/index.ts_
 ...
 import {
   createRestApiServer,
-  connectToDBServer,
-+ connectToMessageBrokerServer,
+  dbServer,
++ messageBroker,
 } from '#core/servers/index.js';
 import { envConstants } from '#core/constants/index.js';
 ...
 
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
-    console.log('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+    console.log('Running DataBase');
   } else {
-    console.log('Running API mock');
+    console.log('Running Mock API');
   }
-+ await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
-  console.log(`Server ready at port ${envConstants.PORT}`);
++ await messageBroker.connect();
+  console.log(`Server ready at port ${ENV.PORT}`);
 });
 
 ```
@@ -209,29 +182,20 @@ _./back/src/index.ts_
 
 ```diff
 ...
-import {
-  createRestApiServer,
-  connectToDBServer,
-  connectToMessageBrokerServer,
-+ messageBroker,
-} from '#core/servers/index.js';
 
-...
-
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
-    console.log('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+    console.log('Running DataBase');
   } else {
-    console.log('Running API mock');
+    console.log('Running Mock API');
   }
-
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
+  await messageBroker.connect();
 + const channel = await messageBroker.channel();
 + const queue = await channel.queue('hello-queue', { durable: false });
 + await queue.publish('Hello Rabbit!');
-    
-  console.log(`Server ready at port ${envConstants.PORT}`);
+
+  console.log(`Server ready at port ${ENV.PORT}`);
 });
 
 ```
@@ -260,7 +224,7 @@ _./consumers/.env.example_
 
 ```diff
 NODE_ENV=development
-+ RABBITMQ_URI=amqp://guest:guest@localhost:5672
++ RABBITMQ_URL=amqp://guest:guest@localhost:5672
 
 ```
 
@@ -268,50 +232,27 @@ _./consumers/.env_
 
 ```diff
 NODE_ENV=development
-+ RABBITMQ_URI=amqp://guest:guest@localhost:5672
++ RABBITMQ_URL=amqp://guest:guest@localhost:5672
 
 ```
 
 _./consumers/src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
-  isProduction: process.env.NODE_ENV === 'production',
-+ RABBITMQ_URI: process.env.RABBITMQ_URI,
+export const ENV = {
+  IS_PRODUCTION: process.env.NODE_ENV === 'production',
++ RABBITMQ_URL: process.env.RABBITMQ_URL,
 };
 
-```
-
-Update `tsconfig.json`:
-
-_./consumers/tsconfig.json_
-
-```diff
-{
-  "compilerOptions": {
-    ...
-    "baseUrl": "./src",
-    "paths": {
-      "#*": ["*"],
-+     "@cloudamqp/amqp-client/types/amqp-base-client": [
-+       "../node_modules/@cloudamqp/amqp-client/types/amqp-base-client.d.ts"
-+     ]
-    }
-...
 ```
 
 _./consumers/src/core/servers/message-broker.server.ts_
 
 ```typescript
 import { AMQPClient } from '@cloudamqp/amqp-client';
-import { AMQPBaseClient } from '@cloudamqp/amqp-client/types/amqp-base-client';
+import { ENV } from '#core/constants/index.js';
 
-export let messageBroker: AMQPBaseClient;
-
-export const connectToMessageBrokerServer = async (connectionURI: string) => {
-  const client = new AMQPClient(connectionURI);
-  messageBroker = await client.connect();
-};
+export const messageBroker = new AMQPClient(ENV.RABBITMQ_URL);
 
 ```
 
@@ -327,17 +268,13 @@ Let's create a consumer:
 _./consumers/src/index.ts_
 
 ```diff
-import '#core/load-env.js';
-+ import { envConstants } from '#core/constants/index.js';
-+ import {
-+   connectToMessageBrokerServer,
-+   messageBroker,
-+ } from '#core/servers/index.js';
++ import { messageBroker } from '#core/servers/index.js';
 
 + try {
-+   await connectToMessageBrokerServer(envConstants.RABBITMQ_URI);
++   await messageBroker.connect();
 +   const channel = await messageBroker.channel();
 +   const queue = await channel.queue('hello-queue', { durable: false });
+
 +   await queue.subscribe(
 +     {
 +       noAck: true,
@@ -350,7 +287,6 @@ import '#core/load-env.js';
 + } catch (error) {
 +   console.error(error);
 + }
-
 
 ```
 

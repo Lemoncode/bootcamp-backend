@@ -1,4 +1,4 @@
 export const envConstants = {
   isProduction: process.env.NODE_ENV === 'production',
-  RABBITMQ_URI: process.env.RABBITMQ_URI,
+  RABBITMQ_URL: process.env.RABBITMQ_URL,
 };
