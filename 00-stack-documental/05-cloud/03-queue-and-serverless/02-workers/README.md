@@ -22,49 +22,42 @@ Let's remove previous `dummy queue`:
 _./back/src/index.ts_
 
 ```diff
-import {
-  createRestApiServer,
-  connectToDBServer,
-  connectToMessageBrokerServer,
-- messageBroker,
-} from '#core/servers/index.js';
-
 ...
 
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
-    console.log('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+    console.log('Running DataBase');
   } else {
-    console.log('Running API mock');
+    console.log('Running Mock API');
   }
-  await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
+  await messageBroker.connect();
 - const channel = await messageBroker.channel();
 - const queue = await channel.queue('hello-queue', { durable: false });
 - await queue.publish('Hello Rabbit!');
 
-  console.log(`Server ready at port ${envConstants.PORT}`);
+  console.log(`Server ready at port ${ENV.PORT}`);
 });
 
 ```
 
 Let's create a `book price archive`:
 
-_./back/src/pods/books/book.rest-api.ts_
+_./back/src/pods/book/book.api.ts_
 
 ```diff
 import { Router } from 'express';
 + import { messageBroker } from '#core/servers/index.js';
 - import { bookRepository } from '#dals/index.js';
 + import { Book, bookRepository } from '#dals/index.js';
-import { authorizationMiddleware } from '#pods/security/index.js';
+import { authorizationMiddleware } from '#core/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
 } from './book.mappers.js';
 
-export const booksApi = Router();
+export const bookApi = Router();
 
 + const sendBookToArchive = async (book: Book) => {
 +   const queueName = 'price-archive-queue';
@@ -115,7 +108,7 @@ npm start
 ```
 
 > Open http://localhost:15672
- 
+
 Run these urls in the POSTMAN app:
 
 ```
@@ -147,13 +140,8 @@ Create consumers:
 _./consumers/src/index.ts_
 
 ```diff
-import '#core/load-env.js';
 + import { AMQPChannel, QueueParams } from '@cloudamqp/amqp-client';
-import { envConstants } from '#core/constants/index.js';
-import {
-  connectToMessageBrokerServer,
-  messageBroker,
-} from '#core/servers/index.js';
+import { messageBroker } from '#core/servers/index.js';
 
 + const priceArchiveConsumerOne = async (
 +   channel: AMQPChannel,
@@ -167,7 +155,7 @@ import {
 +         noAck: false,
 +       },
 +       (message) => {
-+         console.log('Worker 1 message received');
++         console.log('**** Worker 1 processing message ****');
 +         const book = JSON.parse(message.bodyToString());
 +         console.log(
 +           `Saving book with title "${book.title}" and price ${book.price}`
@@ -175,7 +163,7 @@ import {
 +         message.ack();
 +       }
 +     );
-+     console.log('Price archive consumer 1 configured');
++     console.log('**** Worker 1 ready ****');
 +   } catch (error) {
 +     console.error(error);
 +   }
@@ -193,7 +181,7 @@ import {
 +         noAck: false,
 +       },
 +       (message) => {
-+         console.log('Worker 2 message received');
++         console.log('**** Worker 2 processing message ****');
 +         const book = JSON.parse(message.bodyToString());
 +         console.log(
 +           `Saving book with title "${book.title}" and price ${book.price}`
@@ -201,14 +189,14 @@ import {
 +         message.ack();
 +       }
 +     );
-+     console.log('Price archive consumer 2 configured');
++     console.log('**** Worker 2 ready ****');
 +   } catch (error) {
 +     console.error(error);
 +   }
 + };
 
 - try {
-    await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
+    await messageBroker.connect();
 +   const channel = await messageBroker.channel(2);
 +   const queueName = 'price-archive-queue';
 +   const queueParams: QueueParams = { durable: true };
@@ -233,7 +221,7 @@ import {
 
 > By default, RabbitMQ will send each message to the next consumer, in sequence. On average every consumer will get the same number of messages. This way of distributing messages is called round-robin.
 
-What happens if we forgot to send the `ack`? 
+What happens if we forgot to send the `ack`?
 
 _./consumers/src/index.ts_
 
@@ -251,16 +239,21 @@ const priceArchiveConsumerOne = async (
         noAck: false,
       },
       (message) => {
-        console.log('Worker 1 message received');
-        const book = JSON.parse(message.bodyToString());
-        console.log(
-          `Saving book with title "${book.title}" and price ${book.price}`
-        );
+        console.log('**** Worker 1 processing message ****');
+-       const book = JSON.parse(message.bodyToString());
+-       console.log(
+-         `Saving book with title "${book.title}" and price ${book.price}`
+-       );
 -       message.ack();
++       console.log('**** Looooong task, work in progress ****');
++       // const book = JSON.parse(message.bodyToString());
++       // console.log(
++       //   `Saving book with title "${book.title}" and price ${book.price}`
++       // );
 +       // message.ack();
       }
     );
-    console.log('Price archive consumer 1 configured');
+    console.log('**** Worker 1 ready ****');
   } catch (error) {
     console.error(error);
   }
@@ -268,7 +261,7 @@ const priceArchiveConsumerOne = async (
 ...
 ```
 
-The first worker is getting more messages without resolve the first one, let's solve this using `prefetch`:
+The first worker is getting more messages while it still working on the first message, let's resolve it using `prefetch`:
 
 _./consumers/src/index.ts_
 
@@ -277,7 +270,7 @@ _./consumers/src/index.ts_
 
 await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
-+ channel.prefetch(1);
++ await channel.prefetch(1);
 const queueName = 'price-archive-queue';
 const queueParams: QueueParams = { durable: true };
 await priceArchiveConsumerOne(channel, queueName, queueParams);
@@ -285,40 +278,34 @@ await priceArchiveConsumerTwo(channel, queueName, queueParams);
 ...
 ```
 
-Let's stop and remove the current message broker server to create a new one:
+Let's remove the current data on message broker:
 
 ```bash
-docker-compose down
-
+docker compose down
 ```
 
-And add a new volume to persist the message broker data:
+And we can add a new volume to persist the message broker data:
 
 _./docker-compose.yml_
 
 ```diff
-version: '3.8'
 services:
   book-store-db:
     container_name: book-store-db
-    image: mongo:6
+    image: mongo:7
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
-      - type: bind
-        source: ./mongo-data
-        target: /data/db
+      - ./mongo-data:/data/db
   message-broker:
     container_name: message-broker
-    image: rabbitmq:3.11-management-alpine
+    image: rabbitmq:4.0-management-alpine
     ports:
-      - '5672:5672'
-      - '15672:15672'
-+   hostname: 'localhost'
+      - "5672:5672"
+      - "15672:15672"
++   hostname: "localhost"
 +   volumes:
-+     - type: bind
-+       source: ./message-broker-data
-+       target: /var/lib/rabbitmq/mnesia/rabbit@localhost
++     - ./message-broker-data:/var/lib/rabbitmq/mnesia/rabbit@localhost
 volumes:
   mongo-data:
 + message-broker-data:
@@ -331,19 +318,42 @@ _./.gitignore_
 
 ```diff
 node_modules
+dist
 .env
 mongo-data
-+ message-broker-data
-globalConfig.json
 public
-dist
++ message-broker-data
 
 ```
 
-Run again
+Update the `./back/create-dev-env.js` file:
+
+```diff
+...
+
+const MONGO_VOLUMEN = '../mongo-data';
+if (!existsSync(MONGO_VOLUMEN)) {
+  await mkdir(MONGO_VOLUMEN);
+}
+
++ const MESSAGE_BROKER_VOLUMEN = '../message-broker-data';
++ if (!existsSync(MESSAGE_BROKER_VOLUMEN)) {
++   await mkdir(MESSAGE_BROKER_VOLUMEN);
++ }
+
+
+```
+
+Let's stop and start the `back` and `consumers` projects to reset the current queue:
 
 ```bash
-docker-compose up -d
+docker compose up -d
+
+cd back
+npm start
+
+cd consumers
+npm start
 
 ```
 

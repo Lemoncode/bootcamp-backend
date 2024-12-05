@@ -1,18 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "baseUrl": "./src",
-    "paths": {
-      "#*": ["*"],
-      "@cloudamqp/amqp-client/types/amqp-base-client": [
-        "../node_modules/@cloudamqp/amqp-client/types/amqp-base-client.d.ts"
-      ]
-    }
+    "esModuleInterop": true
   },
-  "include": ["src/**/*", "./global-types.d.ts"]
+  "include": ["src/**/*", "./global-types.d.ts", "config/test/config.d.ts"]
 }

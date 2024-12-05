@@ -1,7 +1,6 @@
 node_modules
+dist
 .env
 mongo-data
-message-broker-data
-globalConfig.json
 public
-dist
+message-broker-data
