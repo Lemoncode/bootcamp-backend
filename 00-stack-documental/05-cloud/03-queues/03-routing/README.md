@@ -19,7 +19,7 @@ npm install
 
 The previous example was using the default AMQP `exchange`, that is, we will update the example but using an explicit one:
 
-_./back/src/pods/book/book.rest-api.ts_
+_./back/src/pods/book/book.api.ts_
 
 ```diff
 ...
@@ -64,11 +64,16 @@ const priceArchiveConsumerOne = async (
       },
       (message) => {
         console.log('Worker 1 message received');
-        const book = JSON.parse(message.bodyToString());
-        console.log(
-          `Saving book with title "${book.title}" and price ${book.price}`
-        );
+-       console.log('**** Looooong task, work in progress ****');
+-       // const book = JSON.parse(message.bodyToString());
+-       // console.log(
+-       //   `Saving book with title "${book.title}" and price ${book.price}`
+-       // );
 -       // message.ack();
++       const book = JSON.parse(message.bodyToString());
++       console.log(
++         `Saving book with title "${book.title}" and price ${book.price}`
++       );
 +       message.ack();
       }
     );
@@ -91,8 +96,8 @@ const priceArchiveConsumerTwo = async (
 
   await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
   const channel = await messageBroker.channel(2);
-  channel.prefetch(1);
-+ channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+  await channel.prefetch(1);
++ await channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
   const queueName = 'price-archive-queue';
 ...
 
@@ -116,7 +121,7 @@ BODY:
 
 The `routingKey`s are usefull if we want to route messages, for example, route by max price:
 
-_./back/src/pods/book/book.rest-api.ts_
+_./back/src/pods/book/book.api.ts_
 
 ```diff
 ...
@@ -175,8 +180,8 @@ const priceArchiveConsumerTwo = async (
 
 await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
-channel.prefetch(1);
-channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
+await channel.prefetch(1);
+await channel.exchangeDeclare(exchangeName, 'direct', { durable: true });
 - const queueName = 'price-archive-queue';
 - const queueParams: QueueParams = { durable: true };
 - await priceArchiveConsumerOne(channel, queueName, queueParams);
