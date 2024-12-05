@@ -63,7 +63,7 @@ const priceArchiveConsumerOne = async (
         noAck: false,
       },
       (message) => {
-        console.log('Worker 1 message received');
+        console.log('**** Worker 1 processing message ****');
 -       console.log('**** Looooong task, work in progress ****');
 -       // const book = JSON.parse(message.bodyToString());
 -       // console.log(
@@ -77,7 +77,7 @@ const priceArchiveConsumerOne = async (
 +       message.ack();
       }
     );
-    console.log('Price archive consumer 1 configured');
+    console.log('**** Worker 1 ready ****');
   } catch (error) {
     console.error(error);
   }

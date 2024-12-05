@@ -35,7 +35,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
         noAck: false,
       },
       (message) => {
-        console.log('Worker 1 message received');
+        console.log('**** Worker 1 processing message ****');
         const book = JSON.parse(message.bodyToString());
 -       console.log(
 -         `Saving book with title "${book.title}" and price ${book.price}`
@@ -68,7 +68,7 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
 
 await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
 const channel = await messageBroker.channel(2);
-channel.prefetch(1);
+await channel.prefetch(1);
 - await channel.exchangeDeclare(exchangeName, 'fanout', { durable: true });
 + await channel.exchangeDeclare(exchangeName, 'topic', { durable: true });
 await priceArchiveConsumerOne(channel);
@@ -112,7 +112,7 @@ METHOD: POST
 BODY:
 {
     "title": "My new book",
-    "releaseDate": "2023-09-10T00:00:00.000Z",
+    "releaseDate": "3000-09-10T00:00:00.000Z",
     "author": "John Doe",
     "price": 90
 }

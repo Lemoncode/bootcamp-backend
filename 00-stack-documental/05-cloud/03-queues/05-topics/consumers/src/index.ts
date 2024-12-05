@@ -1,10 +1,5 @@
-import '#core/load-env.js';
 import { AMQPChannel } from '@cloudamqp/amqp-client';
-import { envConstants } from '#core/constants/index.js';
-import {
-  connectToMessageBrokerServer,
-  messageBroker,
-} from '#core/servers/index.js';
+import { messageBroker } from '#core/servers/index.js';
 
 const exchangeName = 'price-archive';
 
@@ -18,7 +13,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
         noAck: false,
       },
       (message) => {
-        console.log('Worker 1 message received');
+        console.log('**** Worker 1 processing message ****');
         const book = JSON.parse(message.bodyToString());
         console.log(
           `Saving book with price ${book.price}, author ${book.author} and year ${book.releaseDate}`
@@ -26,7 +21,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
         message.ack();
       }
     );
-    console.log('Price archive consumer 1 configured');
+    console.log('**** Worker 1 ready ****');
   } catch (error) {
     console.error(error);
   }
@@ -42,7 +37,7 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
         noAck: false,
       },
       (message) => {
-        console.log('Worker 2 message received');
+        console.log('**** Worker 2 processing message ****');
         const book = JSON.parse(message.bodyToString());
         console.log(
           `Saving book with price ${book.price}, author ${book.author} and year ${book.releaseDate}`
@@ -50,15 +45,15 @@ const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
         message.ack();
       }
     );
-    console.log('Price archive consumer 2 configured');
+    console.log('**** Worker 2 ready ****');
   } catch (error) {
     console.error(error);
   }
 };
 
-await connectToMessageBrokerServer(envConstants.RABBITMQ_URL);
-const channel = await messageBroker.channel(2);
-channel.prefetch(1);
-channel.exchangeDeclare(exchangeName, 'topic', { durable: true });
+await messageBroker.connect();
+const channel = await messageBroker.channel();
+await channel.prefetch(1);
+await channel.exchangeDeclare(exchangeName, 'topic', { durable: true });
 await priceArchiveConsumerOne(channel);
 await priceArchiveConsumerTwo(channel);

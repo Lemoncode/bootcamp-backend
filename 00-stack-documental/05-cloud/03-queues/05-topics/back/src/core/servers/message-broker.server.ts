@@ -1,9 +1,4 @@
 import { AMQPClient } from '@cloudamqp/amqp-client';
-import { AMQPBaseClient } from '@cloudamqp/amqp-client/types/amqp-base-client';
+import { ENV } from '#core/constants/index.js';
 
-export let messageBroker: AMQPBaseClient;
-
-export const connectToMessageBrokerServer = async (connectionURI: string) => {
-  const client = new AMQPClient(connectionURI);
-  messageBroker = await client.connect();
-};
+export const messageBroker = new AMQPClient(ENV.RABBITMQ_URL);
