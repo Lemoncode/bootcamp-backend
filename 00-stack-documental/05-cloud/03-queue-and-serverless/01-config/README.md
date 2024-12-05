@@ -32,7 +32,7 @@ services:
       - ./mongo-data:/data/db
 + message-broker:
 +   container_name: message-broker
-+   image: rabbitmq:4.0-management-alpine
++   image: rabbitmq:4-management-alpine
 +   ports:
 +     - '5672:5672'
 +     - '15672:15672'
@@ -40,7 +40,6 @@ volumes:
   mongo-data:
 
 ```
-
 > `x.y-management-alpine`: RabbitMQ server and Management UI (for development purpose)
 >
 > `x.y-alpine`: only with RabbitMQ server.
@@ -54,7 +53,7 @@ docker compose up -d
 
 > Open http://localhost:15672 with guest/guest credentials
 
-We are going to install an official recommended library which implements AMQP 0-9-1 protocol, [amqp-client](https://github.com/cloudamqp/amqp-client.js).
+We are going to install a recommended library which implements AMQP 0-9-1 protocol, [amqp-client](https://github.com/cloudamqp/amqp-client.js).
 
 ```bash
 cd back

@@ -23,7 +23,7 @@ const priceArchiveConsumerOne = async (
         console.log(
           `Saving book with title "${book.title}" and price ${book.price}`
         );
-        // message.ack();
+        message.ack();
       }
     );
     console.log('Price archive consumer 1 configured');

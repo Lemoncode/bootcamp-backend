@@ -41,6 +41,5 @@ app.listen(ENV.PORT, async () => {
   const channel = await messageBroker.channel();
   const queue = await channel.queue('hello-queue', { durable: false });
   await queue.publish('Hello Rabbit!');
-
   console.log(`Server ready at port ${ENV.PORT}`);
 });
