@@ -1,0 +1,48 @@
+{
+  "name": "bootcamp-backend",
+  "type": "module",
+  "scripts": {
+    "prestart": "node ./create-dev-env.js",
+    "start": "run-p -l type-check:watch start:dev",
+    "start:dev": "tsx --require dotenv/config --watch src/index.ts",
+    "prestart:console-runners": "npm run prestart",
+    "start:console-runners": "run-p type-check:watch console-runners",
+    "console-runners": "tsx --require dotenv/config --watch src/console-runners/index.ts",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc --project tsconfig.prod.json",
+    "type-check": "tsc --noEmit --preserveWatchOutput",
+    "type-check:watch": "npm run type-check -- --watch",
+    "test": "vitest run -c ./config/test/config.ts",
+    "test:watch": "vitest watch -c ./config/test/config.ts"
+  },
+  "imports": {
+    "#*": "./src/*"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.658.1",
+    "@aws-sdk/s3-request-presigner": "^3.658.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.9.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.7.4",
+    "@types/prompts": "^2.4.9",
+    "@types/supertest": "^6.0.2",
+    "dotenv": "^16.4.5",
+    "mongodb-memory-server": "^10.0.1",
+    "npm-run-all": "^4.1.5",
+    "prompts": "^2.4.2",
+    "rimraf": "^6.0.1",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}

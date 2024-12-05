@@ -1,7 +1,0 @@
-node_modules
-.env
-mongo-data
-message-broker-data
-globalConfig.json
-public
-dist

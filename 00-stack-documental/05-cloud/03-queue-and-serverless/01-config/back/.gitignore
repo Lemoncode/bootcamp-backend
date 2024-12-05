@@ -1,6 +1,0 @@
-node_modules
-dist
-.env
-mongo-data
-globalConfig.json
-public
