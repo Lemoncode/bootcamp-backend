@@ -102,6 +102,8 @@ export const bookApi = Router();
 Run insert new book:
 
 ```bash
+docker compose up -d
+
 cd back
 npm start
 
@@ -197,12 +199,12 @@ import { messageBroker } from '#core/servers/index.js';
 
 - try {
     await messageBroker.connect();
+-   const channel = await messageBroker.channel();
 +   const channel = await messageBroker.channel(2);
 +   const queueName = 'price-archive-queue';
 +   const queueParams: QueueParams = { durable: true };
 +   await priceArchiveConsumerOne(channel, queueName, queueParams);
 +   await priceArchiveConsumerTwo(channel, queueName, queueParams);
--   const channel = await messageBroker.channel();
 -   const queue = await channel.queue('hello-queue', { durable: false });
 -   await queue.subscribe(
 -     {
@@ -340,7 +342,6 @@ if (!existsSync(MONGO_VOLUMEN)) {
 + if (!existsSync(MESSAGE_BROKER_VOLUMEN)) {
 +   await mkdir(MESSAGE_BROKER_VOLUMEN);
 + }
-
 
 ```
 
