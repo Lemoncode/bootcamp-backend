@@ -145,7 +145,7 @@ _./consumers/src/index.ts_
 ```diff
 - import { AMQPChannel, QueueParams } from '@cloudamqp/amqp-client';
 + import { AMQPChannel } from '@cloudamqp/amqp-client';
-import { envConstants } from 'core/constants';
+import { messageBroker } from '#core/servers/index.js';
 
 ...
 
