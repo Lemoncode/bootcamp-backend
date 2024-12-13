@@ -5,7 +5,7 @@ const exchangeName = 'price-archive';
 
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { exclusive: true });
+    const queue = await channel.queue('', { autoDelete: true, exclusive: true });
     await queue.bind(exchangeName);
     await queue.subscribe(
       {
@@ -28,7 +28,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
 
 const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { exclusive: true });
+    const queue = await channel.queue('', { autoDelete: true, exclusive: true });
     await queue.bind(exchangeName);
     await queue.subscribe(
       {

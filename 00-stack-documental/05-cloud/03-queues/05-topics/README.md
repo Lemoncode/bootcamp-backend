@@ -26,7 +26,7 @@ _./consumers/src/index.ts_
 
 const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { exclusive: true });
+    const queue = await channel.queue('', { autoDelete: true, exclusive: true });
 -   await queue.bind(exchangeName);
 +   await queue.bind(exchangeName, 'low-prices.*.new');
 +   await queue.bind(exchangeName, '*.Jane Doe.*');
@@ -47,7 +47,7 @@ const priceArchiveConsumerOne = async (channel: AMQPChannel) => {
 
 const priceArchiveConsumerTwo = async (channel: AMQPChannel) => {
   try {
-    const queue = await channel.queue('', { exclusive: true });
+    const queue = await channel.queue('', { autoDelete: true, exclusive: true });
 -   await queue.bind(exchangeName);
 +   await queue.bind(exchangeName, 'high-prices.#');
 +   await queue.bind(exchangeName, '#.old');
@@ -125,11 +125,11 @@ BODY:
 - Price: `200` and Author: `Jane Doe`
 > `high-prices.Jane Doe.new`: worker 1 and 2 will receive this message
 
-- Price: `90`, Author: `John Doe` and releaseDate: `1990`
-> `low-prices.John Doe.old`: Only worker 2 will receive this message
-
 - Price: `90`, Author: `Jane Doe` and releaseDate: `1990`
 > `low-prices.Jane Doe.old`: worker 1 and 2 will receive this message
+
+- Price: `90`, Author: `John Doe` and releaseDate: `1990`
+> `low-prices.John Doe.old`: Only worker 2 will receive this message
 
 # ¿Con ganas de aprender Backend?
 
