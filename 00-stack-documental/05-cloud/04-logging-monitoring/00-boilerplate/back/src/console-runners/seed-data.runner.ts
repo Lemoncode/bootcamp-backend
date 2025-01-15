@@ -1,6 +1,5 @@
 import { hash } from '#common/helpers/index.js';
 import { getUserContext } from '#dals/user/user.context.js';
-import { getBookContext } from '#dals/book/book.context.js';
 import { db } from '#dals/mock-data.js';
 
 export const run = async () => {
@@ -12,5 +11,4 @@ export const run = async () => {
       password: hashedPassword,
     });
   }
-  await getBookContext().insertMany(db.books);
 };
