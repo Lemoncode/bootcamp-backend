@@ -26,20 +26,23 @@ In this example, we will create a custom logger transport, in this case, we will
 
 First, let's create a new account and create a new rollbar project:
 
-![01-create-new-project](./readme-resources/01-create-new-project.png)
+![01-new-project](./readme-resources/01-new-project.png)
+
+![02-create-new-project](./readme-resources/02-create-new-project.png)
 
 
 Select the SDK language:
 
-![02-select-rollbar-language](./readme-resources/02-select-rollbar-language.png)
+![03-select-rollbar-language](./readme-resources/03-select-rollbar-language.png)
 
 Now, rollbar is waiting for data from our app:
 
-![03-waiting-to-send-messages](./readme-resources/03-waiting-to-send-messages.png)
+![04-waiting-to-send-messages](./readme-resources/04-waiting-to-send-messages.png)
 
 Let's install rollbar:
 
 ```bash
+cd back
 npm install rollbar --save
 
 ```
@@ -47,6 +50,7 @@ npm install rollbar --save
 Since there isn't any official winston rollbar transport, we will create a custom transport. We will explicitly install `winston`'s internal dependencies to create new transport:
 
 ```bash
+cd back
 npm install winston-transport triple-beam --save
 
 ```
@@ -92,7 +96,7 @@ export class RollbarTransport extends Transport {
 
 We need to access `info[MESSAGE]` if we want to log the formatted message instead the raw one:
 
-![04-winston-symbol-message](./readme-resources/04-winston-symbol-message.png)
+![05-winston-symbol-message](./readme-resources/05-winston-symbol-message.png)
 
 Add barrel file
 
@@ -103,7 +107,7 @@ export * from './rollbar.transport.js';
 
 ```
 
-Add rollbar transport instance (NOTE: Pending to add `envConstants`):
+Add rollbar transport instance (NOTE: Pending to add `ENV` constant):
 
 _./back/src/core/logger/transports/rollbar.transport.ts_
 
@@ -115,10 +119,10 @@ import { envConstants } from '#core/constants/index.js';
 const { combine, timestamp, prettyPrint } = format;
 
 export const rollbar = new RollbarTransport({
-  accessToken: envConstants.ROLLBAR_ACCESS_TOKEN,
-  environment: envConstants.ROLLBAR_ENV,
-  captureUncaught: envConstants.isProduction,
-  captureUnhandledRejections: envConstants.isProduction,
+  accessToken: ENV.ROLLBAR_ACCESS_TOKEN,
+  environment: ENV.ROLLBAR_ENV,
+  captureUncaught: ENV.IS_PRODUCTION,
+  captureUnhandledRejections: ENV.IS_PRODUCTION,
   format: combine(timestamp(), prettyPrint()),
   level: 'warn',
 });
@@ -160,7 +164,7 @@ _./back/.env_
 _./back/src/core/constants/env.constants.ts_
 
 ```diff
-export const envConstants = {
+export const ENV = {
   ...
 + ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
 + ROLLBAR_ENV: process.env.ROLLBAR_ENV,
@@ -186,7 +190,7 @@ export const logger = createLogger({
 
 Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs. Check results in rollbar.
 
-![05-rollbar-dashboard](./readme-resources/05-rollbar-dashboard.png)
+![06-rollbar-dashboard](./readme-resources/06-rollbar-dashboard.png)
 
 Another features supported by Rollbar:
 
