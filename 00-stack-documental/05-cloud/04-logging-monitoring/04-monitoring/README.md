@@ -28,7 +28,7 @@ Let's create new account:
 
 ![01-create-new-relic-account](./readme-resources/01-create-new-relic-account.png)
 
-Click on `APM options` and select NodeJS:
+Click on `Integrations & Agents` in the left side app bar and select NodeJS:
 
 ![02-click-apm-options](./readme-resources/02-click-apm-options.png)
 
@@ -36,13 +36,15 @@ Select `Package manager`:
 
 ![03-select-package-manager](./readme-resources/03-select-package-manager.png)
 
-Select `Node standard installation`:
+Create `new key` (copy the key value in a safe place):
 
-![04-select-node-standar-install](./readme-resources/04-select-node-standar-install.png)
+![04-create-new-key](./readme-resources/04-create-new-key.png)
 
 Give app name:
 
 ![05-give-app-name](./readme-resources/05-give-app-name.png)
+
+> Click on Continue button.
 
 Install `new relic` in back app:
 
@@ -58,33 +60,32 @@ Use it:
 _./back/src/core/monitoring.ts_
 
 ```javascript
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from "#core/constants/index.js";
 
-if (envConstants.isProduction) {
-  import('newrelic');
+if (ENV.IS_PRODUCTION) {
+  import("newrelic");
 }
-
 ```
 
 _./back/src/index.ts_
 
 ```diff
-import '#core/load-env.js';
 + import '#core/monitoring.js';
 import express from 'express';
+import path from 'node:path';
 ...
 
 ```
 
 Let's remove the `unexpected error`:
 
-_./back/src/pods/book/book.rest-api.ts_
+_./back/src/pods/book/book.api.ts_
 
 ```diff
 ...
 
 booksApi
-  .get('/', authorizationMiddleware(), async (req, res, next) => {
+  .get('/', async (req, res, next) => {
     try {
 -     const book = undefined;
 -     book.name;
@@ -99,13 +100,11 @@ booksApi
 ...
 ```
 
-`Download your custom configuration file` provided by New Relic to see app token, but instead of added it to the project, we will [configure it using env variables](https://docs.newrelic.com/docs/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration/#exports_config).
-
-![06-download-custom-config-file](./readme-resources/06-download-custom-config-file.png)
-
 We will create these env variables in `Render`:
 
-![07-new-relic-env-variables](./readme-resources/07-new-relic-env-variables.png)
+![06-new-relic-env-variables](./readme-resources/06-new-relic-env-variables.png)
+
+> [New Relic ENV variables](https://docs.newrelic.com/docs/apm/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration/#exports_config)
 
 Deploy new version:
 
@@ -116,136 +115,31 @@ git push
 
 ```
 
-Important note about `Connect your logs and infrastructure`. We will skip this step because for a basic metrics it's not necessary, but you can configure it using one of the two options.
-
 Check data in New Relic portal:
 
-![08-check-data](./readme-resources/08-check-data.png)
+![07-check-data](./readme-resources/07-check-data.png)
 
-![09-close-test-connection](./readme-resources/09-close-test-connection.png)
-
-![10-open-apm-service](./readme-resources/10-open-apm-service.png)
+![08-open-apm-service](./readme-resources/08-open-apm-service.png)
 
 If we play with the app, we could check all queries in `Distributed tracing` tab:
 
-![11-distributed-tracing-tab](./readme-resources/11-distributed-tracing-tab.png)
+![09-distributed-tracing-tab](./readme-resources/09-distributed-tracing-tab.png)
 
-If we check `Service map` and `Dependencies` tabs, we could see which external services we are using:
+If we check `Service map` and `Dependencies` tabs, we could see which external services we are using (in this case the Rollbar service):
 
-![12-service-map](./readme-resources/12-service-map.png)
+![10-service-map](./readme-resources/10-service-map.png)
 
-![13-dependencies](./readme-resources/13-dependencies.png)
+![11-dependencies](./readme-resources/11-dependencies.png)
 
 We could check which query consume more clock time in `Transactions` tab:
 
-![14-transactions](./readme-resources/14-transactions.png)
+![12-transactions](./readme-resources/12-transactions.png)
+
+> If you have a database connected to the app, you also can see the queries to the database.
 
 And server statistics in `Node VMs` tab:
 
-![15-node-vms](./readme-resources/15-node-vms.png)
-
-Let's deploy a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) as we did in `05-cloud > 02-deploy > 03-mongo-deploy` to see MongoDB statistics:
-
-![16-start-free-cluster](./readme-resources/16-start-free-cluster.png)
-
-We could select between three providers and different regions:
-
-![17-select-provider-and-region](./readme-resources/17-select-provider-and-region.png)
-
-Select the cluster tier, in this case `M0 Sandbox` which it's a free tier with No backup:
-
-![18-select-cluster-tier](./readme-resources/18-select-cluster-tier.png)
-
-Finally, give a name (if you want) and create the cluster:
-
-![19-create-cluster](./readme-resources/19-create-cluster.png)
-
-This is the main cluster page, where we will see:
-
-- Configure Network Access.
-- Configure Database Access.
-- See mongo connection URI.
-- See collections and documents.
-
-![20-main-cluster-page](./readme-resources/20-main-cluster-page.png)
-
-By default, MongoDB Atlas only allows access to configured IPs, let's add a new rule to allow all IPs:
-
-![21-configure-network-access](./readme-resources/21-configure-network-access.png)
-
-Let's configure database access, adding new user:
-
-![22.1-configure-database-access](./readme-resources/22.1-configure-database-access.png)
-
-![22.2-configure-database-access](./readme-resources/22.2-configure-database-access.png)
-
-> Let's copy the autogenerated password. We will use in the MongoDB Connection URI
-
-Let's copy the `MongoDB Connection URI`:
-
-![23-click-connect-button](./readme-resources/23-click-connect-button.png)
-
-![24-copy-connection-uri](./readme-resources/24-copy-connection-uri.png)
-
-Update env variable:
-
-_./back/.env_
-
-```diff
-...
-API_MOCK=true
-- MONGODB_URI=mongodb://localhost:27017/book-store
-+ MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/book-store?retryWrites=true&w=majority
-AUTH_SECRET=MY_AUTH_SECRET
-...
-
-```
-
-> Replace `<user>`, `<password>` and `<cluster>` with MongoDB Atlas provided values.
-
-And run backend `seed-data` runner:
-
-```bash
-npm run start:console-runners
-
-> seed-data
-
-```
-
-Update env variables in `Dockerfile`:
-
-_./Dockerfile_
-
-```diff
-...
-ENV NODE_ENV=production
-ENV STATIC_FILES_PATH=./public
-- ENV API_MOCK=true
-+ ENV API_MOCK=false
-ENV CORS_ORIGIN=false
-...
-```
-
-Deploy new version:
-
-```bash
-git add .
-git commit -m "update env variables"
-git push
-
-```
-
-Update env variables in `Render`:
-
-![25-update-env-variables](./readme-resources/25-update-env-variables.png)
-
-Now, if we play with the app, we could see MongoDB statistics:
-
-![26-mongodb-summary](./readme-resources/26-mongodb-summary.png)
-
-![27-mongodb-service-map](./readme-resources/27-mongodb-service-map.png)
-
-![28-mongodb-databases](./readme-resources/28-mongodb-databases.png)
+![13-node-vms](./readme-resources/13-node-vms.png)
 
 # ¿Con ganas de aprender Backend?
 
