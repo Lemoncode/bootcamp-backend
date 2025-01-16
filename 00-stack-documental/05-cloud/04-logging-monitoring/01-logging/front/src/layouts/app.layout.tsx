@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBarComponent } from '@/common-app/app-bar';
+import { AppBarComponent } from '#common-app/app-bar';
 import * as classes from './app.layout.styles';
 
 interface ChildrenProps {

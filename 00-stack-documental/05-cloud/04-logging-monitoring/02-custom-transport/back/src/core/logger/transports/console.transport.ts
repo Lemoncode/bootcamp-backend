@@ -1,4 +1,4 @@
-import { transports, format } from 'winston';
+import { transports, format } from "winston";
 
 const { combine, colorize, timestamp, printf } = format;
 

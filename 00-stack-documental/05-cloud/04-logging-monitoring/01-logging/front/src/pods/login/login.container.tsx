@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbarContext } from '@/common/components';
-import { linkRoutes } from '@/core/router';
+import { useSnackbarContext } from '#common/components';
+import { linkRoutes } from '#core/router';
 import * as api from './api';
 import { LoginComponent } from './login.component';
 import { User } from './login.vm';

@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import HomeIcon from '@mui/icons-material/Home';
 import UserIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
-import { linkRoutes } from '@/core/router';
+import { linkRoutes } from '#core/router';
 import * as api from './api';
 import * as classes from './app-bar.styles';
 
