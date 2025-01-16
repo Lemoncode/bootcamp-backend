@@ -25,6 +25,7 @@ npm install
 There are many logging libraries for Nodejs like [Winston](https://github.com/winstonjs/winston), [Bunyan](https://github.com/trentm/node-bunyan), [Pino](https://github.com/pinojs/pino), [Loglevel](https://github.com/pimterry/loglevel), [Npmlog](https://github.com/npm/npmlog), etc. Which provide similar features, let's try the first one:
 
 ```bash
+cd back
 npm install winston
 ```
 
@@ -40,7 +41,6 @@ const console = new transports.Console();
 export const logger = createLogger({
   transports: [console],
 });
-
 ```
 
 Add barrel file:
@@ -49,7 +49,6 @@ _./back/src/core/logger/index.ts_
 
 ```javascript
 export * from "./logger.js";
-
 ```
 
 Replace `console.log` by `logger`:
@@ -58,22 +57,23 @@ _./back/src/index.ts_
 
 ```diff
 ...
-import { createRestApiServer, connectToDBServer } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
+import { createRestApiServer, dbServer } from '#core/servers/index.js';
+import { ENV } from '#core/constants/index.js';
+import { authenticationMiddleware } from '#core/security/index.js';
 + import { logger } from '#core/logger/index.js';
 ...
 
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
--   console.log('Connected to DB');
-+   logger.info('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+-   console.log('Running DataBase');
++   logger.info('Running DataBase');
   } else {
--   console.log('Running API mock');
-+   logger.info('Running API mock');
+-   console.log('Running Mock API');
++   logger.info('Running Mock API');
   }
-- console.log(`Server ready at port ${envConstants.PORT}`);
-+ logger.info(`Server ready at port ${envConstants.PORT}`);
+- console.log(`Server ready at port ${ENV.PORT}`);
++ logger.info(`Server ready at port ${ENV.PORT}`);
 });
 
 ```
@@ -96,14 +96,14 @@ npm start
 
 Let's add a warning message:
 
-_./back/src/pods/security/security.rest-api.ts_
+_./back/src/pods/security/security.api.ts_
 
 ```diff
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { UserSession } from '#common-app/models/index.js';
+import { UserSession } from '#core/models/index.js';
+import { ENV } from '#core/constants/index.js';
 + import { logger } from '#core/logger/index.js';
-import { envConstants } from '#core/constants/index.js';
 ...
 
 securityApi
@@ -112,6 +112,7 @@ securityApi
 ...
         res.sendStatus(204);
       } else {
+        res.clearCookie('authorization');
 +       logger.warn(`Invalid credentials for email ${email}`);
         res.sendStatus(401);
       }
@@ -146,7 +147,7 @@ import { RequestHandler, ErrorRequestHandler } from 'express';
       next();
     };
 
-- export const logErrorRequestMiddleware: ErrorRequestHandler = 
+- export const logErrorRequestMiddleware: ErrorRequestHandler =
 + export const logErrorRequestMiddleware = (logger: Logger): ErrorRequestHandler =>
     async (error, req, res, next) => {
 -    console.error(error);
@@ -163,27 +164,27 @@ _./back/src/index.ts_
 ```diff
 ...
 
-- restApiServer.use(logRequestMiddleware);
-+ restApiServer.use(logRequestMiddleware(logger));
+- app.use(logRequestMiddleware);
++ app.use(logRequestMiddleware(logger));
 
-restApiServer.use('/api/security', securityApi);
-restApiServer.use('/api/books', authenticationMiddleware, booksApi);
-restApiServer.use('/api/users', authenticationMiddleware, userApi);
+app.use('/api/security', securityApi);
+app.use('/api/books', authenticationMiddleware, bookApi);
+app.use('/api/users', authenticationMiddleware, userApi);
 
-- restApiServer.use(logErrorRequestMiddleware);
-+ restApiServer.use(logErrorRequestMiddleware(logger));
+- app.use(logErrorRequestMiddleware);
++ app.use(logErrorRequestMiddleware(logger));
 ...
 
 ```
 
 And simulate some unexpected error:
 
-_./back/src/pods/book/book.rest-api.ts_
+_./back/src/pods/book/book.api.ts_
 
 ```diff
 ...
 booksApi
-  .get('/', authorizationMiddleware(), async (req, res, next) => {
+  .get('/', async (req, res, next) => {
     try {
 +     const book = undefined;
 +     book.name;
@@ -241,13 +242,15 @@ export const logger = createLogger({
 > `timestamp`: add a timestamp to log
 >
 > `printf`: create custom message
+>
+> Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs.
 
 The best feature in this kind of libraries is we can save our logs in different transports at the same time. Let's move `console` transport to its own file:
 
 _./back/src/core/logger/transports/console.transport.ts_
 
 ```javascript
-import { transports, format } from 'winston';
+import { transports, format } from "winston";
 
 const { combine, colorize, timestamp, printf } = format;
 
@@ -260,42 +263,36 @@ export const console = new transports.Console({
     })
   ),
 });
-
 ```
-
-Open browser at `http://localhost:8080/` and run `info`, `warn` and `error` logs.
 
 Let's add a new `File` transport, for example, we will save only `warnings` and `errors` in this file:
 
 _./back/src/core/logger/transports/file.transport.ts_
 
 ```javascript
-import { transports, format } from 'winston';
+import { transports, format } from "winston";
 
 const { combine, timestamp, prettyPrint } = format;
 
 export const file = new transports.File({
-  filename: 'app.log',
+  filename: "app.log",
   format: combine(timestamp(), prettyPrint()),
-  level: 'warn', // Save level lower or equal than warning
+  level: "warn", // Save level lower or equal than warning
   handleExceptions: true,
 });
-
 ```
 
 > [Logging levels](https://github.com/winstonjs/winston#logging-levels)
 >
 > `prettyPrint`: JSON format
 
-
 Add barrel file:
 
 _./back/src/core/logger/transports/index.ts_
 
 ```javascript
-export * from './console.transport.js';
-export * from './file.transport.js';
-
+export * from "./console.transport.js";
+export * from "./file.transport.js";
 ```
 
 Update logger:
