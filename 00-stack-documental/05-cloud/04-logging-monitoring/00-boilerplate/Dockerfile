@@ -20,7 +20,7 @@ COPY --from=front-build /usr/app/dist ./public
 COPY --from=back-build /usr/app/dist ./
 COPY ./back/package.json ./
 RUN apk update && apk add jq
-RUN updatedImports="$(jq '.imports[]|=sub("./src"; "./")' ./package.json)" && echo "${updatedImports}" > ./package.json
+RUN updatedImports="$(jq '.imports[]|=sub("./src"; ".")' ./package.json)" && echo "${updatedImports}" > ./package.json
 COPY ./back/package-lock.json ./
 RUN npm ci --omit=dev
 
