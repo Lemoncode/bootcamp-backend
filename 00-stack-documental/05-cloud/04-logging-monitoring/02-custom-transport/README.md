@@ -51,7 +51,7 @@ Since there isn't any official winston rollbar transport, we will create a custo
 
 ```bash
 cd back
-npm install winston-transport triple-beam --save
+npm install winston-transport --save
 
 ```
 
@@ -64,7 +64,6 @@ _./back/src/common/logger-transports/rollbar.transport.ts_
 ```javascript
 import Transport from 'winston-transport';
 import Rollbar, { Configuration } from 'rollbar';
-import { MESSAGE } from 'triple-beam';
 
 type Config = Transport.TransportStreamOptions & Configuration;
 
@@ -84,7 +83,7 @@ export class RollbarTransport extends Transport {
   log(info, next) {
     setImmediate(() => this.emit('logged', info));
     const level = info.level;
-    const message = info[MESSAGE];
+    const message = info[Symbol.for('message')];
     this.rollbar[level](message);
     next();
   }
@@ -114,7 +113,7 @@ _./back/src/core/logger/transports/rollbar.transport.ts_
 ```javascript
 import { format } from 'winston';
 import { RollbarTransport } from '#common/logger-transports/index.js';
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from '#core/constants/index.js';
 
 const { combine, timestamp, prettyPrint } = format;
 
