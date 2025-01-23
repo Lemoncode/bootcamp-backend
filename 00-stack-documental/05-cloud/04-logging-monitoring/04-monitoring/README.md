@@ -32,7 +32,7 @@ Click on `Integrations & Agents` in the left side app bar and select NodeJS:
 
 ![02-click-apm-options](./readme-resources/02-click-apm-options.png)
 
-Select `Package manager`:
+Select manual installation using a `Package manager`:
 
 ![03-select-package-manager](./readme-resources/03-select-package-manager.png)
 
