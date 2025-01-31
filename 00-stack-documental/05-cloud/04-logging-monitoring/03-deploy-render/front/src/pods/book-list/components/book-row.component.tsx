@@ -6,7 +6,7 @@ import {
   RowRendererProps,
   RowComponent,
   CellComponent,
-} from '@/common/components';
+} from '#common/components';
 import { Book } from '../book-list.vm';
 
 type Props = RowRendererProps<Book>;
