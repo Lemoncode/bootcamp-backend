@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lookup } from '@/common/models';
+import { Lookup } from '#common/models';
 import { CellProps } from './components';
 import {
   ConfirmationDialogLabelProps,
@@ -15,7 +15,7 @@ export type Column = string | CellHeaderProps;
 export interface RowRendererProps<T = {}> {
   row: T;
   index: number;
-  key: string | number;
+  key: React.Key;
   onEdit?: (id: string) => void;
   onDelete?: (lookup: Lookup) => void;
 }

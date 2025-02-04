@@ -15,10 +15,14 @@ npm install
 
 # Libraries
 
-We are going to install the main library to work with graphql and express, [graphql-http](https://github.com/graphql/graphql-http). ([Documentation page](https://graphql.org/graphql-js/))
+We are going to install the main library to work with graphql and express, [graphql-http](https://github.com/graphql/graphql-http).
+
+> [Documentation page](https://graphql.org/learn/)
+>
+> [grapqhl package docs](https://graphql.org/graphql-js/)
 
 ```bash
-npm install graphql-http graphql graphql-playground-middleware-express --save
+npm install graphql-http graphql  --save
 
 ```
 
@@ -26,26 +30,90 @@ npm install graphql-http graphql graphql-playground-middleware-express --save
 >
 > [Playground](https://github.com/graphql/graphql-playground/tree/main)
 
+# Add Playground
+
+_./src/core/graphql/playground.html_
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GraphiQL</title>
+    <style>
+      body {
+        height: 100%;
+        margin: 0;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      #graphiql {
+        height: 100vh;
+      }
+    </style>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <script
+      src="https://unpkg.com/graphiql/graphiql.min.js"
+      type="application/javascript"
+    ></script>
+    <link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css" />
+    <script
+      src="https://unpkg.com/@graphiql/plugin-explorer/dist/index.umd.js"
+      crossorigin
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@graphiql/plugin-explorer/dist/style.css"
+    />
+  </head>
+
+  <body>
+    <div id="graphiql">Loading...</div>
+    <script>
+      const root = ReactDOM.createRoot(document.getElementById('graphiql'));
+      const fetcher = GraphiQL.createFetcher({
+        url: '/graphql',
+      });
+      const explorerPlugin = GraphiQLPluginExplorer.explorerPlugin();
+      root.render(
+        React.createElement(GraphiQL, {
+          fetcher,
+          defaultEditorToolsVisibility: true,
+          plugins: [explorerPlugin],
+        })
+      );
+    </script>
+  </body>
+</html>
+```
+
 # Config
 
-ApolloServer comes with types definitions and we don't need an extra package for TypeScript. We have to define a new `ApolloServer` instance to create a new `GraphQL Server`:
+Let's create a dummy `GraphQL server` to check it how it works:
 
 _./src/index.ts_
 
 ```diff
-import '#core/load-env.js';
 import '#core/monitoring.js';
 import express from 'express';
-import path from 'path';
-import url from 'url';
+import path from 'node:path';
 + import { createHandler } from 'graphql-http/lib/use/express';
 + import { buildSchema } from 'graphql';
-+ import playground from 'graphql-playground-middleware-express';
-+ const graphqlPlayground = playground.default;
 
 ...
 
-restApiServer.use('/', express.static(staticFilesPath));
+app.use(
+  '/',
+  express.static(path.resolve(import.meta.dirname, ENV.STATIC_FILES_PATH))
+);
 
 + const schema = buildSchema(`
 +   type Query {
@@ -57,15 +125,19 @@ restApiServer.use('/', express.static(staticFilesPath));
 +     return 'Working endpoint!';
 +   },
 + };
-+ restApiServer.use('/graphql', createHandler({ schema, rootValue: resolvers }));
-+ if (!envConstants.isProduction) {
-+   restApiServer.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
++ app.use('/graphql', createHandler({ schema, rootValue: resolvers }));
++ if (!ENV.IS_PRODUCTION) {
++   app.use('/playground', async (req, res) => {
++     res.sendFile(
++       path.join(import.meta.dirname, './core/graphql/playground.html')
++     );
++   });
 + }
 
 ...
 
-  logger.info(`Server ready at port ${envConstants.PORT}`);
-+ logger.info(`GraphQL Server ready at port ${envConstants.PORT}/graphql`);
+  logger.info(`Server ready at port ${ENV.PORT}`);
++ logger.info(`GraphQL Server ready at port ${ENV.PORT}/graphql`);
 });
 
 ```
@@ -90,19 +162,22 @@ Let's move GraphQL Server config to `core`:
 _./src/core/servers/graphql.server.ts_
 
 ```javascript
+import path from 'node:path';
 import { Express } from 'express';
 import { createHandler, HandlerOptions } from 'graphql-http/lib/use/express';
-import playground from 'graphql-playground-middleware-express';
-const graphqlPlayground = playground.default;
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from '#core/constants/index.js';
 
 export const createGraphqlServer = (
   expressApp: Express,
   options: HandlerOptions
 ) => {
   expressApp.use('/graphql', createHandler(options));
-  if (!envConstants.isProduction) {
-    expressApp.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
+  if (!ENV.IS_PRODUCTION) {
+    expressApp.use('/playground', async (req, res) => {
+      res.sendFile(
+        path.join(import.meta.dirname, '../graphql/playground.html')
+      );
+    });
   }
 };
 
@@ -131,28 +206,17 @@ import path from 'path';
 import url from 'url';
 - import { createHandler } from 'graphql-http/lib/use/express';
 - import { buildSchema } from 'graphql';
-- import playground from 'graphql-playground-middleware-express';
-- const graphqlPlayground = playground.default;
 import {
   logRequestMiddleware,
   logErrorRequestMiddleware,
 } from '#common/middlewares/index.js';
 import {
   createRestApiServer,
-  connectToDBServer,
+  dbServer,
 + createGraphqlServer,
 } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { logger } from '#core/logger/index.js';
-import { booksApi } from '#pods/book/index.js';
-import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
-import { userApi } from '#pods/user/index.js';
+...
 
-const restApiServer = createRestApiServer();
-
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
-restApiServer.use('/', express.static(staticFilesPath));
 
 - const schema = buildSchema(`
 -   type Query {
@@ -164,13 +228,13 @@ restApiServer.use('/', express.static(staticFilesPath));
 -     return 'Working endpoint!';
 -   },
 - };
-- restApiServer.use('/graphql', createHandler({ schema, rootValue: resolvers }));
-- if (!envConstants.isProduction) {
--   restApiServer.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
+- app.use('/graphql', createHandler({ schema, rootValue: resolvers }));
+- if (!ENV.IS_PRODUCTION) {
+-   app.use('/playground', graphqlPlayground({ endpoint: '/graphql' }));
 - }
-+ createGraphqlServer(restApiServer, { schema: null, rootValue: null });
++ createGraphqlServer(app, { schema: null, rootValue: null });
 
-restApiServer.use(logRequestMiddleware(logger));
+app.use(logRequestMiddleware(logger));
 
 ...
 
@@ -237,7 +301,7 @@ Update barrel file:
 _./src/pods/book/index.ts_
 
 ```diff
-export * from "./book.rest-api.js";
+export * from "./book.api.js";
 + export * from './graphql/index.js';
 
 ```
@@ -248,15 +312,13 @@ _./src/index.ts_
 
 ```diff
 ...
-import { envConstants } from '#core/constants/index.js';
-import { logger } from '#core/logger/index.js';
-- import { booksApi } from '#pods/book/index.js';
-+ import { booksApi, bookSchema, bookResolvers } from '#pods/book/index.js';
+
+- import { bookApi } from '#pods/book/index.js';
++ import { bookApi, bookSchema, bookResolvers } from '#pods/book/index.js';
 import { securityApi, authenticationMiddleware } from '#pods/security/index.js';
 import { userApi } from '#pods/user/index.js';
 
 ...
-restApiServer.use('/', express.static(staticFilesPath));
 createGraphqlServer(restApiServer, {
 - schema: null,
 + schema: bookSchema,

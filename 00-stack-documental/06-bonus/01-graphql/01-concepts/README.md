@@ -4,17 +4,17 @@ In this example we are going to learn GraphQL base concepts.
 
 # Steps to build it
 
-- This is the [official documentation page](https://graphql.org/learn/), but now we are going to use an editor tool called **GraphiQL**
+This is the [official documentation page](https://graphql.org/learn/), but now we are going to use an editor tool called **GraphiQL**
 
-- We can play with online tool at [Github GraphQL Server](https://developer.github.com/v4/explorer/)
+We can play with online tool at [Github GraphQL Server](https://developer.github.com/v4/explorer/)
 
 # Base concepts - Consuming GraphQL Server data
 
 ## 1. Playing with tool:
 
-- Click on `Docs` to open right panel.
+Click on `Docs` to open side panel.
 
-- Type the following query and click on play button:
+Type the following query and click on play button:
 
 ```graphql
 query {
@@ -24,7 +24,7 @@ query {
 }
 ```
 
-- It returns a some data. Let's add more fields to it:
+It returns a some data. Let's add more fields to it:
 
 ```diff
 query {
@@ -36,7 +36,7 @@ query {
 }
 ```
 
-- We can fetch resources by some parameters:
+We can fetch resources by some parameters:
 
 ```diff
 query {
@@ -75,9 +75,9 @@ query {
 > 
 > ```
 
-- As we known, `name` and `owner` are required fields. We can check `Docs` section on right side to provide necessary input fields, returned types, etc.
+As we know, `name` and `owner` are required fields. We can check `Docs` section to provide necessary input fields, returned types, etc.
 
-- We can fetch array's fields as we did with object's fields:
+We can fetch array's fields as we did with object's fields:
 
 ```diff
 query {
@@ -102,11 +102,17 @@ query {
 
 - [Scalar Types](https://graphql.org/learn/schema/#scalar-types)
 
-- [Enumeration Types](https://graphql.org/learn/schema/#enumeration-types)
+- [Enum Types](https://graphql.org/learn/schema/#enum-types)
 
-- [List](https://graphql.org/learn/schema/#lists-and-non-null)
+- [Non-Null](https://graphql.org/learn/schema/#non-null)
+
+- [List](https://graphql.org/learn/schema/#list)
 
 - [Object Types](https://graphql.org/learn/schema/#object-types-and-fields)
+
+- [Interfaces](https://graphql.org/learn/schema/#interface-types)
+
+- [Union types](https://graphql.org/learn/schema/#union-types)
 
 Summary:
 
@@ -134,7 +140,7 @@ query {
 
 ## 3. Variables
 
-- Let's create a variable:
+Let's create a variable:
 
 ```json
 {
@@ -144,7 +150,7 @@ query {
 ```
 
 
-- And use it:
+And use it:
 
 ```diff
 - query {
@@ -169,24 +175,9 @@ query {
 
 ```
 
-> If you want create a `custom` variable type, you have to use [input](https://graphql.org/learn/schema/#input-types) type in server schema definition.
-
-For example:
-
-```
-input RepositoryInput {
-  name: String!
-  owner: String!
-}
-
-type Query {
-  repository: (repositoryInput: RepositoryInput!)
-}
-```
-
 ## 4. Mutations
 
-- Let's fetch a repository to update information:
+Let's fetch a repository to update information:
 
 ```diff
 + query {
@@ -201,7 +192,7 @@ type Query {
 
 > [Repository](https://github.com/Lemoncode/graphql-playground-example)
 
-- If we want to update the description, we have to use a mutation:
+If we want to update the description, we have to use a mutation:
 
 ```diff
 - query {
@@ -227,7 +218,7 @@ type Query {
 
 ```
 
-- This is a good example to use variables:
+This is a good example to use variables:
 
 ```diff
 ...
@@ -256,7 +247,7 @@ type Query {
 ```
 
 
-# Advance Concepts
+# Advanced Concepts
 
 ## 1. Aliases.
 
@@ -324,22 +315,28 @@ Sometimes using just the field arguments to customize the behavior of the GraphQ
 
 The best way to do this in GraphQL is with a _directive_. Directives can be used to alter the GraphQL _runtime_ execution, and they are commonly used with variables to customize the reponse based on the variables values.
 
-- built-in directives -> _skip_, _include_, both can be used on fields and fragments.
+> built-in directives -> _skip_, _include_, both can be used on fields and fragments.
 
 ```diff
 - query {
 + query($includeRepo:Boolean!) {
-    viewer {
+-   user: viewer {
++   viewer {
+-     githubId: id
       login
       name
       company
       avatarUrl
     }
--   repository(name: "react", owner: "facebook") {
+-   facebookRepo:repository(name: "react", owner: "facebook") {
 +   repository(name: "react", owner: "facebook") @include(if: $includeRepo)  {
       name
       description
     }
+-   lemoncodeRepo:repository(name: "fonk", owner: "lemoncode") {
+-     name
+-     description
+-   }
   }
 
 ```

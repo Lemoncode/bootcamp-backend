@@ -1,6 +1,6 @@
 import { Column } from 'react-table';
 import * as viewModel from './table.vm';
-import { mapToCollection } from '@/common/mappers';
+import { mapToCollection } from '#common/mappers';
 
 const mapColumnFromVMToCellHeaderProps = (
   column: viewModel.Column

@@ -1,9 +1,8 @@
 import { mapSchema, MapperKind, getDirective } from '@graphql-tools/utils';
 import { GraphQLSchema, defaultFieldResolver } from 'graphql';
 import { verifyJWT } from '#common/helpers/index.js';
-import { UserSession } from '#common-app/models/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { GraphQLContext } from '#common-app/models/graphql.js';
+import { UserSession, GraphQLContext } from '#core/models/index.js';
+import { ENV } from '#core/constants/index.js';
 
 const isAuthenticatedResolver = async (
   _,
@@ -13,10 +12,7 @@ const isAuthenticatedResolver = async (
 ) => {
   try {
     const [, token] = context.req.raw.cookies.authorization?.split(' ') || [];
-    const userSession = await verifyJWT<UserSession>(
-      token,
-      envConstants.AUTH_SECRET
-    );
+    const userSession = await verifyJWT<UserSession>(token, ENV.AUTH_SECRET);
     context.userSession = userSession;
     return next();
   } catch (error) {

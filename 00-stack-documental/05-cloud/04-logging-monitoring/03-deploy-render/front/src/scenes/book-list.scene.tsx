@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppLayout } from '@/layouts';
-import { BookListContainer } from '@/pods/book-list';
+import { AppLayout } from '#layouts';
+import { BookListContainer } from '#pods/book-list';
 
 export const BookListScene: React.FunctionComponent = () => {
   return (

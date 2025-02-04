@@ -1,5 +1,5 @@
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from "#core/constants/index.js";
 
-if (envConstants.isProduction) {
-  import('newrelic');
+if (ENV.IS_PRODUCTION) {
+  import("newrelic");
 }

@@ -30,9 +30,9 @@ export const securitySchema = graphql(`
 `);
 ```
 
-Move GraphQLResolver to `common-app/models`:
+Move GraphQLResolver to `core/models`:
 
-_./src/common-app/models/graphql.ts_
+_./src/core/models/graphql.model.ts_
 
 ```javascript
 import { GraphQLResolveInfo } from 'graphql';
@@ -47,12 +47,12 @@ export type GraphQLResolver<Args, ReturnType> = (
 
 Update barrel file:
 
-_./src/common-app/models/index.ts_
+_./src/core/models/index.ts_
 
 ```diff
-export * from './user-session.js';
-export * from './role.js';
-+ export * from './graphql.js';
+export * from './user-session.model.js';
+export * from './role.model.js';
++ export * from './graphql.model.js';
 
 ```
 
@@ -62,11 +62,11 @@ _./src/pods/book/graphql/book.resolvers.ts_
 
 ```diff
 - import { GraphQLResolveInfo } from 'graphql';
-+ import { GraphQLResolver } from '#common-app/models/index.js';
++ import { GraphQLResolver } from '#core/models/index.js';
 import { logger } from '#core/logger/index.js';
 ...
 
-- // TODO: Move to common-app/models/graphql.model.ts
+- // TODO: Move to core/models/graphql.model.ts
 - // Pending to add Context type
 - type GraphQLResolver<Args, Context, ReturnType> = (
 -   args: Args,
@@ -93,7 +93,7 @@ Add `security` resolvers:
 _./src/pods/security/graphql/security.resolvers.ts_
 
 ```javascript
-import { GraphQLResolver } from '#common-app/models/index.js';
+import { GraphQLResolver } from '#core/models/index.js';
 
 interface SecurityResolvers {
   login: GraphQLResolver<{ email: string; password: string }, void>;
@@ -122,8 +122,7 @@ Update barrel file:
 _./src/pods/security/index.ts_
 
 ```diff
-export * from './security.rest-api.js';
-export * from './security.middlewares.js';
+export * from './security.api.js';
 + export * from './graphql/index.js';
 
 ```
@@ -140,25 +139,21 @@ Update app:
 _./src/index.ts_
 
 ```diff
-import '#core/load-env.js';
 import '#core/monitoring.js';
 import express from 'express';
-import path from 'path';
-import url from 'url';
+import path from 'node:path';
 + import { mergeSchemas } from '@graphql-tools/schema';
 ...
-import { booksApi, bookSchema, bookResolvers } from '#pods/book/index.js';
+import { bookApi, bookSchema, bookResolvers } from '#pods/book/index.js';
 import {
   securityApi,
-  authenticationMiddleware,
 + securitySchema,
 + securityResolvers,
 } from '#pods/security/index.js';
 import { userApi } from '#pods/user/index.js';
 
 ...
-restApiServer.use('/', express.static(staticFilesPath));
-createGraphqlServer(restApiServer, {
+createGraphqlServer(app, {
 - schema: bookSchema,
 + schema: mergeSchemas({ schemas: [securitySchema, bookSchema] }),
 - rootValue: bookResolvers,
@@ -174,9 +169,9 @@ _./src/pods/security/graphql/security.resolvers.ts_
 
 ```diff
 + import jwt from 'jsonwebtoken';
-- import { GraphQLResolver } from '#common-app/models/index.js';
-+ import { GraphQLResolver, UserSession } from '#common-app/models/index.js';
-+ import { envConstants } from '#core/constants/index.js';
+- import { GraphQLResolver } from '#core/models/index.js';
++ import { GraphQLResolver, UserSession } from '#core/models/index.js';
++ import { ENV } from '#core/constants/index.js';
 + import { userRepository } from '#dals/index.js';
 
 interface SecurityResolvers {
@@ -187,7 +182,7 @@ interface SecurityResolvers {
 export const securityResolvers: SecurityResolvers = {
   login: async ({ email, password }) => {
 -   console.log({ email, password });
-+   const user = await userRepository.getUserByEmailAndPassword(
++   const user = await userRepository.getUser(
 +     email,
 +     password
 +   );
@@ -196,7 +191,7 @@ export const securityResolvers: SecurityResolvers = {
 +       id: user._id.toHexString(),
 +       role: user.role,
 +     };
-+     const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
++     const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
 +       expiresIn: '1d',
 +       algorithm: 'HS256',
 +     });
@@ -210,7 +205,7 @@ export const securityResolvers: SecurityResolvers = {
 How could I get `res` object to set a cookie? We could use [GraphQL Context](https://github.com/graphql/graphql-http#context) for that:
 
 
-_./src/common-app/models/graphql.ts_
+_./src/core/models/graphql.model.ts_
 
 ```diff
 import { GraphQLResolveInfo } from 'graphql';
@@ -238,14 +233,11 @@ _./src/index.ts_
 ```diff
 ...
 import { mergeSchemas } from '@graphql-tools/schema';
-+ import { GraphQLContext } from '#common-app/models/index.js';
-import {
-  logRequestMiddleware,
-  logErrorRequestMiddleware,
-} from '#common/middlewares/index.js';
++ import { GraphQLContext } from '#core/models/index.js';
+
 ...
 
-createGraphqlServer(restApiServer, {
+createGraphqlServer(app, {
   schema: mergeSchemas({ schemas: [securitySchema, bookSchema] }),
   rootValue: { ...securityResolvers, ...bookResolvers },
 + context: (req): any => {
@@ -262,9 +254,9 @@ _./src/pods/security/graphql/security.resolvers.ts_
 
 ```diff
 import jwt from 'jsonwebtoken';
-import { GraphQLResolver, UserSession } from '#common-app/models/index.js';
+import { GraphQLResolver, UserSession } from '#core/models/index.js';
 + import { logger } from '#core/logger/index.js';
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from '#core/constants/index.js';
 import { userRepository } from '#dals/index.js';
 
 interface SecurityResolvers {
@@ -284,13 +276,13 @@ export const securityResolvers: SecurityResolvers = {
         id: user._id.toHexString(),
         role: user.role,
       };
-      const token = jwt.sign(userSession, envConstants.AUTH_SECRET, {
+      const token = jwt.sign(userSession, ENV.AUTH_SECRET, {
         expiresIn: '1d',
         algorithm: 'HS256',
       });
 +     context.res.cookie('authorization', `Bearer ${token}`, {
 +       httpOnly: true,
-+       secure: envConstants.isProduction,
++       secure: ENV.IS_PRODUCTION,
 +     });
 -   }
 +   } else {
@@ -304,10 +296,6 @@ export const securityResolvers: SecurityResolvers = {
 
 ```
 
-
-Configure playground to `include` credentials:
-
-![01-configure-playground](./readme-resources/01-configure-playground.png)
 
 Example invalid credentials query:
 
@@ -375,9 +363,8 @@ _./src/pods/security/graphql/security.directives.ts_
 import { mapSchema, MapperKind, getDirective } from '@graphql-tools/utils';
 import { GraphQLSchema, defaultFieldResolver } from 'graphql';
 import { verifyJWT } from '#common/helpers/index.js';
-import { UserSession } from '#common-app/models/index.js';
-import { envConstants } from '#core/constants/index.js';
-import { GraphQLContext } from '#common-app/models/graphql.js';
+import { UserSession, GraphQLContext } from '#core/models/index.js';
+import { ENV } from '#core/constants/index.js';
 
 const isAuthenticatedResolver = async (
   _,
@@ -389,7 +376,7 @@ const isAuthenticatedResolver = async (
     const [, token] = context.req.raw.cookies.authorization?.split(' ') || [];
     const userSession = await verifyJWT<UserSession>(
       token,
-      envConstants.AUTH_SECRET
+      ENV.AUTH_SECRET
     );
     context.userSession = userSession;
     return next();
@@ -450,12 +437,12 @@ export * from './security.schema.js';
 
 Update `context`:
 
-_./src/common-app/models/graphql.ts_
+_./src/core/models/graphql.model.ts_
 
 ```diff
 ...
 import { Request, Response } from 'express';
-+ import { UserSession } from './user-session.js';
++ import { UserSession } from './user-session.model.js';
 
 export interface GraphQLContext {
   req: GraphQLRequest<Request, RequestContext>;
