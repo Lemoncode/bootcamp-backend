@@ -1,4 +1,4 @@
-import { GraphQLResolver } from '#common-app/models/index.js';
+import { GraphQLResolver } from '#core/models/index.js';
 import { logger } from '#core/logger/index.js';
 import { bookRepository } from '#dals/index.js';
 import { Book } from '../book.api-model.js';

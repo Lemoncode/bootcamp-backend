@@ -1,36 +1,36 @@
-import '#core/load-env.js';
 import '#core/monitoring.js';
 import express from 'express';
-import path from 'path';
-import url from 'url';
+import path from 'node:path';
 import { mergeSchemas } from '@graphql-tools/schema';
-import { GraphQLContext } from '#common-app/models/index.js';
+import { GraphQLContext } from '#core/models/index.js';
 import {
   logRequestMiddleware,
   logErrorRequestMiddleware,
 } from '#common/middlewares/index.js';
 import {
   createRestApiServer,
-  connectToDBServer,
+  dbServer,
   createGraphqlServer,
 } from '#core/servers/index.js';
-import { envConstants } from '#core/constants/index.js';
+import { ENV } from '#core/constants/index.js';
+import { authenticationMiddleware } from '#core/security/index.js';
 import { logger } from '#core/logger/index.js';
-import { booksApi, bookSchema, bookResolvers } from '#pods/book/index.js';
+import { bookApi, bookSchema, bookResolvers } from '#pods/book/index.js';
 import {
   securityApi,
-  authenticationMiddleware,
   securitySchema,
   securityResolvers,
 } from '#pods/security/index.js';
 import { userApi } from '#pods/user/index.js';
 
-const restApiServer = createRestApiServer();
+const app = createRestApiServer();
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const staticFilesPath = path.resolve(__dirname, envConstants.STATIC_FILES_PATH);
-restApiServer.use('/', express.static(staticFilesPath));
-createGraphqlServer(restApiServer, {
+app.use(
+  '/',
+  express.static(path.resolve(import.meta.dirname, ENV.STATIC_FILES_PATH))
+);
+
+createGraphqlServer(app, {
   schema: mergeSchemas({ schemas: [securitySchema, bookSchema] }),
   rootValue: { ...securityResolvers, ...bookResolvers },
   context: (req): any => {
@@ -49,21 +49,21 @@ createGraphqlServer(restApiServer, {
   },
 });
 
-restApiServer.use(logRequestMiddleware(logger));
+app.use(logRequestMiddleware(logger));
 
-restApiServer.use('/api/security', securityApi);
-restApiServer.use('/api/books', authenticationMiddleware, booksApi);
-restApiServer.use('/api/users', authenticationMiddleware, userApi);
+app.use('/api/security', securityApi);
+app.use('/api/books', authenticationMiddleware, bookApi);
+app.use('/api/users', authenticationMiddleware, userApi);
 
-restApiServer.use(logErrorRequestMiddleware(logger));
+app.use(logErrorRequestMiddleware(logger));
 
-restApiServer.listen(envConstants.PORT, async () => {
-  if (!envConstants.isApiMock) {
-    await connectToDBServer(envConstants.MONGODB_URI);
-    logger.info('Connected to DB');
+app.listen(ENV.PORT, async () => {
+  if (!ENV.IS_API_MOCK) {
+    await dbServer.connect(ENV.MONGODB_URL);
+    logger.info('Running DataBase');
   } else {
-    logger.info('Running API mock');
+    logger.info('Running Mock API');
   }
-  logger.info(`Server ready at port ${envConstants.PORT}`);
-  logger.info(`GraphQL Server ready at port ${envConstants.PORT}/graphql`);
+  logger.info(`Server ready at port ${ENV.PORT}`);
+  logger.info(`GraphQL Server ready at port ${ENV.PORT}/graphql`);
 });

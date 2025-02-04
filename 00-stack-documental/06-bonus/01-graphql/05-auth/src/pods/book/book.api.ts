@@ -1,27 +1,26 @@
 import { Router } from 'express';
 import { bookRepository } from '#dals/index.js';
-import { authorizationMiddleware } from '#pods/security/index.js';
+import { authorizationMiddleware } from '#core/security/index.js';
 import {
   mapBookListFromModelToApi,
   mapBookFromModelToApi,
   mapBookFromApiToModel,
 } from './book.mappers.js';
 
-export const booksApi = Router();
+export const bookApi = Router();
 
-booksApi
-  .get('/', authorizationMiddleware(), async (req, res, next) => {
+bookApi
+  .get('/', async (req, res, next) => {
     try {
       const page = Number(req.query.page);
       const pageSize = Number(req.query.pageSize);
       const bookList = await bookRepository.getBookList(page, pageSize);
-
       res.send(mapBookListFromModelToApi(bookList));
     } catch (error) {
       next(error);
     }
   })
-  .get('/:id', authorizationMiddleware(), async (req, res, next) => {
+  .get('/:id', async (req, res, next) => {
     try {
       const { id } = req.params;
       const book = await bookRepository.getBook(id);
