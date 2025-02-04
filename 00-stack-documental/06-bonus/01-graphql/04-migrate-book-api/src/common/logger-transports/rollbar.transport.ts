@@ -1,6 +1,5 @@
 import Transport from 'winston-transport';
 import Rollbar, { Configuration } from 'rollbar';
-import { MESSAGE } from 'triple-beam';
 
 type Config = Transport.TransportStreamOptions & Configuration;
 
@@ -20,7 +19,7 @@ export class RollbarTransport extends Transport {
   log(info, next) {
     setImmediate(() => this.emit('logged', info));
     const level = info.level;
-    const message = info[MESSAGE];
+    const message = info[Symbol.for('message')];
     this.rollbar[level](message);
     next();
   }
